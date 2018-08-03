@@ -26,6 +26,7 @@ repositories {
 
 dependencies {
     compile(kotlinModule("stdlib-jdk8", kotlin_version))
+    compile("com.google.code.gson:gson:2.8.5")
 }
 
 tasks.withType<KotlinCompile> {
