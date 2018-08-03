@@ -22,11 +22,12 @@ val kotlin_version: String by extra
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     compile(kotlinModule("stdlib-jdk8", kotlin_version))
-    compile("com.google.code.gson:gson:2.8.5")
+    compile("com.beust:klaxon:3.0.1")
 }
 
 tasks.withType<KotlinCompile> {

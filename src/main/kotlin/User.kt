@@ -1,4 +1,4 @@
-import com.google.gson.Gson
+import com.beust.klaxon.Klaxon
 
 data class User(
         // Strings and profile
@@ -19,7 +19,6 @@ fun main(args: Array<String>) {
     val f = User::class.java.getResource("/test.json")
     val t = f.readText()
     print(t)
-    val g = Gson()
-    val u = g.fromJson(t, User::class.java)
-    println(u)
+    val u = Klaxon().parse<User>(t)
+    print(u)
 }
