@@ -4,7 +4,7 @@ object Log {
 
     private fun log(mode: Modes, message: String) {
         if (mode >= this.mode) {
-            println("[${mode.name}] - $message")
+            println("[${mode.name}] $message")
         }
     }
 

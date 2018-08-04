@@ -66,8 +66,8 @@ fun main(args: Array<String>) {
     val token = args[0]
     println("Token: $token")
 
-    API.token = token
-    API.get(API.URL_USERS_LIST, mapOf())
+    Http.token = token
+    Http.encodeAndGet(Http.URL_USERS_LIST, mapOf())
 
     /*
     val u = Klaxon()
