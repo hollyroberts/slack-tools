@@ -15,7 +15,7 @@ object Http {
     // URLs
     const val URL_USERS_LIST = "https://slack.com/api/users.list"
 
-    // Enum to pass from getAndCheck to get
+    // Internal Enum to pass between methods
     enum class Status { SUCCESS, FAILURE, RATE_LIMITED }
 
     /**
@@ -112,6 +112,9 @@ object Http {
         }
 
         // Check for warnings, but do not fail on them
+        if (json.containsKey("warnings")) {
+            Log.warn("Slack response contained warning for request '$url'. Message: " + json.string("warnings"))
+        }
 
         return Pair(Status.SUCCESS, json)
     }
