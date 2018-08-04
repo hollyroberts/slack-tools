@@ -19,12 +19,12 @@ object ProfileConverter: Converter {
 
     override fun canConvert(cls: Class<*>) = cls == Profile::class.java
     override fun fromJson(jv: JsonValue): Profile {
-        // Get obj, then display name string from object
+        // get obj, then display name string from object
         val obj = jv.obj ?: throw KlaxonException("Null profile")
         val display_name = obj["display_name"] as? String ?: throw KlaxonException("No display_name in profile")
 
 
-        // Get the map of images
+        // get the map of images
         val images = mutableMapOf<String, String>()
         obj.filterKeys { it.startsWith("image_") }
                 .forEach { key, value ->
@@ -52,7 +52,7 @@ data class Profile(
             return images.getValue("original")
         }
 
-        // Get the largest number
+        // get the largest number
         return images
                 .filterKeys { when(it.toIntOrNull()){
                     null -> false
@@ -63,11 +63,16 @@ data class Profile(
 }
 
 fun main(args: Array<String>) {
-    val f = User::class.java.getResource("/test.json")
-    val t = f.readText()
-    println(t)
+    val token = args[0]
+    println("Token: $token")
+
+    API.token = token
+    API.get(API.URL_USERS_LIST, mapOf())
+
+    /*
     val u = Klaxon()
             .converter(ProfileConverter)
             .parse<User>(t)!!
     println(u.profile.getLargestImage())
+    */
 }
