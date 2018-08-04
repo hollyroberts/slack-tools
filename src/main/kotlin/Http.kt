@@ -1,31 +1,61 @@
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
-import com.beust.klaxon.Parser
-import com.sun.org.apache.xpath.internal.operations.Bool
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.io.StringReader
+import kotlin.system.exitProcess
 
 object Http {
     val client = OkHttpClient()
     var token = ""
 
     // URLs
-    const val URL_USERS_LIST = "https://slack.com/api/users.listt"
+    const val URL_USERS_LIST = "https://slack.com/api/users.list"
 
     // Enum to pass from getAndCheck to get
     enum class Status { SUCCESS, FAILURE, RATE_LIMITED }
 
     /**
-     * Base function for GET requests
+     * Sends GET request to (slack) url and verifies basic json
+     * @return A JsonObject result. Will always be success as right now any failure in getting data will cause the program to exit
+     */
+    fun get(url: String, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 1) : Result<JsonObject> {
+        require(rateLimitAttempts >= 1)
+
+        for (i in 1..rateLimitAttempts) {
+            val (status, json) = getInternal(url, params)
+
+            // Handle status codes
+            when (status) {
+                Status.SUCCESS -> return Result.Success(json!!)
+                Status.FAILURE -> {
+                    Log.error("Exiting due to response failure")
+                    exitProcess(-1)
+                }
+                Status.RATE_LIMITED -> {
+                    if (i < rateLimitAttempts) {
+                        println("Retrying (" + ordinal(i + 1) + " attempt)")
+                    } else {
+                        println("Number of rate limited retry attempts exceeded")
+                    }
+                }
+            }
+        }
+
+        exitProcess(-1)
+        // return Result.Failure
+    }
+
+    /**
+     * Internal base function for GET requests
      * Encodes params and sends, then uses processResponse to return a pair of status and string (null if not success)
      *
      * @throws IOException
      */
-    fun encodeAndGet(url: String, params: Map<String, String>) : Pair<Status, JsonObject?> {
+    private fun getInternal(url: String, params: Map<String, String>) : Pair<Status, JsonObject?> {
         // Add params to url (including token)
         val httpUrl = HttpUrl.parse(url)!!.newBuilder()
         httpUrl.addQueryParameter("token", token)
@@ -40,6 +70,7 @@ object Http {
 
         // Send request
         try {
+            Log.debug("GET '" + httpUrl.toString() + "'")
             client.newCall(request).execute().use {
                 return processResponse(it, url)
             }
@@ -71,24 +102,17 @@ object Http {
         val json = Klaxon().parseJsonObject(StringReader(body))
 
         if (!(json.getOrDefault("ok", false) as Boolean)) {
-            var msg = "$errBaseMsg Did not receive true OK"
+            var msg = "$errBaseMsg OK field was false or missing"
             if (json.containsKey("error")) {
-                msg += "Error message given: " + json["error"]
+                msg += ". Failure message given: " + json["error"]
             }
 
             Log.error(msg)
             return Pair(Status.FAILURE, null)
         }
-        
+
+        // Check for warnings, but do not fail on them
+
         return Pair(Status.SUCCESS, json)
-        /*
-        val a = System.currentTimeMillis()
-        println(json.boolean("ok"))
-        val t = Klaxon()
-                .converter(ProfileConverter)
-                .parseFromJsonObject<User>(json.array<JsonObject>("members")!![0])
-        println(t)
-        println((System.currentTimeMillis() - a).toString())
-        */
     }
 }
