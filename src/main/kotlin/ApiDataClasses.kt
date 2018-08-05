@@ -1,7 +1,8 @@
 import java.util.*
 
 data class UserList (
-        val members: Array<User>
+        val members: Array<User>,
+        val response_metadata: Cursor
 ) {
 
     /*
@@ -22,3 +23,5 @@ data class UserList (
         return Arrays.hashCode(members)
     }
 }
+
+data class Cursor(val next_cursor: String?)

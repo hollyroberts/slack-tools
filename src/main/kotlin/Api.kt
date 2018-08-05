@@ -5,7 +5,7 @@ object Api {
     private const val URL_USERS_LIST = "https://slack.com/api/users.list"
 
     // Limits
-    private const val USERS_LIST_LIMIT = 10
+    private const val USERS_LIST_LIMIT = 50
 
     // Rate limit times to wait (in ms)
     private const val RETRY_TIER_1 = 60 * 1000
@@ -19,16 +19,30 @@ object Api {
      */
     fun getUsers() : Map<String, User> {
         val userMap = mutableMapOf<String, User>()
-        val params = mutableMapOf("limit" to USERS_LIST_LIMIT.toString())
+        val params = mutableMapOf(
+                "limit" to USERS_LIST_LIMIT.toString(),
+                "cursor" to "")
 
+        do {
             // Get response (presume success)
             val response = Http.get(URL_USERS_LIST, params) as Result.Success
             val parsedJson = Klaxon()
                     .converter(ProfileConverter)
                     .parseFromJsonObject<UserList>(response.value)!!
 
-        println(parsedJson.members.size)
+            // Add entries to map
+            parsedJson.members.forEach {
+                userMap[it.id] = it
+            }
 
-        return mapOf()
+            // Check cursor
+            if (parsedJson.response_metadata.next_cursor.isNullOrEmpty()) {
+                break
+            } else {
+                params["cursor"] = parsedJson.response_metadata.next_cursor!!
+            }
+        } while (true)
+
+        return userMap
     }
 }
