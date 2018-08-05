@@ -9,11 +9,8 @@ import java.io.StringReader
 import kotlin.system.exitProcess
 
 object Http {
-    val client = OkHttpClient()
+    private val client = OkHttpClient()
     var token = ""
-
-    // URLs
-    const val URL_USERS_LIST = "https://slack.com/api/users.list"
 
     // Internal Enum to pass between methods
     enum class Status { SUCCESS, FAILURE, RATE_LIMITED }
@@ -22,7 +19,7 @@ object Http {
      * Sends GET request to (slack) url and verifies basic json
      * @return A JsonObject result. Will always be success as right now any failure in getting data will cause the program to exit
      */
-    fun get(url: String, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 1) : Result<JsonObject> {
+    fun get(url: String, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 2) : Result<JsonObject> {
         require(rateLimitAttempts >= 1)
 
         for (i in 1..rateLimitAttempts) {
@@ -98,8 +95,9 @@ object Http {
 
         // Parse JSON to klaxon representation
         // Body is guaranteed to be non-null if called from execute()
-        val body = response.body()!!.string()
-        val json = Klaxon().parseJsonObject(StringReader(body))
+        val a = System.currentTimeMillis()
+        val json = Klaxon().parseJsonObject(response.body()!!.charStream())
+        println((System.currentTimeMillis() - a).toString())
 
         if (!(json.getOrDefault("ok", false) as Boolean)) {
             var msg = "$errBaseMsg OK field was false or missing"
