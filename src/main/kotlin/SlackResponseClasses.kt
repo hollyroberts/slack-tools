@@ -20,5 +20,10 @@ open class PaginatedCursor : SlackResponse() {
     data class Cursor(val next_cursor: String?)
 
     fun moreEntries() = !nextCursor().isNullOrEmpty()
+
+    /**
+     * Returns the next cursor if it exists
+     * If moreEntries is true then guaranteed to be non null
+     */
     fun nextCursor() = response_metadata.next_cursor
 }

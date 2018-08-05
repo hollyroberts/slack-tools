@@ -75,5 +75,5 @@ fun main(args: Array<String>) {
     println("Token: $token")
 
     Http.token = token
-    Api.getUsers()
+    println(Api.getUsers().size)
 }

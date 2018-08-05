@@ -17,7 +17,7 @@ object Http {
      * Sends GET request to (slack) url and verifies basic json
      * @return A JsonObject result. Will always be success as right now any failure in getting data will cause the program to exit
      */
-    fun <T : SlackResponse> get(url: String, adapter: JsonAdapter<T>, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 2): Result.Success<T?> {
+    fun <T : SlackResponse> get(url: String, adapter: JsonAdapter<T>, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 2): Result<T?> {
         require(rateLimitAttempts >= 1)
 
         for (i in 1..rateLimitAttempts) {
@@ -94,7 +94,9 @@ object Http {
         // Parse JSON to moshi representation
         // Body is guaranteed to be non-null if called from execute()
         val json = response.body()!!.string()
+        val tStart = System.currentTimeMillis()
         val parsedJson = adapter.fromJson(json)!!
+        println((System.currentTimeMillis() - tStart).toString())
 
         if (!parsedJson.ok) {
             var msg = "$errBaseMsg OK field was false or missing"
