@@ -27,7 +27,7 @@ repositories {
 
 dependencies {
     compile(kotlinModule("stdlib-jdk8", kotlin_version))
-    compile("com.beust:klaxon:3.0.1")
+    compile("com.beust:klaxon:3.0.6")
     compile("com.squareup.okhttp3:okhttp:3.11.0")
 }
 
