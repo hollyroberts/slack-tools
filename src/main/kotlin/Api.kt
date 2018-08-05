@@ -1,4 +1,4 @@
-import com.beust.klaxon.Klaxon
+import com.squareup.moshi.Moshi
 
 object Api {
     // URLs
@@ -13,6 +13,11 @@ object Api {
     private const val RETRY_TIER_3 = 1 * 1000
     private const val RETRY_TIER_4 = 0.5 * 1000
 
+    val moshi = Moshi.Builder()
+            .add(ProfileJsonAdapter)
+            .build()!!
+    val adapter = moshi.adapter(UserList::class.java)
+
     /**
      * Retrieves full list of users using Slack API
      * @return map of userid to user object
@@ -20,6 +25,8 @@ object Api {
     fun getUsers() : Map<String, User> {
         val userMap = mutableMapOf<String, User>()
         val params = mutableMapOf("limit" to USERS_LIST_LIMIT.toString())
+
+        Http.get(URL_USERS_LIST, adapter, params)
 
         return mapOf()
     }
