@@ -5,7 +5,7 @@ object Api {
     private const val URL_USERS_LIST = "https://slack.com/api/users.list"
 
     // Limits
-    private const val USERS_LIST_LIMIT = 50
+    private const val USERS_LIST_LIMIT = 31
 
     // Rate limit times to wait (in ms)
     private const val RETRY_TIER_1 = 60 * 1000
@@ -43,6 +43,7 @@ object Api {
             }
         } while (true)
 
+        println(userMap.size)
         return userMap
     }
 }
