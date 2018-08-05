@@ -21,14 +21,6 @@ object Api {
         val userMap = mutableMapOf<String, User>()
         val params = mutableMapOf("limit" to USERS_LIST_LIMIT.toString())
 
-            // Get response (presume success)
-            val response = Http.get(URL_USERS_LIST, params) as Result.Success
-            val parsedJson = Klaxon()
-                    .converter(ProfileConverter)
-                    .parseFromJsonObject<UserList>(response.value)!!
-
-        println(parsedJson.members.size)
-
         return mapOf()
     }
 }

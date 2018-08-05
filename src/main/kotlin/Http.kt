@@ -1,5 +1,6 @@
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
+import com.squareup.moshi.Moshi
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -19,7 +20,7 @@ object Http {
      * Sends GET request to (slack) url and verifies basic json
      * @return A JsonObject result. Will always be success as right now any failure in getting data will cause the program to exit
      */
-    fun get(url: String, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 2) : Result<JsonObject> {
+    fun get(url: String, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 2): Result<JsonObject> {
         require(rateLimitAttempts >= 1)
 
         for (i in 1..rateLimitAttempts) {
@@ -52,7 +53,7 @@ object Http {
      *
      * @throws IOException
      */
-    private fun getInternal(url: String, params: Map<String, String>) : Pair<Status, JsonObject?> {
+    private fun getInternal(url: String, params: Map<String, String>): Pair<Status, JsonObject?> {
         // Add params to url (including token)
         val httpUrl = HttpUrl.parse(url)!!.newBuilder()
         httpUrl.addQueryParameter("token", token)
@@ -80,7 +81,7 @@ object Http {
     /**
      * Handles the checking of the response
      */
-    private fun processResponse(response: Response, url: String) : Pair<Status, JsonObject?> {
+    private fun processResponse(response: Response, url: String): Pair<Status, JsonObject?> {
         val errBaseMsg = "Request for '$url' failed."
 
         // HTTP status codes
@@ -95,9 +96,13 @@ object Http {
 
         // Parse JSON to klaxon representation
         // Body is guaranteed to be non-null if called from execute()
-        val a = System.currentTimeMillis()
-        val json = Klaxon().parseJsonObject(response.body()!!.charStream())
-        println((System.currentTimeMillis() - a).toString())
+        val body = response.body()!!.string()
+
+        val moshi = Moshi.Builder().build()
+        val adapter = moshi.adapter(PaginatedCursor::class.java)
+        val test = adapter.fromJson(body)
+
+        val json = Klaxon().parseJsonObject(StringReader(body))
 
         if (!(json.getOrDefault("ok", false) as Boolean)) {
             var msg = "$errBaseMsg OK field was false or missing"

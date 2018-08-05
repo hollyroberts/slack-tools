@@ -17,25 +17,25 @@ object ProfileConverter: Converter {
         return "Not implemented"
     }
 
-    override fun canConvert(cls: Class<*>) = cls == Profile::class.java
-    override fun fromJson(jv: JsonValue): Profile {
-        // get obj, then display name string from object
-        val obj = jv.obj ?: throw KlaxonException("Null profile")
-        val display_name = obj["display_name"] as? String ?: throw KlaxonException("No display_name in profile")
+override fun canConvert(cls: Class<*>) = cls == Profile::class.java
+override fun fromJson(jv: JsonValue): Profile {
+    // get obj, then display name string from object
+    val obj = jv.obj ?: throw KlaxonException("Null profile")
+    val display_name = obj["display_name"] as? String ?: throw KlaxonException("No display_name in profile")
 
 
-        // get the map of images
-        val images = mutableMapOf<String, String>()
-        obj.filterKeys { it.startsWith("image_") }
-                .forEach { key, value ->
-                    images[key.removePrefix("image_")] =
-                            value as? String ?: throw KlaxonException("$key did contain a string") }
-        if (images.isEmpty()) {
-            throw KlaxonException("No images found for profile")
-        }
-
-        return Profile(display_name, images)
+    // get the map of images
+    val images = mutableMapOf<String, String>()
+    obj.filterKeys { it.startsWith("image_") }
+            .forEach { key, value ->
+                images[key.removePrefix("image_")] =
+                        value as? String ?: throw KlaxonException("$key did contain a string") }
+    if (images.isEmpty()) {
+        throw KlaxonException("No images found for profile")
     }
+
+    return Profile(display_name, images)
+}
 }
 
 data class Profile(
@@ -68,11 +68,4 @@ fun main(args: Array<String>) {
 
     Http.token = token
     Api.getUsers()
-
-    /*
-    val u = Klaxon()
-            .converter(ProfileConverter)
-            .parse<User>(t)!!
-    println(u.profile.getLargestImage())
-    */
 }
