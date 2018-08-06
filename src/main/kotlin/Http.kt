@@ -94,9 +94,8 @@ object Http {
         // Parse JSON to moshi representation
         // Body is guaranteed to be non-null if called from execute()
         val json = response.body()!!.string()
-        val tStart = System.currentTimeMillis()
+        Log.debug("Parsing JSON")
         val parsedJson = adapter.fromJson(json)!!
-        println((System.currentTimeMillis() - tStart).toString())
 
         if (!parsedJson.ok) {
             var msg = "$errBaseMsg OK field was false or missing"

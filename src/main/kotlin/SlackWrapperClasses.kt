@@ -3,4 +3,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class UserList(
         val members: List<User>
-) : PaginatedCursor()
+) : CursorResponse()
+
+@JsonClass(generateAdapter = true)
+data class FileList(
+        val files: List<File>
+) : PaginatedResponse()

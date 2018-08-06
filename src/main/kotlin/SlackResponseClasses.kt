@@ -12,7 +12,7 @@ open class SlackResponse {
 }
 
 @JsonClass(generateAdapter = true)
-open class PaginatedCursor : SlackResponse() {
+open class CursorResponse : SlackResponse() {
     @Suppress("PropertyName")
     lateinit var response_metadata: Cursor
 
@@ -27,3 +27,18 @@ open class PaginatedCursor : SlackResponse() {
      */
     fun nextCursor() = response_metadata.next_cursor
 }
+
+@JsonClass(generateAdapter = true)
+open class PaginatedResponse : SlackResponse() {
+    lateinit var paging: Page
+    //@Json(name = "page.count")
+    //val count: Int? = null
+}
+
+@JsonClass(generateAdapter = true)
+data class Page(
+        val count: Int,
+        val total: Int,
+        val page: Int,
+        val pages: Int
+)

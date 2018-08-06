@@ -4,7 +4,7 @@ import kotlin.math.max
 import kotlin.math.pow
 
 data class File(
-        // Identication
+        // Identification
         val id: String,
         val user: String,
         val title: String,

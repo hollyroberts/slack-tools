@@ -3,9 +3,11 @@ import com.squareup.moshi.Moshi
 object Api {
     // URLs
     private const val URL_USERS_LIST = "https://slack.com/api/users.list"
+    private const val URL_FILES_LIST = "https://slack.com/api/files.list"
 
     // Limits
-    private const val USERS_LIST_LIMIT = 50
+    private const val USERS_LIST_LIMIT = 100
+    private const val FILE_LIST_LIMIT = 100
 
     // Rate limit times to wait (in ms)
     private const val RETRY_TIER_1 = 60 * 1000
@@ -16,7 +18,20 @@ object Api {
     private val moshi = Moshi.Builder()
             .add(ProfileJsonAdapter)
             .build()!!
-    private val adapter = moshi.adapter(UserList::class.java)!!
+
+    fun getFiles(startTime: Int = 0, endTime: Int? = null) : List<File> {
+        val params = mutableMapOf(
+                "page" to "1",
+                "limit" to FILE_LIST_LIMIT.toString(),
+                "start_ts" to startTime.toString(),
+                "end_ts" to (endTime?.toString() ?: "now")
+        )
+        val adapter = moshi.adapter(FileList::class.java)!!
+
+        val response = (Http.get(URL_FILES_LIST, adapter, params) as Result.Success).value!!
+
+        return listOf()
+    }
 
     /**
      * Retrieves full list of users using Slack API
@@ -27,6 +42,7 @@ object Api {
         val params = mutableMapOf(
                 "limit" to USERS_LIST_LIMIT.toString(),
                 "cursor" to "")
+        val adapter = moshi.adapter(UserList::class.java)!!
 
         do {
             // Get converted response
