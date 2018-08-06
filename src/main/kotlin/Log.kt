@@ -1,10 +1,10 @@
 object Log {
     enum class Modes { DEBUG, INFO, WARN, ERROR }
-    val mode = Modes.DEBUG
+    val mode = Modes.INFO
 
     private fun log(mode: Modes, message: String) {
         if (mode >= this.mode) {
-            val msg = message.replace(Http.token, "{T-O-K-E-N}")
+            val msg = message.replace(Http.token, "T-O-K-E-N")
 
             println("[${mode.name}] $msg")
         }

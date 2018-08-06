@@ -6,11 +6,11 @@ object Api {
     private const val URL_FILES_LIST = "https://slack.com/api/files.list"
 
     // Limits
-    private const val USERS_LIST_LIMIT = 100
-    private const val FILE_LIST_LIMIT = 50
+    private const val USERS_LIST_LIMIT = 1
+    private const val FILE_LIST_LIMIT = 100
 
     // Rate limit times to wait (in ms)
-    private const val RETRY_TIER_1 = 60 * 1000
+    private const val RETRY_TIER_1 = 60
     private const val RETRY_TIER_2 = 3 * 1000
     private const val RETRY_TIER_3 = 1 * 1000
     private const val RETRY_TIER_4 = 0.5 * 1000
@@ -31,12 +31,12 @@ object Api {
         // Get results
         val files = mutableListOf<File>()
         do {
-            val response = (Http.get(URL_FILES_LIST, adapter, params) as Result.Success).value!!
+            val response = (Http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
             files.addAll(response.files)
 
             Log.info("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
         } while (response.updatePageParams(params))
-        
+
         return files
     }
 
@@ -53,12 +53,13 @@ object Api {
 
         do {
             // Get converted response
-            val response = (Http.get(URL_USERS_LIST, adapter, params) as Result.Success).value!!
+            val response = (Http.get(URL_USERS_LIST, adapter, params, RETRY_TIER_2) as Result.Success).value!!
 
             // Add entries to map
             response.members.forEach {
                 userMap[it.id] = it
             }
+            Log.info("Retrieved ${userMap.size} user results")
 
             // Check cursor
             if (!response.moreEntries()) {

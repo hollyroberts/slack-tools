@@ -10,6 +10,8 @@ object Http {
     private val client = OkHttpClient()
     var token = ""
 
+    private const val RETRY_ATTEMPTS = 3
+
     // Internal Enum to pass between methods
     enum class Status { SUCCESS, FAILURE, RATE_LIMITED }
 
@@ -17,10 +19,8 @@ object Http {
      * Sends GET request to (slack) url and verifies basic json
      * @return A JsonObject result. Will always be success as right now any failure in getting data will cause the program to exit
      */
-    fun <T : SlackResponse> get(url: String, adapter: JsonAdapter<T>, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 2): Result<T?> {
-        require(rateLimitAttempts >= 1)
-
-        for (i in 1..rateLimitAttempts) {
+    fun <T : SlackResponse> get(url: String, adapter: JsonAdapter<T>, params: Map<String, String> = mapOf(), waitTime: Int = 1000): Result<T?> {
+        for (i in 1..RETRY_ATTEMPTS) {
             val (status, json) = getInternal(url, adapter, params)
 
             // Handle status codes
@@ -30,16 +30,16 @@ object Http {
                     Log.error("Exiting due to response failure")
                     exitProcess(-1)
                 }
-                Status.RATE_LIMITED -> {
-                    if (i < rateLimitAttempts) {
-                        println("Retrying (" + ordinal(i + 1) + " attempt)")
-                    } else {
-                        println("Number of rate limited retry attempts exceeded")
-                    }
-                }
+                Status.RATE_LIMITED -> Log.warn("Rate limited, waiting " + "%,d".format(waitTime) + "ms")
+            }
+
+            if (i < RETRY_ATTEMPTS) {
+                Thread.sleep(waitTime.toLong())
+                Log.info("Retrying (" + ordinal(i + 1) + " attempt)")
             }
         }
 
+        Log.error("Number of retry attempts exceeded")
         exitProcess(-1)
         // return Result.Failure
     }

@@ -73,7 +73,7 @@ data class Profile(
 fun main(args: Array<String>) {
     val token = args[0]
     Http.token = token
-    Log.debug("Token: $token")
+    println("Token: $token")
 
-    Api.getFiles()
+    Api.getUsers()
 }
