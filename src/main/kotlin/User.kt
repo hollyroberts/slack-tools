@@ -1,4 +1,5 @@
-import com.beust.klaxon.*
+import com.squareup.moshi.*
+import com.squareup.moshi.JsonReader
 
 data class User(
         // Strings and profile
@@ -11,27 +12,34 @@ data class User(
         val is_bot: Boolean
 )
 
-object ProfileConverter: Converter {
-    // Don't support converting from object to JSON
-    override fun toJson(value: Any): String {
-        return "Not implemented"
-    }
-
-    override fun canConvert(cls: Class<*>) = cls == Profile::class.java
-    override fun fromJson(jv: JsonValue): Profile {
-        // get obj, then display name string from object
-        val obj = jv.obj ?: throw KlaxonException("Null profile")
-        val display_name = obj["display_name"] as? String ?: throw KlaxonException("No display_name in profile")
-
-
-        // get the map of images
+object ProfileJsonAdapter {
+    /**
+     * Takes a JsonReader representing a profile
+     * @return a profile with display_name and map of images
+     */
+    @FromJson fun jsonToProfile(reader: JsonReader) : Profile {
+        var display_name: String? = null
         val images = mutableMapOf<String, String>()
-        obj.filterKeys { it.startsWith("image_") }
-                .forEach { key, value ->
-                    images[key.removePrefix("image_")] =
-                            value as? String ?: throw KlaxonException("$key did contain a string") }
+
+        // Loop to iterate over and consume object
+        reader.beginObject()
+        while(reader.peek() != JsonReader.Token.END_OBJECT) {
+            val name = reader.nextName()
+
+            when {
+                name == "display_name" -> display_name = reader.nextString()
+                name.startsWith("image_") -> images[name.removePrefix("image_")] = reader.nextString()
+                else -> reader.skipValue()
+            }
+        }
+        reader.endObject()
+
+        // Check that we've got what we want
+        if (display_name == null) {
+            throw JsonDataException("No display_name for profile")
+        }
         if (images.isEmpty()) {
-            throw KlaxonException("No images found for profile")
+            throw JsonDataException("No images found for profile")
         }
 
         return Profile(display_name, images)
@@ -67,12 +75,5 @@ fun main(args: Array<String>) {
     println("Token: $token")
 
     Http.token = token
-    Api.getUsers()
-
-    /*
-    val u = Klaxon()
-            .converter(ProfileConverter)
-            .parse<User>(t)!!
-    println(u.profile.getLargestImage())
-    */
+    println(Api.getUsers().size)
 }

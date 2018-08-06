@@ -1,11 +1,9 @@
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Klaxon
+import com.squareup.moshi.JsonAdapter
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.io.StringReader
 import kotlin.system.exitProcess
 
 object Http {
@@ -19,11 +17,11 @@ object Http {
      * Sends GET request to (slack) url and verifies basic json
      * @return A JsonObject result. Will always be success as right now any failure in getting data will cause the program to exit
      */
-    fun get(url: String, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 2) : Result<JsonObject> {
+    fun <T : SlackResponse> get(url: String, adapter: JsonAdapter<T>, params: Map<String, String> = mapOf(), rateLimitAttempts: Int = 2): Result<T?> {
         require(rateLimitAttempts >= 1)
 
         for (i in 1..rateLimitAttempts) {
-            val (status, json) = getInternal(url, params)
+            val (status, json) = getInternal(url, adapter, params)
 
             // Handle status codes
             when (status) {
@@ -52,7 +50,7 @@ object Http {
      *
      * @throws IOException
      */
-    private fun getInternal(url: String, params: Map<String, String>) : Pair<Status, JsonObject?> {
+    private fun <T : SlackResponse> getInternal(url: String, adapter: JsonAdapter<T>, params: Map<String, String>): Pair<Status, T?> {
         // Add params to url (including token)
         val httpUrl = HttpUrl.parse(url)!!.newBuilder()
         httpUrl.addQueryParameter("token", token)
@@ -69,7 +67,7 @@ object Http {
         try {
             Log.debug("GET '" + httpUrl.toString() + "'")
             client.newCall(request).execute().use {
-                return processResponse(it, url)
+                return processResponse(it, adapter, url)
             }
         } catch (e: IOException) {
             Log.error(e.toString())
@@ -80,7 +78,7 @@ object Http {
     /**
      * Handles the checking of the response
      */
-    private fun processResponse(response: Response, url: String) : Pair<Status, JsonObject?> {
+    private fun <T : SlackResponse> processResponse(response: Response, adapter: JsonAdapter<T>, url: String): Pair<Status, T?> {
         val errBaseMsg = "Request for '$url' failed."
 
         // HTTP status codes
@@ -93,16 +91,17 @@ object Http {
             return Pair(Status.FAILURE, null)
         }
 
-        // Parse JSON to klaxon representation
+        // Parse JSON to moshi representation
         // Body is guaranteed to be non-null if called from execute()
-        val a = System.currentTimeMillis()
-        val json = Klaxon().parseJsonObject(response.body()!!.charStream())
-        println((System.currentTimeMillis() - a).toString())
+        val json = response.body()!!.string()
+        val tStart = System.currentTimeMillis()
+        val parsedJson = adapter.fromJson(json)!!
+        println((System.currentTimeMillis() - tStart).toString())
 
-        if (!(json.getOrDefault("ok", false) as Boolean)) {
+        if (!parsedJson.ok) {
             var msg = "$errBaseMsg OK field was false or missing"
-            if (json.containsKey("error")) {
-                msg += ". Failure message given: " + json["error"]
+            if (parsedJson.error != null) {
+                msg += ". Failure message given: " + parsedJson.error
             }
 
             Log.error(msg)
@@ -110,10 +109,10 @@ object Http {
         }
 
         // Check for warnings, but do not fail on them
-        if (json.containsKey("warnings")) {
-            Log.warn("Slack response contained warning for request '$url'. Message: " + json.string("warnings"))
+        if (parsedJson.warning != null) {
+            Log.warn("Slack response contained warning for request '$url'. Message: " + parsedJson.warning)
         }
 
-        return Pair(Status.SUCCESS, json)
+        return Pair(Status.SUCCESS, parsedJson)
     }
 }

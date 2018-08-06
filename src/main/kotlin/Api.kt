@@ -1,17 +1,22 @@
-import com.beust.klaxon.Klaxon
+import com.squareup.moshi.Moshi
 
 object Api {
     // URLs
     private const val URL_USERS_LIST = "https://slack.com/api/users.list"
 
     // Limits
-    private const val USERS_LIST_LIMIT = 31
+    private const val USERS_LIST_LIMIT = 50
 
     // Rate limit times to wait (in ms)
     private const val RETRY_TIER_1 = 60 * 1000
     private const val RETRY_TIER_2 = 3 * 1000
     private const val RETRY_TIER_3 = 1 * 1000
     private const val RETRY_TIER_4 = 0.5 * 1000
+
+    private val moshi = Moshi.Builder()
+            .add(ProfileJsonAdapter)
+            .build()!!
+    private val adapter = moshi.adapter(UserList::class.java)!!
 
     /**
      * Retrieves full list of users using Slack API
@@ -24,26 +29,22 @@ object Api {
                 "cursor" to "")
 
         do {
-            // Get response (presume success)
-            val response = Http.get(URL_USERS_LIST, params) as Result.Success
-            val parsedJson = Klaxon()
-                    .converter(ProfileConverter)
-                    .parseFromJsonObject<UserList>(response.value)!!
+            // Get converted response
+            val response = (Http.get(URL_USERS_LIST, adapter, params) as Result.Success).value!!
 
             // Add entries to map
-            parsedJson.members.forEach {
+            response.members.forEach {
                 userMap[it.id] = it
             }
 
             // Check cursor
-            if (parsedJson.response_metadata.next_cursor.isNullOrEmpty()) {
+            if (!response.moreEntries()) {
                 break
             } else {
-                params["cursor"] = parsedJson.response_metadata.next_cursor!!
+                params["cursor"] = response.nextCursor()!!
             }
         } while (true)
 
-        println(userMap.size)
         return userMap
     }
 }

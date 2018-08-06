@@ -4,7 +4,7 @@ object Log {
 
     private fun log(mode: Modes, message: String) {
         if (mode >= this.mode) {
-            val msg = message.replace(Http.token, "TOKEN")
+            val msg = message.replace(Http.token, "{T-O-K-E-N}")
 
             println("[${mode.name}] $msg")
         }
