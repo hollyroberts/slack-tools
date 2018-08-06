@@ -6,14 +6,14 @@ object Api {
     private const val URL_FILES_LIST = "https://slack.com/api/files.list"
 
     // Limits
-    private const val USERS_LIST_LIMIT = 1
+    private const val USERS_LIST_LIMIT = 100
     private const val FILE_LIST_LIMIT = 100
 
-    // Rate limit times to wait (in ms)
+    // Rate limit times to wait (in s)
     private const val RETRY_TIER_1 = 60
-    private const val RETRY_TIER_2 = 3 * 1000
-    private const val RETRY_TIER_3 = 1 * 1000
-    private const val RETRY_TIER_4 = 0.5 * 1000
+    private const val RETRY_TIER_2 = 3
+    private const val RETRY_TIER_3 = 1
+    private const val RETRY_TIER_4 = 1
 
     private val moshi = Moshi.Builder()
             .add(ProfileJsonAdapter)
@@ -28,15 +28,18 @@ object Api {
         )
         val adapter = moshi.adapter(FileList::class.java)!!
 
+
         // Get results
+        Log.info("Retrieving list of files")
         val files = mutableListOf<File>()
         do {
             val response = (Http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
             files.addAll(response.files)
 
-            Log.info("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
+            Log.debugHigh("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
         } while (response.updatePageParams(params))
 
+        Log.info("Retrieved ${files.size} files")
         return files
     }
 
@@ -51,6 +54,7 @@ object Api {
                 "cursor" to "")
         val adapter = moshi.adapter(UserList::class.java)!!
 
+        Log.info("Retrieving user results")
         do {
             // Get converted response
             val response = (Http.get(URL_USERS_LIST, adapter, params, RETRY_TIER_2) as Result.Success).value!!
@@ -59,7 +63,7 @@ object Api {
             response.members.forEach {
                 userMap[it.id] = it
             }
-            Log.info("Retrieved ${userMap.size} user results")
+            Log.debugHigh("Retrieved ${userMap.size} user results")
 
             // Check cursor
             if (!response.moreEntries()) {
@@ -69,6 +73,7 @@ object Api {
             }
         } while (true)
 
+        Log.info("Finished retrieving user results (${userMap.size} found)")
         return userMap
     }
 }

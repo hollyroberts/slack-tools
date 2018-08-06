@@ -76,4 +76,5 @@ fun main(args: Array<String>) {
     println("Token: $token")
 
     Api.getUsers()
+    Api.getFiles()
 }

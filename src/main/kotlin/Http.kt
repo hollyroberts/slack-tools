@@ -19,7 +19,7 @@ object Http {
      * Sends GET request to (slack) url and verifies basic json
      * @return A JsonObject result. Will always be success as right now any failure in getting data will cause the program to exit
      */
-    fun <T : SlackResponse> get(url: String, adapter: JsonAdapter<T>, params: Map<String, String> = mapOf(), waitTime: Int = 1000): Result<T?> {
+    fun <T : SlackResponse> get(url: String, adapter: JsonAdapter<T>, params: Map<String, String> = mapOf(), waitTime: Int = 1): Result<T?> {
         for (i in 1..RETRY_ATTEMPTS) {
             val (status, json) = getInternal(url, adapter, params)
 
@@ -30,11 +30,11 @@ object Http {
                     Log.error("Exiting due to response failure")
                     exitProcess(-1)
                 }
-                Status.RATE_LIMITED -> Log.warn("Rate limited, waiting " + "%,d".format(waitTime) + "ms")
+                Status.RATE_LIMITED -> Log.warn("Rate limited, waiting " + "%,d".format(waitTime) + "s")
             }
 
             if (i < RETRY_ATTEMPTS) {
-                Thread.sleep(waitTime.toLong())
+                Thread.sleep(waitTime.toLong() * 1000)
                 Log.info("Retrying (" + ordinal(i + 1) + " attempt)")
             }
         }
@@ -65,7 +65,7 @@ object Http {
 
         // Send request
         try {
-            Log.debug("GET '" + httpUrl.toString() + "'")
+            Log.debugLow("GET '" + httpUrl.toString() + "'")
             client.newCall(request).execute().use {
                 return processResponse(it, adapter, url)
             }
@@ -94,7 +94,7 @@ object Http {
         // Parse JSON to moshi representation
         // Body is guaranteed to be non-null if called from execute()
         val json = response.body()!!.string()
-        Log.debug("Parsing JSON")
+        Log.debugLow("Parsing JSON")
         val parsedJson = adapter.fromJson(json)!!
 
         if (!parsedJson.ok) {
