@@ -31,8 +31,20 @@ open class CursorResponse : SlackResponse() {
 @JsonClass(generateAdapter = true)
 open class PaginatedResponse : SlackResponse() {
     lateinit var paging: Page
-    //@Json(name = "page.count")
-    //val count: Int? = null
+
+    /**
+     * Looks at the paging response metadata and update the params given
+     * @param params Parameters passed to GET method
+     * @return False if there are no more results to be retrieved
+     */
+    fun updatePageParams(params: MutableMap<String, String>) : Boolean {
+        if (paging.page >= paging.pages) {
+            return false
+        }
+
+        params["page"] = (paging.page + 1).toString()
+        return true
+    }
 }
 
 @JsonClass(generateAdapter = true)

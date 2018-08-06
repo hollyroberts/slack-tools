@@ -7,7 +7,7 @@ object Api {
 
     // Limits
     private const val USERS_LIST_LIMIT = 100
-    private const val FILE_LIST_LIMIT = 100
+    private const val FILE_LIST_LIMIT = 50
 
     // Rate limit times to wait (in ms)
     private const val RETRY_TIER_1 = 60 * 1000
@@ -22,15 +22,22 @@ object Api {
     fun getFiles(startTime: Int = 0, endTime: Int? = null) : List<File> {
         val params = mutableMapOf(
                 "page" to "1",
-                "limit" to FILE_LIST_LIMIT.toString(),
+                "count" to FILE_LIST_LIMIT.toString(),
                 "start_ts" to startTime.toString(),
                 "end_ts" to (endTime?.toString() ?: "now")
         )
         val adapter = moshi.adapter(FileList::class.java)!!
 
-        val response = (Http.get(URL_FILES_LIST, adapter, params) as Result.Success).value!!
+        // Get results
+        val files = mutableListOf<File>()
+        do {
+            val response = (Http.get(URL_FILES_LIST, adapter, params) as Result.Success).value!!
+            files.addAll(response.files)
 
-        return listOf()
+            Log.info("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
+        } while (response.updatePageParams(params))
+        
+        return files
     }
 
     /**
