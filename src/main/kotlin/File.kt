@@ -78,12 +78,13 @@ data class File(
             firstSeen = mutableMapOf(Pair(location, timestamp))
             return
         }
-
-        if (!firstSeen!!.containsKey(location)) {
-            firstSeen!![location] = timestamp
-        } else {
-            if (firstSeen!![location]!! > timestamp) {
-                firstSeen!![location] = timestamp
+        firstSeen!!.let {
+            if (it.containsKey(location)) {
+                it[location] = timestamp
+            } else {
+                if (it[location]!! > timestamp) {
+                    it[location] = timestamp
+                }
             }
         }
     }
