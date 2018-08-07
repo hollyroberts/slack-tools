@@ -26,7 +26,7 @@ object Api {
                 "start_ts" to startTime.toString(),
                 "end_ts" to (endTime?.toString() ?: "now")
         )
-        val adapter = moshi.adapter(FileList::class.java)!!
+        val adapter = moshi.adapter(FileListResponse::class.java)!!
 
 
         // Get results
@@ -43,6 +43,10 @@ object Api {
         return files
     }
 
+    fun getFile(fileId: String) {
+
+    }
+
     /**
      * Retrieves full list of users using Slack API
      * @return map of userid to user object
@@ -52,7 +56,7 @@ object Api {
         val params = mutableMapOf(
                 "limit" to USERS_LIST_LIMIT.toString(),
                 "cursor" to "")
-        val adapter = moshi.adapter(UserList::class.java)!!
+        val adapter = moshi.adapter(UserListResponse::class.java)!!
 
         Log.info("Retrieving user results")
         do {

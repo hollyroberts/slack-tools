@@ -75,6 +75,9 @@ fun main(args: Array<String>) {
     Http.token = token
     println("Token: $token")
 
-    Api.getUsers()
-    Api.getFiles()
+    // Api.getUsers()
+    val files = Api.getFiles()
+    for (file in files) {
+        file.retrieveIncompleteData()
+    }
 }
