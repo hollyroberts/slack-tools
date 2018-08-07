@@ -4,6 +4,7 @@ object Api {
     // URLs
     private const val URL_USERS_LIST = "https://slack.com/api/users.list"
     private const val URL_FILES_LIST = "https://slack.com/api/files.list"
+    private const val URL_FILES_INFO = "https://slack.com/api/files.info"
 
     // Limits
     private const val USERS_LIST_LIMIT = 100
@@ -43,8 +44,12 @@ object Api {
         return files
     }
 
-    fun getFile(fileId: String) {
+    fun getFile(fileId: String) : File {
+        val params = mapOf("file" to fileId)
+        val adapter = moshi.adapter(FileResponse::class.java)!!
+        val response = (Http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
 
+        return response.file
     }
 
     /**

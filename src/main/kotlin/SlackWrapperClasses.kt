@@ -11,6 +11,6 @@ data class FileListResponse(
 ) : PaginatedResponse()
 
 @JsonClass(generateAdapter = true)
-data class FileReponse (
+data class FileResponse (
         val file: File
 ) : SlackResponse()
