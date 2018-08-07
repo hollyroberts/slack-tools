@@ -28,15 +28,19 @@ data class File(
 
         val shares: FileShare?
 ) {
+    var firstSeen: MutableMap<String, Double>? = null
     var uploadLocation: String? = null
     init {
+        // Destruct FileShare if it exists
+        firstSeen = shares?.firstSeen
+
+        // Update uploadLocation
         if (channelsUploadedIn() == 1) {
             uploadLocation = channels?.get(0) ?: groups?.get(0) ?: ims!![0]
         } else {
             updateUploadChannelFromShares(shares)
         }
     }
-
 
     /**
      * Formats the size of the file into a human readable version
@@ -65,10 +69,29 @@ data class File(
         }
 
         val f = Api.getFile(id)
-        updateUploadChannelFromShares(f.shares)
+        firstSeen = f.shares!!.firstSeen
+        updateUploadChannelFromShares(shares)
     }
 
-    private fun updateUploadChannelFromShares(shares: FileShare?) {
+    fun addShareLocation(location: String, timestamp: Double) {
+        if (firstSeen == null) {
+            firstSeen = mutableMapOf(Pair(location, timestamp))
+            return
+        }
+
+        if (!firstSeen!!.containsKey(location)) {
+            firstSeen!![location] = timestamp
+        } else {
+            if (firstSeen!![location]!! > timestamp) {
+                firstSeen!![location] = timestamp
+            }
+        }
+    }
+
+    /**
+     * It's possible to add shares manually (eg. when traversing history), so this should be called at the end
+     */
+    fun updateUploadChannelFromShares(shares: FileShare?) {
         if (shares?.firstSeen?.isNotEmpty() == true) {
             uploadLocation = shares.firstSeen.minBy { it.value }!!.key
         }
