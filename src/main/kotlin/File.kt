@@ -23,10 +23,20 @@ data class File(
         // Where has this file been sent
         // Won't be included if file object is directly from a channel
         val channels: List<String>?,
-        val ims: List<String>,
+        val groups: List<String>?,
+        val ims: List<String>?,
 
         val shares: FileShare?
 ) {
+    var uploadLocation: String? = null
+    init {
+        if (channelsUploadedIn() == 1) {
+            uploadLocation = channels?.get(0) ?: groups?.get(0) ?: ims!![0]
+        } else {
+            updateUploadChannelFromShares(shares)
+        }
+    }
+
 
     /**
      * Formats the size of the file into a human readable version
@@ -42,13 +52,26 @@ data class File(
         return "$formattedSize ${prefix}iB"
     }
 
+    private fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
+
     /**
      * Depending on how they were retrieved files might not have the full set of data that we're interested in
      * Right now this is the channel that the file was uploaded in
      * This is added either manually (if it can be inferred from the channel history parser), or by this method which uses the slack api (so much slower)
      */
     fun retrieveIncompleteData() {
+        if (uploadLocation != null) {
+            return
+        }
+
         val f = Api.getFile(id)
+        updateUploadChannelFromShares(f.shares)
+    }
+
+    private fun updateUploadChannelFromShares(shares: FileShare?) {
+        if (shares?.firstSeen?.isNotEmpty() == true) {
+            uploadLocation = shares.firstSeen.minBy { it.value }!!.key
+        }
     }
 }
 
