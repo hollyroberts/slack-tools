@@ -96,6 +96,7 @@ object Http {
         val json = response.body()!!.string()
         Log.debugLow("Parsing JSON")
         val parsedJson = adapter.fromJson(json)!!
+        Log.debugLow("JSON parsed")
 
         if (!parsedJson.ok) {
             var msg = "$errBaseMsg OK field was false or missing"

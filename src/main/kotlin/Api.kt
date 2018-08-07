@@ -18,6 +18,7 @@ object Api {
 
     private val moshi = Moshi.Builder()
             .add(ProfileJsonAdapter)
+            .add(ShareJsonAdapter)
             .build()!!
 
     fun getFiles(startTime: Int = 0, endTime: Int? = null) : List<File> {
