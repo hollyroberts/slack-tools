@@ -1,4 +1,4 @@
-package Utils
+package utils
 
 object Log {
     enum class Modes { DEBUG_LOW, DEBUG_HIGH, INFO, WARN, ERROR }

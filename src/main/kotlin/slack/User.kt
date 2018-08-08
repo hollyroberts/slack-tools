@@ -1,7 +1,5 @@
-package Slack
+package slack
 
-import Utils.Api
-import Utils.Http
 import com.squareup.moshi.*
 import com.squareup.moshi.JsonReader
 
@@ -71,18 +69,5 @@ data class Profile(
                     else -> true
                 }}
                 .maxBy { it.key.toInt() }!!.value
-    }
-}
-
-fun main(args: Array<String>) {
-    val token = args[0]
-    Http.token = token
-    println("Token: $token")
-
-    // Utils.Api.getUsers()
-    val files = Api.getFiles()
-    for (file in files) {
-        file.retrieveIncompleteData()
-        println(file.uploadLocation)
     }
 }

@@ -1,6 +1,6 @@
-package Slack
+package slack
 
-import Utils.Api
+import utils.Api
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonDataException
@@ -34,7 +34,7 @@ data class File(
     var firstSeen: MutableMap<String, Double>? = null
     var uploadLocation: String? = null
     init {
-        // Destruct Slack.FileShare if it exists
+        // Destruct slack.FileShare if it exists
         firstSeen = shares?.firstSeen
 
         // Update uploadLocation
@@ -122,7 +122,7 @@ object ShareJsonAdapter {
             val channelType = reader.nextName()
 
             if (channelType != "public" && channelType != "private") {
-                throw JsonDataException("Slack.File share data was not public or private (was $channelType)")
+                throw JsonDataException("File share data was not public or private (was $channelType)")
             }
 
             // Iterate over channel IDs
