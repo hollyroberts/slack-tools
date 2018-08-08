@@ -2,11 +2,13 @@ package utils
 
 object Log {
     enum class Modes { DEBUG_LOW, DEBUG_HIGH, INFO, WARN, ERROR }
-    val mode = Modes.DEBUG_HIGH
+    val mode = Modes.DEBUG_LOW
 
     private fun log(mode: Modes, message: String) {
         if (mode >= Log.mode) {
-            val msg = message.replace(Http.token, "T-O-K-E-N")
+            val msg = Http.token?.let {
+                message.replace(it, "T-O-K-E-N")
+            } ?: message
 
             println("[${mode.name}] $msg")
         }

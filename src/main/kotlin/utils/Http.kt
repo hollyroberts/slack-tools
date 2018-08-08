@@ -11,7 +11,7 @@ import kotlin.system.exitProcess
 
 object Http {
     private val client = OkHttpClient()
-    var token = ""
+    var token: String? = null
 
     private const val RETRY_ATTEMPTS = 3
 
