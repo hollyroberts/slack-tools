@@ -1,3 +1,6 @@
+package Utils
+
+import Slack.SlackResponse
 import com.squareup.moshi.JsonAdapter
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
@@ -41,7 +44,7 @@ object Http {
 
         Log.error("Number of retry attempts exceeded")
         exitProcess(-1)
-        // return Result.Failure
+        // return Utils.Result.Failure
     }
 
     /**

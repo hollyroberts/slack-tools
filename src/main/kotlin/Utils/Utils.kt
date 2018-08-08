@@ -1,9 +1,11 @@
+package Utils
+
 /**
  * Generic results class to reduce use of Pair
- * Eg. when interfacing with Http.get
+ * Eg. when interfacing with Utils.Http.get
  */
 sealed class Result<out R> {
-    data class Success<out T>(val value: T) : Result<T> ()
+    data class Success<out T>(val value: T) : Result<T>()
     data class Failure(val msg: String)
 }
 

@@ -1,3 +1,7 @@
+package Slack
+
+import Utils.Api
+import Utils.Http
 import com.squareup.moshi.*
 import com.squareup.moshi.JsonReader
 
@@ -75,7 +79,7 @@ fun main(args: Array<String>) {
     Http.token = token
     println("Token: $token")
 
-    // Api.getUsers()
+    // Utils.Api.getUsers()
     val files = Api.getFiles()
     for (file in files) {
         file.retrieveIncompleteData()
