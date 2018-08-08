@@ -25,7 +25,7 @@ object Api {
     private const val RETRY_TIER_3 = 1
     private const val RETRY_TIER_4 = 1
 
-    private val moshi = Moshi.Builder()
+    val moshi = Moshi.Builder()
             .add(ProfileJsonAdapter)
             .add(ShareJsonAdapter)
             .build()!!

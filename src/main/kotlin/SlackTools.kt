@@ -1,6 +1,9 @@
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.option
+import slack.SlackExport
+import java.nio.file.Path
+import java.nio.file.Paths
 
 fun main(arguments: Array<String>) = SlackTools()
         .subcommands(ExportProcessor())
@@ -19,5 +22,6 @@ class ExportProcessor: CliktCommand(
             help = "Convert the JSON files per channel into a single file")
 
     override fun run() {
+        SlackExport.loadFromFolder(Paths.get("clan"))
     }
 }
