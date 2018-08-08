@@ -79,5 +79,6 @@ fun main(args: Array<String>) {
     val files = Api.getFiles()
     for (file in files) {
         file.retrieveIncompleteData()
+        println(file.uploadLocation)
     }
 }

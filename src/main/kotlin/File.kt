@@ -36,9 +36,9 @@ data class File(
 
         // Update uploadLocation
         if (channelsUploadedIn() == 1) {
-            uploadLocation = channels?.get(0) ?: groups?.get(0) ?: ims!![0]
+            uploadLocation = channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
         } else {
-            updateUploadChannelFromShares(shares)
+            updateLocationFromShares()
         }
     }
 
@@ -69,32 +69,42 @@ data class File(
         }
 
         val f = Api.getFile(id)
-        firstSeen = f.shares!!.firstSeen
-        updateUploadChannelFromShares(shares)
+        firstSeen = f.firstSeen
+        updateLocationFromShares()
     }
 
+    /**
+     * Manually add a timestamp record of when a file was first seen in a channel
+     * Will not update if this is later than the earliest file
+     */
     fun addShareLocation(location: String, timestamp: Double) {
-        if (firstSeen == null) {
-            firstSeen = mutableMapOf(Pair(location, timestamp))
-            return
-        }
-        firstSeen!!.let {
+        firstSeen?.also {
             if (it.containsKey(location)) {
-                it[location] = timestamp
-            } else {
                 if (it[location]!! > timestamp) {
                     it[location] = timestamp
                 }
+            } else {
+                it[location] = timestamp
             }
+        } ?: run {
+            firstSeen = mutableMapOf(Pair(location, timestamp))
         }
     }
 
     /**
      * It's possible to add shares manually (eg. when traversing history), so this should be called at the end
      */
-    fun updateUploadChannelFromShares(shares: FileShare?) {
-        if (shares?.firstSeen?.isNotEmpty() == true) {
-            uploadLocation = shares.firstSeen.minBy { it.value }!!.key
+    fun updateLocationFromShares() {
+        firstSeen?.let { seen ->
+            if (seen.isNotEmpty()) {
+                uploadLocation = firstSeen?.minBy { it.value }!!.key
+            }
+        }
+    }
+
+    private fun updateLocationFromArrays() {
+        if (channelsUploadedIn() == 1) {
+            uploadLocation = channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
         }
     }
 }

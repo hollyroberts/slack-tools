@@ -65,7 +65,7 @@ object Http {
 
         // Send request
         try {
-            Log.debugLow("GET '" + httpUrl.toString() + "'")
+            Log.debugHigh("GET '" + httpUrl.toString() + "'")
             client.newCall(request).execute().use {
                 return processResponse(it, adapter, url)
             }

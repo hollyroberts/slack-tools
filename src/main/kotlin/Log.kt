@@ -1,6 +1,6 @@
 object Log {
     enum class Modes { DEBUG_LOW, DEBUG_HIGH, INFO, WARN, ERROR }
-    val mode = Modes.DEBUG_LOW
+    val mode = Modes.DEBUG_HIGH
 
     private fun log(mode: Modes, message: String) {
         if (mode >= this.mode) {
