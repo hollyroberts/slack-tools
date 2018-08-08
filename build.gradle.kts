@@ -32,6 +32,8 @@ dependencies {
     compile(kotlinModule("stdlib-jdk8", kotlin_version))
     compile("com.squareup.okhttp3:okhttp:3.11.0")
     compile("com.squareup.moshi:moshi:1.6.0")
+    compile("com.github.ajalt:clikt:1.4.0")
+
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.6.0")
 }
 
