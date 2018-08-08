@@ -1,4 +1,4 @@
-package slack
+package slackjson
 
 import com.squareup.moshi.*
 import com.squareup.moshi.JsonReader

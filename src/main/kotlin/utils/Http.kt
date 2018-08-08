@@ -1,6 +1,6 @@
 package utils
 
-import slack.SlackResponse
+import slackjson.SlackResponse
 import com.squareup.moshi.JsonAdapter
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient

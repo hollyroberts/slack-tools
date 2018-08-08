@@ -1,4 +1,4 @@
-package slack
+package slackjson
 
 import utils.Api
 import com.squareup.moshi.FromJson
@@ -34,7 +34,7 @@ data class File(
     var firstSeen: MutableMap<String, Double>? = null
     var uploadLocation: String? = null
     init {
-        // Destruct slack.FileShare if it exists
+        // Destruct slackjson.FileShare if it exists
         firstSeen = shares?.firstSeen
 
         // Update uploadLocation

@@ -1,12 +1,12 @@
 package utils
 
-import slack.File
-import slack.FileListResponse
-import slack.FileResponse
-import slack.ProfileJsonAdapter
-import slack.ShareJsonAdapter
-import slack.User
-import slack.UserListResponse
+import slackjson.File
+import slackjson.FileListResponse
+import slackjson.FileResponse
+import slackjson.ProfileJsonAdapter
+import slackjson.ShareJsonAdapter
+import slackjson.User
+import slackjson.UserListResponse
 import com.squareup.moshi.Moshi
 
 object Api {
