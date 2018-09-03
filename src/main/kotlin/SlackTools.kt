@@ -4,6 +4,7 @@ import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.option
 import slack.SlackExport
+import utils.Http
 import java.nio.file.Paths
 
 fun main(arguments: Array<String>) = SlackTools()
@@ -25,10 +26,9 @@ class DownloadCommand : CliktCommand(
         help = "Download files, avatars, and private/dm message history") {
 
     private val token by argument()
-    private val config by findObject { mutableMapOf<String, String>() }
 
     override fun run() {
-        config["token"] = token
+        Http.token = token
     }
 }
 
