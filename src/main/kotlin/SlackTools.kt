@@ -1,13 +1,15 @@
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
+import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.option
 import slack.SlackExport
-import java.nio.file.Path
 import java.nio.file.Paths
 
 fun main(arguments: Array<String>) = SlackTools()
-        .subcommands(ExportProcessor())
-        .main(arguments)
+        .subcommands(
+                ExportProcessor(),
+                DownloadCommand().subcommands(FileCommand())
+        ).main(arguments)
 
 // Wrapper for subcommands (because clikt wants us to do it this way)
 class SlackTools : CliktCommand() {
