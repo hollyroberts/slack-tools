@@ -1,13 +1,7 @@
 package utils
 
-import slackjson.File
-import slackjson.FileListResponse
-import slackjson.FileResponse
-import slackjson.ProfileJsonAdapter
-import slackjson.ShareJsonAdapter
-import slackjson.User
-import slackjson.UserListResponse
 import com.squareup.moshi.Moshi
+import slackjson.*
 
 object Api {
     // URLs
@@ -30,7 +24,7 @@ object Api {
             .add(ShareJsonAdapter)
             .build()!!
 
-    fun getFiles(startTime: Int = 0, endTime: Int? = null) : List<File> {
+    fun getFiles(startTime: Int = 0, endTime: Int? = null) : List<ParsedFile> {
         val params = mutableMapOf(
                 "page" to "1",
                 "count" to FILE_LIST_LIMIT.toString(),
@@ -42,7 +36,7 @@ object Api {
 
         // Get results
         Log.info("Retrieving list of files")
-        val files = mutableListOf<File>()
+        val files = mutableListOf<ParsedFile>()
         do {
             val response = (Http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
             files.addAll(response.files)

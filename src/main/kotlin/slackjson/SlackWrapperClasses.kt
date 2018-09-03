@@ -9,7 +9,7 @@ data class UserListResponse(
 
 @JsonClass(generateAdapter = true)
 data class FileListResponse(
-        val files: List<File>
+        val files: List<ParsedFile>
 ) : PaginatedResponse()
 
 @JsonClass(generateAdapter = true)
