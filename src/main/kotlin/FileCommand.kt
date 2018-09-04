@@ -1,23 +1,31 @@
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import slackjson.CompleteFile
 import slackjson.SlackFile
 import utils.Api
 import utils.Log
+import java.nio.file.Path
+import java.nio.file.Paths
 
 object FileCommand: CliktCommand(
         name = "file",
         help = "Downloads files from slack") {
 
     // Args/Opts
-    val noInfer by option("-ni", "--no-infer",
+    private val noInfer by option("-ni", "--no-infer",
             help = "Disable channel inference using list API data, as edge cases can exist. " +
                     "Instead performs an API call per file (slow)").flag()
+    private val output by option("-o", "--output",
+            help = "Output directory for files. Extends the base directory set").default("files")
 
     // Constants
     private const val LOCATION_INTERVAL = 3000
 
+    /**
+     * Downloads all files from slack
+     */
     override fun run() {
         val filesRaw: MutableList<SlackFile> = Api.getFiles().toMutableList()
 
@@ -43,5 +51,8 @@ object FileCommand: CliktCommand(
         } else {
             Log.info("Files located")
         }
+
+        // Download files
+        val outDir = SlackTools.folderPath(output)
     }
 }
