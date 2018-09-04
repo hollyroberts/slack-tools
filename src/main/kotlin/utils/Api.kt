@@ -35,16 +35,16 @@ object Api {
 
 
         // Get results
-        Log.info("Retrieving list of files")
+        Log.min("Retrieving list of files")
         val files = mutableListOf<ParsedFile>()
         do {
             val response = (Http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
             files.addAll(response.files)
 
-            Log.debugHigh("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
+            Log.info("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
         } while (response.updatePageParams(params))
 
-        Log.info("Retrieved ${files.size} files")
+        Log.min("Retrieved ${files.size} files")
         return files
     }
 

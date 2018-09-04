@@ -14,7 +14,7 @@ object FileCommand: CliktCommand(
         val filesRaw: MutableList<SlackFile> = Api.getFiles().toMutableList()
 
         // Start timer to output process every X seconds
-        Log.info("Locating upload location of files (this may take a while, especially if inference is disabled)")
+        Log.min("Locating upload location of files (this may take a while, especially if inference is disabled)")
         val startTime = System.currentTimeMillis()
         var nextOutputTime = startTime + LOCATION_INTERVAL
 
@@ -31,7 +31,7 @@ object FileCommand: CliktCommand(
         // Output timed messages if took more than LOCATION_INTERVAL
         val timeTaken = System.currentTimeMillis() - startTime
         if (timeTaken > LOCATION_INTERVAL) {
-            Log.info(String.format("Located the upload location of all files in %.1f seconds", timeTaken.toFloat() / 1000))
+            Log.min(String.format("Located the upload location of all files in %.1f seconds", timeTaken.toFloat() / 1000))
         } else {
             Log.info("Files located")
         }
