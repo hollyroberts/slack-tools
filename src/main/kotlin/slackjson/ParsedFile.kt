@@ -1,9 +1,6 @@
 package slackjson
 
-import com.squareup.moshi.FromJson
-import com.squareup.moshi.JsonClass
-import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.JsonReader
+import com.squareup.moshi.*
 import kotlin.math.min
 
 @JsonClass(generateAdapter = true)
@@ -16,7 +13,8 @@ open class ParsedFile (
         // Metadata
         override val filetype: String,
         override val size: Long,
-        override val url_private_download: String,
+        @Json(name = "url_private_download")
+        override val urlPrivate: String,
 
         // Where has this file been sent
         // Won't be included if file object is directly from a channel

@@ -10,7 +10,7 @@ class CompleteFile(sf: SlackFile) : SlackFile {
 
     override val filetype = sf.filetype
     override val size = sf.size
-    override val url_private_download = sf.url_private_download
+    override val urlPrivate = sf.urlPrivate
 
     // Lists can be copied by reference as they're not mutable (map is also immutable)
     override val channels = sf.channels
