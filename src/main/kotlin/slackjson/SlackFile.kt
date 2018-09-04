@@ -15,6 +15,7 @@ interface SlackFile {
     val filetype: String
     val size: Long
     val urlPrivate: String
+    val urlPrivateDownload: String?
 
     // Where has this file been sent
     // Won't be included if file object is directly from a channel

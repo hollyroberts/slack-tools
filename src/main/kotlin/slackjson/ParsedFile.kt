@@ -13,8 +13,10 @@ open class ParsedFile (
         // Metadata
         override val filetype: String,
         override val size: Long,
-        @Json(name = "url_private_download")
+        @Json(name = "url_private")
         override val urlPrivate: String,
+        @Json(name = "url_private_download")
+        override val urlPrivateDownload: String?,
 
         // Where has this file been sent
         // Won't be included if file object is directly from a channel
