@@ -3,7 +3,7 @@ package slackjson
 import utils.Api
 import utils.Log
 
-class CompleteFile private constructor(pf: ParsedFile) : ParsedFile(pf) {
+class CompleteFile(pf: ParsedFile) : ParsedFile(pf) {
     var uploadLoc: String? = null
 
     init {

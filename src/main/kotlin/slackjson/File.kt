@@ -104,10 +104,24 @@ data class File(
             }
         }
     }
+}
 
-    private fun updateLocationFromArrays() {
-        if (channelsUploadedIn() == 1) {
-            uploadLocation = channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
-        }
-    }
+interface SlackFile {
+    // Identification
+    val id: String
+    val user: String
+    val title: String
+
+    // Metadata
+    val filetype: String
+    val size: Long
+    val url_private_download: String
+
+    // Where has this file been sent
+    // Won't be included if file object is directly from a channel
+    val channels: List<String>?
+    val groups: List<String>?
+    val ims: List<String>?
+
+    val shares: FileShare?
 }

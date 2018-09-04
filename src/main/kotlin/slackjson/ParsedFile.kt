@@ -13,23 +13,23 @@ import kotlin.math.pow
 @JsonClass(generateAdapter = true)
 open class ParsedFile (
         // Identification
-        val id: String,
-        val user: String,
-        val title: String,
+        override val id: String,
+        override val user: String,
+        override val title: String,
 
         // Metadata
-        val filetype: String,
-        val size: Long,
-        val url_private_download: String,
+        override val filetype: String,
+        override val size: Long,
+        override val url_private_download: String,
 
         // Where has this file been sent
         // Won't be included if file object is directly from a channel
-        val channels: List<String>?,
-        val groups: List<String>?,
-        val ims: List<String>?,
+        override val channels: List<String>?,
+        override val groups: List<String>?,
+        override val ims: List<String>?,
 
-        val shares: FileShare?
-) {
+        override val shares: FileShare?
+) : SlackFile {
 
     /**
      * Copy constructor
