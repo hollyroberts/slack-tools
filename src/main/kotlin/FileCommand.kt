@@ -1,6 +1,7 @@
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import slackjson.CompleteFile
+import slackjson.SlackFile
 import utils.Api
 
 class FileCommand: CliktCommand(
@@ -10,6 +11,6 @@ class FileCommand: CliktCommand(
     override fun run() {
         val filesRaw = Api.getFiles().toMutableList()
 
-        filesRaw.replaceAll { CompleteFile.create(it) }
+        filesRaw.replaceAll { CompleteFile(it) }
     }
 }
