@@ -39,7 +39,7 @@ object FileCommand: CliktCommand(
         // Output timed messages if took more than LOCATION_INTERVAL
         val timeTaken = System.currentTimeMillis() - startTime
         if (timeTaken > LOCATION_INTERVAL) {
-            Log.min(String.format("Located the upload location of all files in %.1f seconds", timeTaken.toFloat() / 1000))
+            Log.min(String.format("Located the upload location of all files in %,.1f seconds", timeTaken.toFloat() / 1000))
         } else {
             Log.info("Files located")
         }
