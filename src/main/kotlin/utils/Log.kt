@@ -11,7 +11,7 @@ object Log {
         WARN("WARN"),
         ERROR("ERROR")
     }
-    val mode = Modes.MIN
+    val mode = Modes.DEBUG_HIGH
 
     private fun log(mode: Modes, message: String) {
         if (mode >= Log.mode) {

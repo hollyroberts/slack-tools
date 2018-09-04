@@ -1,4 +1,6 @@
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
 import slackjson.CompleteFile
 import slackjson.SlackFile
 import utils.Api
@@ -8,6 +10,12 @@ object FileCommand: CliktCommand(
         name = "file",
         help = "Downloads files from slack") {
 
+    // Args/Opts
+    val noInfer by option("-ni", "--no-infer",
+            help = "Disable channel inference using list API data, as edge cases can exist. " +
+                    "Instead performs an API call per file (slow)").flag()
+
+    // Constants
     private const val LOCATION_INTERVAL = 3000
 
     override fun run() {
@@ -20,7 +28,7 @@ object FileCommand: CliktCommand(
 
         // Iterate over objects, and replace with complete version
         for ((index, obj) in filesRaw.withIndex()) {
-            filesRaw[index] = CompleteFile(obj)
+            filesRaw[index] = CompleteFile(obj, !noInfer)
 
             if (System.currentTimeMillis() > nextOutputTime) {
                 Log.info("Processed ${index + 1}/${filesRaw.size} files")

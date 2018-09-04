@@ -3,7 +3,7 @@ package slackjson
 import utils.Api
 import utils.Log
 
-class CompleteFile(sf: SlackFile) : SlackFile {
+class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
     override val id = sf.id
     override val user = sf.user
     override val title = sf.title
@@ -17,18 +17,22 @@ class CompleteFile(sf: SlackFile) : SlackFile {
     override val channels = sf.channels
     override val groups = sf.groups
     override val ims = sf.ims
-    
+
     init {
-        val uploadLoc = when {
-            channelsUploadedIn() == 1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
-            channelsUploadedIn() == 0 -> {
-                Log.warn("File $id belongs to no channels")
-                null
+        val uploadLoc = if (infer) {
+            when {
+                channelsUploadedIn() == 1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
+                channelsUploadedIn() == 0 -> {
+                    Log.warn("File $id belongs to no channels")
+                    null
+                }
+                else -> {
+                    Log.debugHigh("File $id belongs to more than one channel, requires API call to resolve")
+                    resolveMultipleLocations(this)
+                }
             }
-            else -> {
-                Log.debugHigh("File $id belongs to more than one channel, requires API call to resolve")
-                resolveMultipleLocations(this)
-            }
+        } else {
+            resolveMultipleLocations(this)
         }
     }
 
