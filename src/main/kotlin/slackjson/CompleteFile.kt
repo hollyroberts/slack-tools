@@ -21,7 +21,7 @@ class CompleteFile(sf: SlackFile) : SlackFile {
         val uploadLoc = when {
             channelsUploadedIn() == 1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
             channelsUploadedIn() == 0 -> {
-                Log.info("File $id belongs to no channels")
+                Log.warn("File $id belongs to no channels")
                 null
             }
             else -> {
