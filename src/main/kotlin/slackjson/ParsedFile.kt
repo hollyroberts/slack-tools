@@ -28,7 +28,8 @@ open class ParsedFile (
         override val groups: List<String>?,
         override val ims: List<String>?,
 
-        override val shares: FileShare?
+        // Non inherited properties
+        val shares: FileShare?
 ) : SlackFile {
     var firstSeen = mutableMapOf<String, Double>()
 

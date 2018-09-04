@@ -16,8 +16,6 @@ class CompleteFile(sf: SlackFile) : SlackFile {
     override val channels = sf.channels
     override val groups = sf.groups
     override val ims = sf.ims
-
-    override val shares = sf.shares
     
     init {
         val uploadLoc = when {

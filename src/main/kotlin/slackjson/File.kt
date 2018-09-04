@@ -24,12 +24,9 @@ data class File(
         val url_private_download: String,
 
         // Where has this file been sent
-        // Won't be included if file object is directly from a channel
         val channels: List<String>?,
         val groups: List<String>?,
-        val ims: List<String>?,
-
-        val shares: FileShare?
+        val ims: List<String>?
 ) {
     var firstSeen: MutableMap<String, Double>? = null
     var uploadLocation: String? = null
@@ -122,8 +119,6 @@ interface SlackFile {
     val channels: List<String>?
     val groups: List<String>?
     val ims: List<String>?
-
-    val shares: FileShare?
 
     fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
 }
