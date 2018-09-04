@@ -9,7 +9,7 @@ class FileCommand: CliktCommand(
         help = "Downloads files from slack") {
 
     override fun run() {
-        val filesRaw = Api.getFiles().toMutableList()
+        val filesRaw: MutableList<SlackFile> = Api.getFiles().toMutableList()
 
         filesRaw.replaceAll { CompleteFile(it) }
     }

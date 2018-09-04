@@ -14,5 +14,5 @@ data class FileListResponse(
 
 @JsonClass(generateAdapter = true)
 data class FileResponse (
-        val file: File
+        val file: ParsedFile
 ) : SlackResponse()

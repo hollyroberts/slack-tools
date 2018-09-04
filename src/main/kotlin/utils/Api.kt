@@ -48,7 +48,7 @@ object Api {
         return files
     }
 
-    fun getFile(fileId: String) : File {
+    fun getFile(fileId: String) : ParsedFile {
         val params = mapOf("file" to fileId)
         val adapter = moshi.adapter(FileResponse::class.java)!!
         val response = (Http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
