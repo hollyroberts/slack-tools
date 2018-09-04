@@ -30,27 +30,7 @@ open class ParsedFile (
 
         override val shares: FileShare?
 ) : SlackFile {
-
-    /**
-     * Copy constructor
-     */
-    constructor(old: ParsedFile) : this(
-            id = old.id,
-            user = old.user,
-            title = old.title,
-
-            filetype = old.filetype,
-            size = old.size,
-            url_private_download = old.url_private_download,
-
-            // Lists can be copied by reference as they're not mutable
-            channels = old.channels,
-            groups = old.groups,
-            ims = old.ims,
-
-            // TODO do we need to duplicate or not?
-            shares = old.shares
-    )
+    var firstSeen = mutableMapOf<String, Double>()
 
     /**
      * Formats the size of the file into a human readable version
@@ -65,9 +45,6 @@ open class ParsedFile (
         val formattedSize = df.format(size / (1024.0).pow(exp))
         return "$formattedSize ${prefix}iB"
     }
-
-    fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
-
 }
 
 object ShareJsonAdapter {
@@ -119,7 +96,3 @@ object ShareJsonAdapter {
         return Pair(id, lowestTs)
     }
 }
-
-data class FileShare(
-        val firstSeen: MutableMap<String, Double>
-)

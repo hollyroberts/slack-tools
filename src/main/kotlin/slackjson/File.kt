@@ -35,7 +35,7 @@ data class File(
     var uploadLocation: String? = null
     init {
         // Destruct slackjson.FileShare if it exists
-        firstSeen = shares?.firstSeen
+        firstSeen = shares?.firstSeen!!.toMutableMap()
 
         // Update uploadLocation
         if (channelsUploadedIn() == 1) {
@@ -124,4 +124,10 @@ interface SlackFile {
     val ims: List<String>?
 
     val shares: FileShare?
+
+    fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
 }
+
+data class FileShare(
+        val firstSeen: Map<String, Double>
+)
