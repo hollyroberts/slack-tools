@@ -38,14 +38,7 @@ class CompleteFile(sf: SlackFile) : SlackFile {
      * Returns id of channel that file was first seen in
      */
     private fun resolveMultipleLocations(cf: CompleteFile) : String? {
-        val f = Api.getFile(cf.id)
-
-        with(f.firstSeen!!) {
-            if (this.isNotEmpty()) {
-                return this.minBy { it.value }!!.key
-            }
-        }
-
-        return null
+        val pf = Api.getFile(cf.id)
+        return pf.inferLocFromShares()
     }
 }

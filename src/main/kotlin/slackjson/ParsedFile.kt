@@ -4,11 +4,7 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonDataException
 import com.squareup.moshi.JsonReader
-import java.text.DecimalFormat
-import kotlin.math.log
-import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.pow
 
 @JsonClass(generateAdapter = true)
 open class ParsedFile (
@@ -31,40 +27,33 @@ open class ParsedFile (
         // Non inherited properties
         val shares: FileShare?
 ) : SlackFile {
-    private val firstSeen = mutableMapOf<String, Double>()
+    // TODO When moshi supports it, make this private
+    @Transient
+    val custTimestamps = mutableMapOf<String, Double>()
 
     /**
      * Manually add a timestamp record of when a file was first seen in a channel
      * Will not update if this is later than the earliest file
      */
     fun addLocationTimestamp(location: String, timestamp: Double) {
-        if (firstSeen.containsKey(location)) {
-            if (firstSeen.getValue(location) > timestamp) {
-                firstSeen[location] = timestamp
+        if (custTimestamps.containsKey(location)) {
+            if (custTimestamps.getValue(location) > timestamp) {
+                custTimestamps[location] = timestamp
             }
         } else {
-            firstSeen[location] = timestamp
+            custTimestamps[location] = timestamp
         }
     }
 
     /**
      * Infers the share location based on the timestamps provided by addLocationTimestamp
      */
-    fun inferLocFromTimestamps() = firstSeen.minBy { it.value }?.key
+    fun inferLocFromTimestamps() = custTimestamps.minBy { it.value }?.key
 
     /**
-     * Formats the size of the file into a human readable version
-     * @param precision Number of decimal places to return (there will be at least 1)
+     * If API call returned shared data then this is the most accurate way to infer where the file was uploaded
      */
-    fun formattedSize(precision: Int) : String {
-        if (size < 1024) return "$size B"
-        val exp = log(size.toDouble(), 1024.0).toInt()
-        val prefix = "KMGTPE"[exp - 1]
-
-        val df = DecimalFormat("#.0" + "#".repeat(max(0, precision - 1)))
-        val formattedSize = df.format(size / (1024.0).pow(exp))
-        return "$formattedSize ${prefix}iB"
-    }
+    fun inferLocFromShares() = shares?.firstSeen?.minBy { it.value }?.key
 }
 
 object ShareJsonAdapter {
@@ -116,3 +105,7 @@ object ShareJsonAdapter {
         return Pair(id, lowestTs)
     }
 }
+
+data class FileShare(
+        val firstSeen: Map<String, Double>
+)
