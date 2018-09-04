@@ -31,7 +31,26 @@ open class ParsedFile (
         // Non inherited properties
         val shares: FileShare?
 ) : SlackFile {
-    var firstSeen = mutableMapOf<String, Double>()
+    private val firstSeen = mutableMapOf<String, Double>()
+
+    /**
+     * Manually add a timestamp record of when a file was first seen in a channel
+     * Will not update if this is later than the earliest file
+     */
+    fun addLocationTimestamp(location: String, timestamp: Double) {
+        if (firstSeen.containsKey(location)) {
+            if (firstSeen.getValue(location) > timestamp) {
+                firstSeen[location] = timestamp
+            }
+        } else {
+            firstSeen[location] = timestamp
+        }
+    }
+
+    /**
+     * Infers the share location based on the timestamps provided by addLocationTimestamp
+     */
+    fun inferLocFromTimestamps() = firstSeen.minBy { it.value }?.key
 
     /**
      * Formats the size of the file into a human readable version
