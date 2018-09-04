@@ -11,25 +11,46 @@ import kotlin.math.min
 import kotlin.math.pow
 
 @JsonClass(generateAdapter = true)
-open class ParsedFile {
-    // Identification
-    lateinit var id: String
-    lateinit var user: String
-    lateinit var title: String
+open class ParsedFile (
+        // Identification
+        val id: String,
+        val user: String,
+        val title: String,
 
-    // Metadata
-    lateinit var filetype: String
-    var size: Long = 0
-    lateinit var url_private_download: String
+        // Metadata
+        val filetype: String,
+        val size: Long,
+        val url_private_download: String,
 
-    // Where has this file been sent
-    // Won't be included if file object is directly from a channel
-    var channels: List<String>? = null
-    var groups: List<String>? = null
-    var ims: List<String>? = null
+        // Where has this file been sent
+        // Won't be included if file object is directly from a channel
+        val channels: List<String>?,
+        val groups: List<String>?,
+        val ims: List<String>?,
 
-    var shares: FileShare? = null
+        val shares: FileShare?
+) {
 
+    /**
+     * Copy constructor
+     */
+    constructor(old: ParsedFile) : this(
+            id = old.id,
+            user = old.user,
+            title = old.title,
+
+            filetype = old.filetype,
+            size = old.size,
+            url_private_download = old.url_private_download,
+
+            // Lists can be copied by reference as they're not mutable
+            channels = old.channels,
+            groups = old.groups,
+            ims = old.ims,
+
+            // TODO do we need to duplicate or not?
+            shares = old.shares
+    )
 
     /**
      * Formats the size of the file into a human readable version
