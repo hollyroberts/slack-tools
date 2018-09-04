@@ -9,8 +9,11 @@ class CompleteFile(pf: ParsedFile) : ParsedFile(pf) {
     init {
         when {
             channelsUploadedIn() == 1 -> uploadLoc = channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
-            channelsUploadedIn() == 0 -> Log.debugHigh("File $id has no channels")
-            else -> resolveMultipleLocations(this)
+            channelsUploadedIn() == 0 -> Log.info("File $id belongs to no channels")
+            else -> {
+                Log.debugHigh("File $id belongs to more than one channel, requires API call to resolve")
+                resolveMultipleLocations(this)
+            }
         }
     }
 
