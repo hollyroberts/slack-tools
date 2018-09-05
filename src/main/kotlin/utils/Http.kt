@@ -7,6 +7,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
 import kotlin.system.exitProcess
 
 object Http {
@@ -17,6 +19,37 @@ object Http {
 
     // Internal Enum to pass between methods
     enum class Status { SUCCESS, FAILURE, RATE_LIMITED }
+
+    /**
+     * Downloads a file
+     * @return Whether the operation was successful or not
+     */
+    fun downloadFile(url: String, saveLoc: Path) : Boolean {
+        val request = Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+
+        try {
+            Log.debugHigh("Retrieving file from URL: '$url'")
+            val response = client.newCall(request).execute()
+            val code = response.code()
+
+            Log.debugLow("Response code: $code")
+            if (code != 200) {
+                Log.error("Code was not 200 when downloading file (given $code")
+                return false
+            }
+
+            Log.debugLow("Writing to $saveLoc")
+            Files.copy(response.body()!!.byteStream(), saveLoc)
+
+            return true
+        } catch (e: IOException) {
+            Log.error("Error downloading file: ${e.message}")
+            return false
+        }
+    }
 
     /**
      * Sends GET request to (slack) url and verifies basic json
