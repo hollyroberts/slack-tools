@@ -42,7 +42,9 @@ object Http {
             }
 
             Log.debugLow("Writing to $saveLoc")
-            Files.copy(response.body()!!.byteStream(), saveLoc)
+            response.body()!!.byteStream().use {
+                Files.copy(it, saveLoc)
+            }
 
             return true
         } catch (e: IOException) {
