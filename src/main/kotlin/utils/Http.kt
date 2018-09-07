@@ -42,6 +42,7 @@ object Http {
             }
 
             Log.debugLow("Writing to $saveLoc")
+            saveLoc.parent.toFile().mkdirs()
             response.body()!!.byteStream().use {
                 Files.copy(it, saveLoc)
             }
