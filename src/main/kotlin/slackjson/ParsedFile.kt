@@ -13,6 +13,8 @@ open class ParsedFile (
         // Metadata
         override val filetype: String,
         override val size: Long,
+        @Json(name = "created")
+        override val timestamp: Long,
         @Json(name = "url_private")
         override val urlPrivate: String,
         @Json(name = "url_private_download")

@@ -10,6 +10,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
 
     override val filetype = sf.filetype
     override val size = sf.size
+    override val timestamp = sf.timestamp
     override val urlPrivate = sf.urlPrivate
     override val urlPrivateDownload = sf.urlPrivateDownload
 

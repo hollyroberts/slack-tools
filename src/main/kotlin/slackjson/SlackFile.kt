@@ -14,6 +14,7 @@ interface SlackFile {
     // Metadata
     val filetype: String
     val size: Long
+    val timestamp: Long
     val urlPrivate: String
     val urlPrivateDownload: String?
 
