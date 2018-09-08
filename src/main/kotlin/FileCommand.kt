@@ -34,10 +34,16 @@ object FileCommand: CliktCommand(
         val startTime = System.currentTimeMillis()
         var nextOutputTime = startTime + LOCATION_INTERVAL
 
-        // Iterate over objects, and replace with complete version
+        // Iterate over objects, create map of file channel to list of file objects
+        val files = mutableMapOf<String, MutableList<CompleteFile>>()
         for ((index, obj) in filesRaw.withIndex()) {
-            filesRaw[index] = CompleteFile(obj, !noInfer)
+            // Cast file and add to list
+            val cf = CompleteFile(obj, !noInfer)
+            val uploadLoc = cf.uploadLoc ?: "Unknown"
+            
+            files.getOrPut(uploadLoc) { mutableListOf(cf) }.add(cf)
 
+            // Print out how many objects have been processed
             if (System.currentTimeMillis() > nextOutputTime) {
                 Log.info("Processed ${index + 1}/${filesRaw.size} files")
                 nextOutputTime = System.currentTimeMillis() + LOCATION_INTERVAL
