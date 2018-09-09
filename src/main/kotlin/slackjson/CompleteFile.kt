@@ -1,7 +1,16 @@
 package slackjson
 
 import utils.Api
+import utils.Http
 import utils.Log
+import java.nio.file.Path
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
+
+
 
 class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
     override val id = sf.id
@@ -35,8 +44,18 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
         resolveMultipleLocations(this)
     }
 
-    fun download() {
+    fun download(folder: Path) {
+        // Create name
+        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC"))
+        val formattedName = "[${dtf.format(datetime)}] - $title"
 
+        // Download
+        urlPrivateDownload?.let {
+            Log.medium("Downloading: '$it' (${formattedSize(2)})")
+            Http.downloadFile(it, folder.resolve(formattedName))
+        } ?: urlPrivate.let {
+            Log.medium("File $id does not have the property url_private_download. Saving external link to text document.")
+        }
     }
 
     /**
@@ -47,5 +66,9 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
     private fun resolveMultipleLocations(cf: CompleteFile) : String? {
         val pf = Api.getFile(cf.id)
         return pf.inferLocFromShares()
+    }
+
+    companion object {
+        val dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd - HH;mm")!!
     }
 }

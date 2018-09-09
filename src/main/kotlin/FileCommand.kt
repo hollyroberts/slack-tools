@@ -6,8 +6,6 @@ import slackjson.CompleteFile
 import slackjson.SlackFile
 import utils.Api
 import utils.Log
-import java.nio.file.Path
-import java.nio.file.Paths
 
 object FileCommand: CliktCommand(
         name = "file",
@@ -53,12 +51,20 @@ object FileCommand: CliktCommand(
         // Output timed messages if took more than LOCATION_INTERVAL
         val timeTaken = System.currentTimeMillis() - startTime
         if (timeTaken > LOCATION_INTERVAL) {
-            Log.min(String.format("Located the upload location of all files in %,.1f seconds", timeTaken.toFloat() / 1000))
+            Log.low(String.format("Located the upload location of all files in %,.1f seconds", timeTaken.toFloat() / 1000))
         } else {
-            Log.info("Files located")
+            Log.medium("Files located")
         }
 
         // Download files
         val outDir = SlackTools.folderPath(output)
+        for (channelID in files.keys) {
+            val filesInChannel = files.getValue(channelID)
+            Log.medium("Downloading ${filesInChannel.size} from $channelID")
+
+            for (file in filesInChannel) {
+                file.download(outDir)
+            }
+        }
     }
 }
