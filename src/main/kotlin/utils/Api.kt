@@ -35,16 +35,16 @@ object Api {
 
 
         // Get results
-        Log.min("Retrieving list of files")
+        Log.low("Retrieving list of files")
         val files = mutableListOf<ParsedFile>()
         do {
             val response = (Http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
             files.addAll(response.files)
 
-            Log.info("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
+            Log.medium("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
         } while (response.updatePageParams(params))
 
-        Log.min("Retrieved ${files.size} files")
+        Log.low("Retrieved ${files.size} files")
         return files
     }
 
@@ -67,7 +67,7 @@ object Api {
                 "cursor" to "")
         val adapter = moshi.adapter(UserListResponse::class.java)!!
 
-        Log.info("Retrieving user results")
+        Log.medium("Retrieving user results")
         do {
             // Get converted response
             val response = (Http.get(URL_USERS_LIST, adapter, params, RETRY_TIER_2) as Result.Success).value!!
@@ -86,7 +86,7 @@ object Api {
             }
         } while (true)
 
-        Log.info("Finished retrieving user results (${userMap.size} found)")
+        Log.medium("Finished retrieving user results (${userMap.size} found)")
         return userMap
     }
 }

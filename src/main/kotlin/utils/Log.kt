@@ -6,8 +6,9 @@ object Log {
         // The exception to this is error, however drawing more attention to the message is a plus
         DEBUG_LOW("D-LO"),
         DEBUG_HIGH("D-HI"),
-        INFO("INFO"),
-        MIN("INFO"), // Minimal logging to cut down on output, but there may be a large wait between output
+        HIGH("INFO"),
+        MEDIUM("INFO"),
+        LOW("INFO"), // Minimal logging to cut down on output, but there may be a large wait between output
         WARN("WARN"),
         ERROR("ERROR")
     }
@@ -25,8 +26,9 @@ object Log {
 
     fun debugLow(message: String) = log(Modes.DEBUG_LOW, message)
     fun debugHigh(message: String) = log(Modes.DEBUG_HIGH, message)
-    fun info(message: String) = log(Modes.INFO, message)
-    fun min(message: String) = log(Modes.MIN, message)
+    fun high(message: String) = log(Modes.HIGH, message)
+    fun medium(message: String) = log(Modes.MEDIUM, message)
+    fun low(message: String) = log(Modes.LOW, message)
     fun warn(message: String) = log(Modes.WARN, message)
     fun error(message: String) = log(Modes.ERROR, message)
 }

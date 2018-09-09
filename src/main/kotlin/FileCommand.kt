@@ -30,7 +30,7 @@ object FileCommand: CliktCommand(
         val filesRaw: MutableList<SlackFile> = Api.getFiles().toMutableList()
 
         // Start timer to output process every X seconds
-        Log.min("Locating upload location of files (this may take a while, especially if inference is disabled)")
+        Log.low("Locating upload location of files (this may take a while, especially if inference is disabled)")
         val startTime = System.currentTimeMillis()
         var nextOutputTime = startTime + LOCATION_INTERVAL
 
@@ -40,12 +40,12 @@ object FileCommand: CliktCommand(
             // Cast file and add to list
             val cf = CompleteFile(obj, !noInfer)
             val uploadLoc = cf.uploadLoc ?: "Unknown"
-            
+
             files.getOrPut(uploadLoc) { mutableListOf(cf) }.add(cf)
 
             // Print out how many objects have been processed
             if (System.currentTimeMillis() > nextOutputTime) {
-                Log.info("Processed ${index + 1}/${filesRaw.size} files")
+                Log.medium("Processed ${index + 1}/${filesRaw.size} files")
                 nextOutputTime = System.currentTimeMillis() + LOCATION_INTERVAL
             }
         }

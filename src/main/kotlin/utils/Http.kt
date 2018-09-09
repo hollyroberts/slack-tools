@@ -74,7 +74,7 @@ object Http {
 
             if (i < RETRY_ATTEMPTS) {
                 Thread.sleep(waitTime.toLong() * 1000)
-                Log.info("Retrying (" + ordinal(i + 1) + " attempt)")
+                Log.medium("Retrying (" + ordinal(i + 1) + " attempt)")
             }
         }
 
