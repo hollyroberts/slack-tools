@@ -59,11 +59,12 @@ object FileCommand: CliktCommand(
         // Download files
         val outDir = SlackTools.folderPath(output)
         for (channelID in files.keys) {
+            val channelFolder = outDir.resolve(channelID)
             val filesInChannel = files.getValue(channelID)
             Log.medium("Downloading ${filesInChannel.size} from $channelID")
 
             for (file in filesInChannel) {
-                file.download(outDir)
+                file.download(channelFolder)
             }
         }
     }
