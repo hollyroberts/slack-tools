@@ -24,6 +24,9 @@ object Api {
             .add(ShareJsonAdapter)
             .build()!!
 
+    /**
+     * Return a list of parsed files (which may be incomplete) in a time range
+     */
     fun getFiles(startTime: Int = 0, endTime: Int? = null) : List<ParsedFile> {
         val params = mutableMapOf(
                 "page" to "1",
@@ -48,6 +51,9 @@ object Api {
         return files
     }
 
+    /**
+     * Return a file from id (files.info)
+     */
     fun getFile(fileId: String) : ParsedFile {
         val params = mapOf("file" to fileId)
         val adapter = moshi.adapter(FileResponse::class.java)!!

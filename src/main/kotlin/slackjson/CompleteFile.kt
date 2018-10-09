@@ -47,6 +47,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
     fun download(folder: Path) {
         // Create name
         val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC"))
+        // TODO format title
         val formattedName = "[${dtf.format(datetime)}] - $title"
 
         // Download
