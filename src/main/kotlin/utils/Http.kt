@@ -2,6 +2,7 @@ package utils
 
 import slackjson.SlackResponse
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonDataException
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -134,7 +135,13 @@ object Http {
         // Body is guaranteed to be non-null if called from execute()
         val json = response.body()!!.string()
         Log.debugLow("Parsing JSON")
-        val parsedJson = adapter.fromJson(json)!!
+        val parsedJson = try {
+            adapter.fromJson(json)!!
+        } catch (e: JsonDataException) {
+            Log.error(e.localizedMessage)
+            Log.high("Json received: \n" + prettyPrint(json))
+            throw e
+        }
         Log.debugLow("JSON parsed")
 
         if (!parsedJson.ok) {
