@@ -139,7 +139,7 @@ object Http {
             adapter.fromJson(json)!!
         } catch (e: JsonDataException) {
             Log.error(e.localizedMessage)
-            Log.high("Json received: \n" + prettyPrint(json))
+            Log.high("Json received: \n" + prettyFormat(json))
             throw e
         }
         Log.debugLow("JSON parsed")

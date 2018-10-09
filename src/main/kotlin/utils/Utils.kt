@@ -11,6 +11,7 @@ import okio.Buffer
  * Generic results class to reduce use of Pair
  * Eg. when interfacing with utils.Http.get
  */
+@Suppress("unused")
 sealed class Result<out R> {
     data class Success<out T>(val value: T) : Result<T>()
     data class Failure(val msg: String)
@@ -24,7 +25,10 @@ fun ordinal(number: Int): String {
     }
 }
 
-fun prettyPrint(json: String) : String {
+/**
+ * Prettifies json string to be nicely indented
+ */
+fun prettyFormat(json: String) : String {
     val source = Buffer().writeUtf8(json)
     val reader = JsonReader.of(source)
     val value = reader.readJsonValue()

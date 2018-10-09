@@ -1,5 +1,6 @@
 package utils
 
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import slackjson.*
 
@@ -29,32 +30,26 @@ object Api {
     /**
      * Returns a list of conversations (channels, groups, ims)
      */
-    fun getConversations() : List<Conversation> {
-        val convos = mutableListOf<Conversation>()
+    fun getConversations() : Map<String, Conversation> {
+        val convos = mutableMapOf<String, Conversation>()
         val params = mutableMapOf(
                 "limit" to CONVO_LIST_LIMIT.toString(),
                 "types" to "public_channel, private_channel, im",
                 "cursor" to "")
         val adapter = moshi.adapter(ConversationListResponse::class.java)!!
 
+
         Log.medium("Retrieving conversations (channels)")
-        do {
-            // Get converted response
-            val response = (Http.get(URL_CONVO_LIST, adapter, params, RETRY_TIER_2) as Result.Success).value!!
-
-            // Add entries to map
-            convos.addAll(response.channels)
-            Log.debugHigh("Retrieved ${response.channels.size} conversations")
-
-            // Check cursor
-            if (!response.moreEntries()) {
-                break
-            } else {
-                params["cursor"] = response.nextCursor()!!
+        callCursorApi<ConversationListResponse>(
+                URL_CONVO_LIST, adapter, params, RETRY_TIER_2
+        ) { response ->
+            // Add entries to map and output message
+            response.channels.forEach {
+                convos[it.id] = it
             }
-        } while (true)
+        }
 
-        return convos.toList()
+        return convos.toMap()
     }
 
     /**
@@ -107,15 +102,45 @@ object Api {
         val adapter = moshi.adapter(UserListResponse::class.java)!!
 
         Log.medium("Retrieving user results")
-        do {
-            // Get converted response
-            val response = (Http.get(URL_USERS_LIST, adapter, params, RETRY_TIER_2) as Result.Success).value!!
-
-            // Add entries to map
+        callCursorApi<UserListResponse>(
+                URL_USERS_LIST, adapter, params, RETRY_TIER_2
+        ) { response ->
+            // Add entries to map and output message
             response.members.forEach {
                 userMap[it.id] = it
             }
             Log.debugHigh("Retrieved ${userMap.size} user results")
+        }
+
+
+        Log.medium("Finished retrieving user results (${userMap.size} found)")
+        return userMap
+    }
+
+    /**
+     * Calls an api method multiple times to go through all the results
+     *
+     * @param url Data for Http.get
+     * @param adapter Data for Http.get
+     * @param params Data for Http.get
+     * @param retry Data for Http.get
+     *
+     * @param postRequest Function to be called with response after each individual API request
+     */
+    private fun <T : CursorResponse> callCursorApi(
+            // HTTP data
+            url: String,
+            adapter: JsonAdapter<T>,
+            params: MutableMap<String, String>,
+            retry: Int,
+
+            // Processing data
+            postRequest: (T) -> (Unit)) {
+
+        do {
+            // Get converted response
+            val response = (Http.get(url, adapter, params, retry) as Result.Success).value!!
+            postRequest.invoke(response)
 
             // Check cursor
             if (!response.moreEntries()) {
@@ -124,8 +149,5 @@ object Api {
                 params["cursor"] = response.nextCursor()!!
             }
         } while (true)
-
-        Log.medium("Finished retrieving user results (${userMap.size} found)")
-        return userMap
     }
 }
