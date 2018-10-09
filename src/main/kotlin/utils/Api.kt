@@ -5,13 +5,15 @@ import slackjson.*
 
 object Api {
     // URLs
-    private const val URL_USERS_LIST = "https://slack.com/api/users.list"
-    private const val URL_FILES_LIST = "https://slack.com/api/files.list"
+    private const val URL_CONVO_LIST = "https://slack.com/api/conversations.list"
     private const val URL_FILES_INFO = "https://slack.com/api/files.info"
+    private const val URL_FILES_LIST = "https://slack.com/api/files.list"
+    private const val URL_USERS_LIST = "https://slack.com/api/users.list"
 
     // Limits
-    private const val USERS_LIST_LIMIT = 100
+    private const val CONVO_LIST_LIMIT = 100
     private const val FILE_LIST_LIMIT = 100
+    private const val USERS_LIST_LIMIT = 100
 
     // Rate limit times to wait (in s)
     private const val RETRY_TIER_1 = 60
@@ -25,7 +27,38 @@ object Api {
             .build()!!
 
     /**
-     * Return a list of parsed files (which may be incomplete) in a time range
+     * Returns a list of conversations (channels, groups, ims)
+     */
+    fun getConversations() : List<Conversation> {
+        val convos = mutableListOf<Conversation>()
+        val params = mutableMapOf(
+                "limit" to CONVO_LIST_LIMIT.toString(),
+                "types" to "public_channel, private_channel, im",
+                "cursor" to "")
+        val adapter = moshi.adapter(ConversationListResponse::class.java)!!
+
+        Log.medium("Retrieving conversations (channels)")
+        do {
+            // Get converted response
+            val response = (Http.get(URL_CONVO_LIST, adapter, params, RETRY_TIER_2) as Result.Success).value!!
+
+            // Add entries to map
+            convos.addAll(response.channels)
+            Log.debugHigh("Retrieved ${response.channels.size} conversations")
+
+            // Check cursor
+            if (!response.moreEntries()) {
+                break
+            } else {
+                params["cursor"] = response.nextCursor()!!
+            }
+        } while (true)
+
+        return convos.toList()
+    }
+
+    /**
+     * Returns a list of parsed files (which may be incomplete) in a time range
      */
     fun getFiles(startTime: Int = 0, endTime: Int? = null) : List<ParsedFile> {
         val params = mutableMapOf(
@@ -52,7 +85,7 @@ object Api {
     }
 
     /**
-     * Return a file from id (files.info)
+     * Returns a file from id (files.info)
      */
     fun getFile(fileId: String) : ParsedFile {
         val params = mapOf("file" to fileId)
