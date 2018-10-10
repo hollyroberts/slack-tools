@@ -3,9 +3,16 @@ package slackjson
 import com.squareup.moshi.JsonClass
 
 /** conversations.list **/
+@JsonClass(generateAdapter = true)
 data class ConversationListResponse(
         val channels: List<Conversation>
-) : CursorResponse()
+) : CursorResponse() {
+    init {
+        channels.forEach {
+            it.verify()
+        }
+    }
+}
 
 /** files.info **/
 @JsonClass(generateAdapter = true)
