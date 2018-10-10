@@ -47,8 +47,10 @@ object Api {
             response.channels.forEach {
                 convos[it.id] = it
             }
+            Log.debugHigh("Retrieved ${convos.size} conversations")
         }
 
+        Log.medium("Finished retrieving conversations (${convos.size} found)")
         return convos.toMap()
     }
 
@@ -111,7 +113,6 @@ object Api {
             }
             Log.debugHigh("Retrieved ${userMap.size} user results")
         }
-
 
         Log.medium("Finished retrieving user results (${userMap.size} found)")
         return userMap
