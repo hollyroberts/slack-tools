@@ -28,7 +28,7 @@ object Api {
             .build()!!
 
     /**
-     * Returns a list of conversations (channels, groups, ims)
+     * Returns a map conversations (channels, groups, ims). Key is conversation id
      */
     fun getConversations() : Map<String, Conversation> {
         val convos = mutableMapOf<String, Conversation>()

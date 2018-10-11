@@ -2,9 +2,11 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
+import slack.SlackData
 import slackjson.CompleteFile
 import slackjson.SlackFile
 import utils.Api
+import utils.Http.token
 import utils.Log
 
 object FileCommand: CliktCommand(
@@ -25,6 +27,10 @@ object FileCommand: CliktCommand(
      * Downloads all files from slack
      */
     override fun run() {
+        SlackData(token!!).users.forEach { t, u -> println(u.name) }
+        return
+        val conversations = Api.getConversations()
+        conversations.forEach { _, convo -> println(convo.getFullName()) }
         val filesRaw: MutableList<SlackFile> = Api.getFiles().toMutableList()
 
         // Start timer to output process every X seconds
