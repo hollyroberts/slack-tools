@@ -29,9 +29,8 @@ open class ParsedFile (
         // Non inherited properties
         val shares: FileShare?
 ) : SlackFile {
-    // TODO When moshi supports it, make this private
     @Transient
-    val custTimestamps = mutableMapOf<String, Double>()
+    private val custTimestamps = mutableMapOf<String, Double>()
 
     /**
      * Manually add a timestamp record of when a file was first seen in a channel
