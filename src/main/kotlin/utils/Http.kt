@@ -30,7 +30,7 @@ object Http {
         // Don't overwrite files
         // TODO make this toggleable (easily)
         if (saveLoc.toFile().exists()) {
-            Log.medium("File exists already: '${saveLoc.fileName}'")
+            Log.debugHigh("File exists already: '${saveLoc.fileName}'")
             return true
         }
         Log.low("Downloading: '$url' as '${saveLoc.fileName}'"
@@ -54,7 +54,7 @@ object Http {
             }
 
             Log.debugLow("Writing to $saveLoc")
-            saveLoc.parent.toFile().mkdirs()
+            saveLoc.parent?.toFile()?.mkdirs()
             response.body()!!.byteStream().use {
                 Files.copy(it, saveLoc, StandardCopyOption.REPLACE_EXISTING)
             }
