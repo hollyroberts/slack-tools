@@ -12,14 +12,20 @@ fun main(args: Array<String>) {
         // Get location to put files in
         val convoName = if (convoID != null) {
             val convo = slack.conversations[convoID]!!
-            convo.getFullName()
+            convo.getFullName(slack)
         } else {
             "Unknown location"
         }
         val convoFolder = outDir.resolve(convoName)
 
+        // Create folder if it doesn't exist
+        if (!convoFolder.toFile().exists()) {
+            Log.debugHigh("Creating directory ' ${convoFolder.fileName}'")
+            convoFolder.toFile().mkdir()
+        }
+
         // Download files
-        // TODO track successes
+        // TODO track successes/failures
         Log.high("Downloading files")
         Log.medium("Downloading ${filesInConvo.size} files from $convoName")
         for (file in filesInConvo) {

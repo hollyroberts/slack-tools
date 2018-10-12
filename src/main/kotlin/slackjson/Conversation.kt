@@ -3,6 +3,7 @@ package slackjson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonDataException
+import slack.SlackData
 
 @JsonClass(generateAdapter = true)
 class Conversation(
@@ -42,11 +43,11 @@ class Conversation(
      * Returns conversation name prefixed with # or @ depending on whether it's a channel or dm
      * TODO convert ids
      */
-    fun getFullName() : String {
+    fun getFullName(slack: SlackData) : String {
         return if (isChannel || isGroup) {
-            "#$id"
+            "#$name"
         } else {
-            "@$user"
+            "@${slack.getUsername(user)}"
         }
     }
 }

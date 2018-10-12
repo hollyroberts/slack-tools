@@ -52,7 +52,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
 
         // Strip out/replace illegal chars
         formattedName = Regex("""[/*?"<>|]""").replace(formattedName, "")
-        formattedName.replace(":", ";")
+        formattedName =  formattedName.replace(":", ";")
 
         // Add extension if it doesn't exist
         if (!formattedName.endsWith(".$filetype") && filetype.isNotEmpty()) {

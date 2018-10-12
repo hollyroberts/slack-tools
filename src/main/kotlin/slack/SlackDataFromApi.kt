@@ -69,7 +69,7 @@ abstract class SlackData {
     }
 
     // Data retrieval methods
-    fun getUsername(userId: String) = users[userId] ?: "unknown user"
+    fun getUsername(userId: String?) = users[userId]?.name ?: "unknown user"
 }
 
 class SlackDataFromApi(token: String) : SlackData() {
