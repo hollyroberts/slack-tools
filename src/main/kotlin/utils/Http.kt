@@ -50,7 +50,7 @@ object Http {
 
             return true
         } catch (e: IOException) {
-            Log.error("Error downloading file: ${e.message}")
+            Log.error("Error downloading file. ${e.javaClass.canonicalName}: ${e.message}")
             return false
         }
     }

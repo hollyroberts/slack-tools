@@ -4,6 +4,7 @@ import slack.SlackData
 import utils.Api
 import utils.Http
 import utils.Log
+import java.io.File
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
@@ -55,7 +56,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
         formattedName =  formattedName.replace(":", ";")
 
         // Add extension if it doesn't exist
-        if (!formattedName.endsWith(".$filetype") && filetype.isNotEmpty()) {
+        if (File(formattedName).extension.isEmpty() && filetype.isNotEmpty()) {
             formattedName += ".$filetype"
         }
 
