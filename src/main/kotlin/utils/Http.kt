@@ -26,12 +26,15 @@ object Http {
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path) : Boolean {
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null) : Boolean {
         // Don't overwrite files
         // TODO make this toggleable (easily)
         if (saveLoc.toFile().exists()) {
-            Log.medium("File '" + saveLoc.fileName + "' exists already")
+            Log.medium("File exists already: '${saveLoc.fileName}'")
+            return true
         }
+        Log.low("Downloading: '$url' as '${saveLoc.fileName}'"
+            + if (size != null) " (${formatSize(size)})" else " (unknown size)")
 
         val request = Request.Builder()
                 .url(url)

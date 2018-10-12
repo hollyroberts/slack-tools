@@ -5,6 +5,10 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import okio.Buffer
+import java.text.DecimalFormat
+import kotlin.math.log
+import kotlin.math.max
+import kotlin.math.pow
 
 
 /**
@@ -34,4 +38,18 @@ fun prettyFormat(json: String) : String {
     val value = reader.readJsonValue()
     val adapter = Moshi.Builder().build().adapter(Any::class.java).indent("    ")
     return adapter.toJson(value)
+}
+
+/**
+ * Formats the size of the file into a human readable version
+ * @param precision Number of decimal places to return (there will be at least 1)
+ */
+fun formatSize(size: Long, precision: Int = 2) : String {
+    if (size < 1024) return "$size B"
+    val exp = log(size.toDouble(), 1024.0).toInt()
+    val prefix = "KMGTPE"[exp - 1]
+
+    val df = DecimalFormat("#.0" + "#".repeat(max(0, precision - 1)))
+    val formattedSize = df.format(size / (1024.0).pow(exp))
+    return "$formattedSize ${prefix}iB"
 }
