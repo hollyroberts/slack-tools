@@ -10,6 +10,7 @@ import okhttp3.Response
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
 object Http {
@@ -26,12 +27,19 @@ object Http {
      * @return Whether the operation was successful or not
      */
     fun downloadFile(url: String, saveLoc: Path) : Boolean {
+        // Don't overwrite files
+        // TODO make this toggleable (easily)
+        if (saveLoc.toFile().exists()) {
+            Log.medium("File '" + saveLoc.fileName + "' exists already")
+        }
+
         val request = Request.Builder()
                 .url(url)
                 .addHeader("Authorization", "Bearer $token")
                 .build()
 
         try {
+            // Download file
             Log.debugHigh("Retrieving file from URL: '$url'")
             val response = client.newCall(request).execute()
             val code = response.code()
@@ -45,7 +53,7 @@ object Http {
             Log.debugLow("Writing to $saveLoc")
             saveLoc.parent.toFile().mkdirs()
             response.body()!!.byteStream().use {
-                Files.copy(it, saveLoc)
+                Files.copy(it, saveLoc, StandardCopyOption.REPLACE_EXISTING)
             }
 
             return true
