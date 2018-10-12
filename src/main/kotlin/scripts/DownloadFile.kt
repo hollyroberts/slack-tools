@@ -8,13 +8,20 @@ fun main(args: Array<String>) {
     val outDir = Paths.get("files")
     val slack = SlackDataFromApi(token)
 
-    for (channelID in files.keys) {
-        val channelFolder = outDir.resolve(channelID)
-        val filesInChannel = files.getValue(channelID)
-        Log.medium("Downloading ${filesInChannel.size} from $channelID")
+    for ((convoID, filesInConvo) in slack.filesByConvo) {
+        // Get location to put files in
+        val convoName = if (convoID != null) {
+            val convo = slack.conversations[convoID]!!
+            convo.getFullName()
+        } else {
+            "Unknown location"
+        }
+        val convoFolder = outDir.resolve(convoName)
 
-        for (file in filesInChannel) {
-            file.download(channelFolder)
+        // Download files
+        Log.medium("Downloading ${filesInConvo.size} from $convoName")
+        for (file in filesInConvo) {
+            file.download(convoFolder)
         }
     }
 }

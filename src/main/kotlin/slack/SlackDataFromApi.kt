@@ -4,6 +4,7 @@ package slack
 
 import slackjson.*
 import utils.Api
+import utils.Http
 import utils.Log
 
 abstract class SlackData {
@@ -52,21 +53,25 @@ abstract class SlackData {
     /**
      * Map of conversation id --> list of files
      */
-    val filesByChannel by lazy {
-        val fileChannel = mutableMapOf<String, MutableList<CompleteFile>>()
+    val filesByConvo by lazy {
+        val filesConvo = mutableMapOf<String?, MutableList<CompleteFile>>()
 
         filesComplete.values.forEach {
-            val uploadLoc = it.uploadLoc ?: "Unknown channel"
-            fileChannel.getOrPut(uploadLoc) { mutableListOf() }
+            val uploadLoc = it.uploadLoc // Key will be null if we don't know the convo
+            filesConvo.getOrPut(uploadLoc) { mutableListOf() }
                     .add(it)
         }
 
-        return@lazy fileChannel.toMap()
+        return@lazy filesConvo.toMap()
     }
 }
 
-class SlackDataFromApi(val token: String) : SlackData() {
+class SlackDataFromApi(token: String) : SlackData() {
     override val conversations by lazy { Api.getConversations() }
     override val filesParsed by lazy { Api.getFiles() }
     override val users by lazy { Api.getUsers() }
+
+    init {
+        Http.token = token
+    }
 }
