@@ -8,14 +8,12 @@ fun main(args: Array<String>) {
     val outDir = Paths.get("files")
     val slack = SlackDataFromApi(token)
 
-    for ((convoID, filesInConvo) in slack.filesByConvo) {
+    // Process conversations alphabetically
+    slack.filesByConvo.keys.sortedBy { slack.getConversationName(it) }.forEach { convoID ->
+        val filesInConvo = slack.filesByConvo[convoID]!!
+
         // Get location to put files in
-        val convoName = if (convoID != null) {
-            val convo = slack.conversations[convoID]!!
-            convo.getFullName(slack)
-        } else {
-            "Unknown location"
-        }
+        val convoName = slack.getConversationName(convoID)
         val convoFolder = outDir.resolve(convoName)
 
         // Create folder if it doesn't exist
@@ -28,7 +26,7 @@ fun main(args: Array<String>) {
         // TODO track successes/failures
         Log.high("Downloading files")
         Log.medium("Downloading ${filesInConvo.size} files from $convoName")
-        for (file in filesInConvo) {
+        filesInConvo.sortedBy { it.timestamp }.forEach { file ->
             file.download(convoFolder, slack)
         }
     }
