@@ -19,7 +19,8 @@ fun main(args: Array<String>) {
         val convoFolder = outDir.resolve(convoName)
 
         // Download files
-        Log.medium("Downloading ${filesInConvo.size} from $convoName")
+        Log.high("Downloading files")
+        Log.medium("Downloading ${filesInConvo.size} files from $convoName")
         for (file in filesInConvo) {
             file.download(convoFolder)
         }

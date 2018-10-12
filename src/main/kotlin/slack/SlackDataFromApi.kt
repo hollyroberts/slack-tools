@@ -21,7 +21,10 @@ abstract class SlackData {
      * Map of file id to complete files
      */
     val filesComplete by lazy {
-        Log.low("Locating upload location of files (this may take a while, especially if inference is disabled)")
+        // Get files parsed first so we do things 'in order'
+        val filesParsed = filesParsed
+
+        Log.high("Locating upload location of files (this may take a while, especially if inference is disabled)")
         val startTime = System.currentTimeMillis()
         var nextOutputTime = startTime + LOCATION_INTERVAL
 
@@ -42,7 +45,7 @@ abstract class SlackData {
         // Output timed messages if took more than LOCATION_INTERVAL
         val timeTaken = System.currentTimeMillis() - startTime
         if (timeTaken > LOCATION_INTERVAL) {
-            Log.low(String.format("Located the upload location of all files in %,.1f seconds", timeTaken.toFloat() / 1000))
+            Log.high(String.format("Located the upload location of all files in %,.1f seconds", timeTaken.toFloat() / 1000))
         } else {
             Log.medium("Files located")
         }
