@@ -1,9 +1,8 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package slack
 
-import slackjson.CompleteFile
-import slackjson.Conversation
-import slackjson.ParsedFile
-import slackjson.User
+import slackjson.*
 import utils.Api
 import utils.Log
 
@@ -17,6 +16,9 @@ abstract class SlackData {
     abstract val users: Map<String, User>
 
     // Responses may need further processing
+    /**
+     * Map of file id to complete files
+     */
     val filesComplete by lazy {
         Log.low("Locating upload location of files (this may take a while, especially if inference is disabled)")
         val startTime = System.currentTimeMillis()
@@ -26,7 +28,7 @@ abstract class SlackData {
         val files = mutableMapOf<String, CompleteFile>()
         for ((index, obj) in filesParsed.withIndex()) {
             // Cast file and add to list
-            val cf = CompleteFile(obj, !FileCommand.noInfer)
+            val cf = CompleteFile(obj, true) // TODO fix this !FileCommand.noInfer)
             files[cf.id] = cf
 
             // Print out how many objects have been processed
@@ -45,6 +47,21 @@ abstract class SlackData {
         }
 
         return@lazy files
+    }
+
+    /**
+     * Map of conversation id --> list of files
+     */
+    val filesByChannel by lazy {
+        val fileChannel = mutableMapOf<String, MutableList<CompleteFile>>()
+
+        filesComplete.values.forEach {
+            val uploadLoc = it.uploadLoc ?: "Unknown channel"
+            fileChannel.getOrPut(uploadLoc) { mutableListOf() }
+                    .add(it)
+        }
+
+        return@lazy fileChannel.toMap()
     }
 }
 
