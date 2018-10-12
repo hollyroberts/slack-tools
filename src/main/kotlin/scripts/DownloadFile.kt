@@ -19,10 +19,11 @@ fun main(args: Array<String>) {
         val convoFolder = outDir.resolve(convoName)
 
         // Download files
+        // TODO track successes
         Log.high("Downloading files")
         Log.medium("Downloading ${filesInConvo.size} files from $convoName")
         for (file in filesInConvo) {
-            file.download(convoFolder)
+            file.download(convoFolder, slack)
         }
     }
 }

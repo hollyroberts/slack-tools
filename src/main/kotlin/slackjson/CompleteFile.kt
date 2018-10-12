@@ -1,15 +1,16 @@
 package slackjson
 
+import slack.SlackData
 import utils.Api
 import utils.Http
 import utils.Log
+import java.nio.charset.Charset
+import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-
-
 
 
 class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
@@ -44,19 +45,27 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
         resolveMultipleLocations(this)
     }
 
-    fun download(folder: Path) {
-        // Create name
+    fun download(folder: Path, slack: SlackData) {
+        // Assemble file name
         val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC"))
-        // TODO format title
-        val formattedName = "[${dtf.format(datetime)}] - $title"
+        var formattedName = "[${dtf.format(datetime)}] - ${slack.getUsername(user)} - $title"
+
+        // Strip out/replace illegal chars
+        formattedName = Regex("""[/*?"<>|]""").replace(formattedName, "")
+        formattedName.replace(":", ";")
+
+        // Add extension if it doesn't exist
+        if (!formattedName.endsWith(".$filetype") && filetype.isNotEmpty()) {
+            formattedName += ".$filetype"
+        }
 
         // Download
         urlPrivateDownload?.let {
-            Log.low("Downloading: '$it' (${formattedSize(2)})")
+            Log.low("Downloading: '$it' as '$formattedName' (${formattedSize(2)})")
             Http.downloadFile(it, folder.resolve(formattedName))
         } ?: urlPrivate.let {
             Log.medium("File $id does not have the property url_private_download. Saving external link to text document.")
-            // TODO
+            folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")
         }
     }
 
@@ -71,6 +80,6 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
     }
 
     companion object {
-        val dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd - HH;mm")!!
+        val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH;mm")!!
     }
 }

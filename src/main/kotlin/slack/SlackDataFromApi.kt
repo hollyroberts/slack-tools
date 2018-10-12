@@ -67,6 +67,9 @@ abstract class SlackData {
 
         return@lazy filesConvo.toMap()
     }
+
+    // Data retrieval methods
+    fun getUsername(userId: String) = users[userId] ?: "unknown user"
 }
 
 class SlackDataFromApi(token: String) : SlackData() {
