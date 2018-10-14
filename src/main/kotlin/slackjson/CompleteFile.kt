@@ -1,12 +1,11 @@
 package slackjson
 
 import slack.SlackData
+import slack.Settings
 import utils.Api
 import utils.Http
 import utils.Log
 import java.io.File
-import java.nio.charset.Charset
-import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDateTime
@@ -62,7 +61,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
 
         // Download
         urlPrivateDownload?.let {
-            Http.downloadFile(it, folder.resolve(formattedName), size)
+            Http.downloadFile(it, folder.resolve(formattedName), size, slack.settings.inferFileLocation)
         } ?: urlPrivate.let {
             Log.medium("File $id does not have the property url_private_download. Saving external link to '$formattedName'")
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")

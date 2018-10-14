@@ -1,14 +1,17 @@
 import utils.Log
 import slack.SlackDataFromApi
+import slack.Settings
 import java.nio.file.Paths
 
 fun main(args: Array<String>) {
     // Basic setup
     val token = args[0]
     val outDir = Paths.get("files")
-    val slack = SlackDataFromApi(token)
+    val settings = Settings()
+    val slack = SlackDataFromApi(token, settings)
 
     // Process conversations alphabetically
+    Log.high("Downloading files")
     slack.filesByConvo.keys.sortedBy { slack.getConversationName(it) }.forEach { convoID ->
         val filesInConvo = slack.filesByConvo[convoID]!!
 
@@ -24,7 +27,6 @@ fun main(args: Array<String>) {
 
         // Download files
         // TODO track successes/failures
-        Log.high("Downloading files")
         Log.medium("Downloading ${filesInConvo.size} files from $convoName")
         filesInConvo.sortedBy { it.timestamp }.forEach { file ->
             file.download(convoFolder, slack)

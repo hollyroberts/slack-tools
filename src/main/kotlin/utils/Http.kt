@@ -26,10 +26,9 @@ object Http {
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path, size: Long? = null) : Boolean {
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true) : Boolean {
         // Don't overwrite files
-        // TODO make this toggleable (easily)
-        if (saveLoc.toFile().exists()) {
+        if (saveLoc.toFile().exists() && ignoreIfExists) {
             Log.debugHigh("File exists already: '${saveLoc.fileName}'")
             return true
         }
