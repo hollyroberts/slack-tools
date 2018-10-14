@@ -64,7 +64,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
         } ?: urlPrivate.let {
             Log.low("File $id does not have the property url_private_download. Saving external link to '$formattedName'")
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")
-            return DownloadStatus.SUCCESS
+            return DownloadStatus.LINK
         }
     }
 

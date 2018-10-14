@@ -28,18 +28,17 @@ fun main(args: Array<String>) {
         }
 
         // Download files
-        // TODO track successes/failures
         val channelStats = DownloadStats()
         Log.medium("Downloading ${filesInConvo.size} files from $convoName")
         filesInConvo.sortedBy { it.timestamp }.forEach { file ->
             channelStats.update(file.download(convoFolder, slack))
         }
 
-        channelStats.log()
+        channelStats.log(convoName)
         downloadStats += channelStats
     }
 
-    downloadStats.log()
+    downloadStats.log("slack")
 }
 
 /**
@@ -82,8 +81,8 @@ class DownloadStats {
 
     fun total() = successes() + failures()
 
-    fun getMessage() : String {
-        var msg = "Downloaded ${successes()}/${total()} files successfully"
+    fun getMessage(location: String) : String {
+        var msg = "Downloaded ${successes()}/${total()} files successfully from $location"
 
         if (links() > 0) {
             msg += " (of which ${links()} were links and saved to text files)"
@@ -92,12 +91,12 @@ class DownloadStats {
         return msg
     }
 
-    fun log() {
+    fun log(location: String) {
         // Output information
         if (failures() == 0) {
-            Log.medium(getMessage())
+            Log.medium(getMessage(location))
         } else {
-            Log.warn(getMessage())
+            Log.warn(getMessage(location))
         }
     }
 }

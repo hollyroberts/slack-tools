@@ -32,7 +32,7 @@ object Http {
         // Don't overwrite files
         val fileExists = saveLoc.toFile().exists()
         if (fileExists && ignoreIfExists) {
-            Log.debugHigh("File exists already: '${saveLoc.fileName}'")
+            Log.low("File exists already: '${saveLoc.fileName}'")
             return DownloadStatus.ALREADY_EXISTED
         }
 

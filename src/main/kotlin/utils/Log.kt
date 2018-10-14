@@ -12,7 +12,7 @@ object Log {
         WARN("WARN"),
         ERROR("ERROR")
     }
-    val mode = Modes.LOW
+    val mode = Modes.MEDIUM
 
     private fun log(mode: Modes, message: String) {
         if (mode >= Log.mode) {
