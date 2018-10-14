@@ -1,6 +1,7 @@
 import utils.Log
 import slack.SlackDataFromApi
 import slack.Settings
+import slackjson.DownloadStatus
 import java.nio.file.Paths
 
 fun main(args: Array<String>) {
@@ -12,6 +13,7 @@ fun main(args: Array<String>) {
 
     // Process conversations alphabetically
     Log.high("Downloading files")
+    var downloadStats = DownloadStats()
     slack.filesByConvo.keys.sortedBy { slack.getConversationName(it) }.forEach { convoID ->
         val filesInConvo = slack.filesByConvo[convoID]!!
 
@@ -27,9 +29,75 @@ fun main(args: Array<String>) {
 
         // Download files
         // TODO track successes/failures
+        val channelStats = DownloadStats()
         Log.medium("Downloading ${filesInConvo.size} files from $convoName")
         filesInConvo.sortedBy { it.timestamp }.forEach { file ->
-            file.download(convoFolder, slack)
+            channelStats.update(file.download(convoFolder, slack))
+        }
+
+        channelStats.log()
+        downloadStats += channelStats
+    }
+
+    downloadStats.log()
+}
+
+/**
+ * Could probably use a map for this, oh well now
+ */
+@Suppress("MemberVisibilityCanBePrivate")
+class DownloadStats {
+    private val map = mutableMapOf<DownloadStatus, Int>()
+
+    init {
+        DownloadStatus.values().forEach {
+            map[it] = 0
+        }
+    }
+
+    // Functions for collecting data
+    fun update(status: DownloadStatus) {
+        map[status] = map[status]!! + 1
+    }
+
+    operator fun plus(other: DownloadStats) : DownloadStats {
+        val new = DownloadStats()
+
+        DownloadStatus.values().forEach {
+            new.map[it] = map[it]!! + other.map[it]!!
+        }
+
+        return new
+    }
+
+    // Data retrieval methods
+    fun links() = map[DownloadStatus.LINK]!!
+
+    fun successes() = map[DownloadStatus.SUCCESS]!! +
+                      map[DownloadStatus.SUCCESS_OVERWRITE]!! +
+                      map[DownloadStatus.ALREADY_EXISTED]!! +
+                      links()
+
+    fun failures() = map[DownloadStatus.FAILURE]!!
+
+    fun total() = successes() + failures()
+
+    fun getMessage() : String {
+        var msg = "Downloaded ${successes()}/${total()} files successfully"
+
+        if (links() > 0) {
+            msg += " (of which ${links()} were links and saved to text files)"
+        }
+
+        return msg
+    }
+
+    fun log() {
+        // Output information
+        if (failures() == 0) {
+            Log.medium(getMessage())
+        } else {
+            Log.warn(getMessage())
         }
     }
 }

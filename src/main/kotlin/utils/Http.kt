@@ -7,6 +7,7 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import slackjson.DownloadStatus
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -19,19 +20,22 @@ object Http {
 
     private const val RETRY_ATTEMPTS = 3
 
-    // Internal Enum to pass between methods
-    enum class Status { SUCCESS, FAILURE, RATE_LIMITED }
+    // Enums to indicate method response
+    enum class GetStatus { SUCCESS, FAILURE, RATE_LIMITED }
+
 
     /**
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true) : Boolean {
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true) : DownloadStatus {
         // Don't overwrite files
-        if (saveLoc.toFile().exists() && ignoreIfExists) {
+        val fileExists = saveLoc.toFile().exists()
+        if (fileExists && ignoreIfExists) {
             Log.debugHigh("File exists already: '${saveLoc.fileName}'")
-            return true
+            return DownloadStatus.ALREADY_EXISTED
         }
+
         Log.low("Downloading: '$url' as '${saveLoc.fileName}'"
             + if (size != null) " (${formatSize(size)})" else " (unknown size)")
 
@@ -41,7 +45,7 @@ object Http {
                 .build()
 
         try {
-            // Download file
+            // Download file using GET request
             Log.debugHigh("Retrieving file from URL: '$url'")
             val response = client.newCall(request).execute()
             val code = response.code()
@@ -49,19 +53,24 @@ object Http {
             Log.debugLow("Response code: $code")
             if (code != 200) {
                 Log.error("Code was not 200 when downloading file (given $code")
-                return false
+                return DownloadStatus.FAILURE
             }
 
+            // Save to disk
             Log.debugLow("Writing to $saveLoc")
             saveLoc.parent?.toFile()?.mkdirs()
             response.body()!!.byteStream().use {
                 Files.copy(it, saveLoc, StandardCopyOption.REPLACE_EXISTING)
             }
 
-            return true
+            return if (fileExists) {
+                DownloadStatus.SUCCESS_OVERWRITE
+            } else {
+                DownloadStatus.SUCCESS
+            }
         } catch (e: IOException) {
             Log.error("Error downloading file. ${e.javaClass.canonicalName}: ${e.message}")
-            return false
+            return DownloadStatus.FAILURE
         }
     }
 
@@ -75,12 +84,12 @@ object Http {
 
             // Handle status codes
             when (status) {
-                Status.SUCCESS -> return Result.Success(json!!)
-                Status.FAILURE -> {
+                GetStatus.SUCCESS -> return Result.Success(json!!)
+                GetStatus.FAILURE -> {
                     Log.error("Exiting due to response failure")
                     exitProcess(-1)
                 }
-                Status.RATE_LIMITED -> Log.warn("Rate limited, waiting " + "%,d".format(waitTime) + "s")
+                GetStatus.RATE_LIMITED -> Log.warn("Rate limited, waiting " + "%,d".format(waitTime) + "s")
             }
 
             if (i < RETRY_ATTEMPTS) {
@@ -100,7 +109,7 @@ object Http {
      *
      * @throws IOException
      */
-    private fun <T : SlackResponse> getInternal(url: String, adapter: JsonAdapter<T>, params: Map<String, String>): Pair<Status, T?> {
+    private fun <T : SlackResponse> getInternal(url: String, adapter: JsonAdapter<T>, params: Map<String, String>): Pair<GetStatus, T?> {
         // Add params to url (including token)
         val httpUrl = HttpUrl.parse(url)!!.newBuilder()
         httpUrl.addQueryParameter("token", token)
@@ -121,24 +130,24 @@ object Http {
             }
         } catch (e: IOException) {
             Log.error(e.toString())
-            return Pair(Status.FAILURE, null)
+            return Pair(GetStatus.FAILURE, null)
         }
     }
 
     /**
      * Handles the checking of the response
      */
-    private fun <T : SlackResponse> processResponse(response: Response, adapter: JsonAdapter<T>, url: String): Pair<Status, T?> {
+    private fun <T : SlackResponse> processResponse(response: Response, adapter: JsonAdapter<T>, url: String): Pair<GetStatus, T?> {
         val errBaseMsg = "Request for '$url' failed."
 
         // HTTP status codes
         if (response.code() == 429) {
             Log.warn("$errBaseMsg Rate limited.")
-            return Pair(Status.RATE_LIMITED, null)
+            return Pair(GetStatus.RATE_LIMITED, null)
         }
         if (response.code() != 200) {
             Log.error("Request for '$url' failed. Status code: " + response.code().toString() + " (" + response.message() + ")")
-            return Pair(Status.FAILURE, null)
+            return Pair(GetStatus.FAILURE, null)
         }
 
         // Parse JSON to moshi representation
@@ -161,7 +170,7 @@ object Http {
             }
 
             Log.error(msg)
-            return Pair(Status.FAILURE, null)
+            return Pair(GetStatus.FAILURE, null)
         }
 
         // Check for warnings, but do not fail on them
@@ -169,6 +178,6 @@ object Http {
             Log.warn("Slack response contained warning for request '$url'. Message: " + parsedJson.warning)
         }
 
-        return Pair(Status.SUCCESS, parsedJson)
+        return Pair(GetStatus.SUCCESS, parsedJson)
     }
 }

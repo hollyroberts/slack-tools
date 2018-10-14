@@ -1,7 +1,6 @@
 package slackjson
 
 import slack.SlackData
-import slack.Settings
 import utils.Api
 import utils.Http
 import utils.Log
@@ -45,7 +44,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
         resolveMultipleLocations(this)
     }
 
-    fun download(folder: Path, slack: SlackData) {
+    fun download(folder: Path, slack: SlackData) : DownloadStatus {
         // Assemble file name
         val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC"))
         var formattedName = "[${dtf.format(datetime)}] - ${slack.getUsername(user)} - $title"
@@ -61,10 +60,11 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
 
         // Download
         urlPrivateDownload?.let {
-            Http.downloadFile(it, folder.resolve(formattedName), size, slack.settings.inferFileLocation)
+            return Http.downloadFile(it, folder.resolve(formattedName), size, slack.settings.inferFileLocation)
         } ?: urlPrivate.let {
-            Log.medium("File $id does not have the property url_private_download. Saving external link to '$formattedName'")
+            Log.low("File $id does not have the property url_private_download. Saving external link to '$formattedName'")
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")
+            return DownloadStatus.SUCCESS
         }
     }
 
@@ -82,3 +82,5 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
         val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH;mm")!!
     }
 }
+
+enum class DownloadStatus { SUCCESS, SUCCESS_OVERWRITE, ALREADY_EXISTED, LINK, FAILURE }
