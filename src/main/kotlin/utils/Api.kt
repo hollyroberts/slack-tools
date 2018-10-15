@@ -4,24 +4,28 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import slackjson.*
 
-object Api {
-    // URLs
-    private const val URL_CONVO_LIST = "https://slack.com/api/conversations.list"
-    private const val URL_FILES_INFO = "https://slack.com/api/files.info"
-    private const val URL_FILES_LIST = "https://slack.com/api/files.list"
-    private const val URL_USERS_LIST = "https://slack.com/api/users.list"
+class Api(val token: String) {
+    companion object {
+        // URLs
+        private const val URL_CONVO_LIST = "https://slack.com/api/conversations.list"
+        private const val URL_FILES_INFO = "https://slack.com/api/files.info"
+        private const val URL_FILES_LIST = "https://slack.com/api/files.list"
+        private const val URL_USERS_LIST = "https://slack.com/api/users.list"
 
-    // Limits
-    private const val CONVO_LIST_LIMIT = 100
-    private const val FILE_LIST_LIMIT = 100
-    private const val USERS_LIST_LIMIT = 100
+        // Limits
+        private const val CONVO_LIST_LIMIT = 100
+        private const val FILE_LIST_LIMIT = 100
+        private const val USERS_LIST_LIMIT = 100
 
-    // Rate limit times to wait (in s)
-    private const val RETRY_TIER_1 = 60
-    private const val RETRY_TIER_2 = 3
-    private const val RETRY_TIER_3 = 1
-    private const val RETRY_TIER_4 = 1
+        // Rate limit times to wait (in s)
+        private const val RETRY_TIER_1 = 60
+        private const val RETRY_TIER_2 = 3
+        private const val RETRY_TIER_3 = 1
+        private const val RETRY_TIER_4 = 1
+    }
 
+    private val http = Http(token)
+    
     val moshi = Moshi.Builder()
             .add(ProfileJsonAdapter)
             .add(ShareJsonAdapter)
@@ -71,7 +75,7 @@ object Api {
         Log.high("Retrieving list of files")
         val files = mutableListOf<ParsedFile>()
         do {
-            val response = (Http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
+            val response = (http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
             files.addAll(response.files)
 
             Log.medium("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
@@ -87,7 +91,7 @@ object Api {
     fun getFile(fileId: String) : ParsedFile {
         val params = mapOf("file" to fileId)
         val adapter = moshi.adapter(FileResponse::class.java)!!
-        val response = (Http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
+        val response = (http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
 
         return response.file
     }
@@ -121,10 +125,10 @@ object Api {
     /**
      * Calls an api method multiple times to go through all the results
      *
-     * @param url Data for Http.get
-     * @param adapter Data for Http.get
-     * @param params Data for Http.get
-     * @param retry Data for Http.get
+     * @param url Data for http.get
+     * @param adapter Data for http.get
+     * @param params Data for http.get
+     * @param retry Data for http.get
      *
      * @param postRequest Function to be called with response after each individual API request
      */
@@ -140,7 +144,7 @@ object Api {
 
         do {
             // Get converted response
-            val response = (Http.get(url, adapter, params, retry) as Result.Success).value!!
+            val response = (http.get(url, adapter, params, retry) as Result.Success).value!!
             postRequest.invoke(response)
 
             // Check cursor

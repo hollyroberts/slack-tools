@@ -12,7 +12,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
-class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
+class CompleteFile(sf: SlackFile, private val api: Api, infer: Boolean = true) : SlackFile {
     override val id = sf.id
     override val user = sf.user
     override val title = sf.title
@@ -44,7 +44,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
         resolveMultipleLocations(this)
     }
 
-    fun download(folder: Path, slack: SlackData) : DownloadStatus {
+    fun download(folder: Path, slack: SlackData, http: Http) : DownloadStatus {
         // Assemble file name
         val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC"))
         var formattedName = "[${dtf.format(datetime)}] - ${slack.getUsername(user)} - $title"
@@ -60,7 +60,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
 
         // Download
         urlPrivateDownload?.let {
-            return Http.downloadFile(it, folder.resolve(formattedName), size, slack.settings.inferFileLocation)
+            return http.downloadFile(it, folder.resolve(formattedName), size, slack.settings.inferFileLocation)
         } ?: urlPrivate.let {
             Log.low("File $id does not have the property url_private_download. Saving external link to '$formattedName'")
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")
@@ -74,7 +74,7 @@ class CompleteFile(sf: SlackFile, infer: Boolean = true) : SlackFile {
      * Returns id of channel that file was first seen in
      */
     private fun resolveMultipleLocations(cf: CompleteFile) : String? {
-        val pf = Api.getFile(cf.id)
+        val pf = api.getFile(cf.id)
         return pf.inferLocFromShares()
     }
 

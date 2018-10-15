@@ -14,15 +14,15 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
-object Http {
-    private val client = OkHttpClient()
-    var token: String? = null
+class Http(val token: String) {
+    companion object {
+        private const val RETRY_ATTEMPTS = 3
+    }
 
-    private const val RETRY_ATTEMPTS = 3
+    private val client = OkHttpClient()
 
     // Enums to indicate method response
     enum class GetStatus { SUCCESS, FAILURE, RATE_LIMITED }
-
 
     /**
      * Downloads a file
@@ -36,7 +36,7 @@ object Http {
             return DownloadStatus.ALREADY_EXISTED
         }
 
-        Log.low("Downloading: '$url' as '${saveLoc.fileName}'"
+        Log.medium("Downloading: '$url' as '${saveLoc.fileName}'"
             + if (size != null) " (${formatSize(size)})" else " (unknown size)")
 
         val request = Request.Builder()

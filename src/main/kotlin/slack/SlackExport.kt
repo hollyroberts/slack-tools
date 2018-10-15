@@ -13,7 +13,7 @@ class SlackExport private constructor() {
     companion object {
         fun loadFromFolder(folder: Path) : SlackExport {
             val dataType = Types.newParameterizedType(List::class.java, User::class.java)
-            val adapter: JsonAdapter<List<User>> = Api.moshi.adapter(dataType)!!
+            val adapter: JsonAdapter<List<User>> = Api("").moshi.adapter(dataType)!!
             val userList = loadJson(folder.resolve("users.json"), adapter)
             val userMap = userList.associateBy({it.id}, {it})
 

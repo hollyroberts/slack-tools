@@ -14,14 +14,14 @@ object Log {
     }
     val mode = Modes.MEDIUM
 
-    private fun log(mode: Modes, message: String) {
-        if (mode >= Log.mode) {
+    fun log(mode: Modes, message: String) {
+        /*if (mode >= Log.mode) {
             val msg = Http.token?.let {
                 message.replace(it, "T-O-K-E-N")
             } ?: message
-
-            println("[${mode.tag}] $msg")
-        }
+*/
+            println("[${mode.tag}] $message")
+        //}
     }
 
     fun debugLow(message: String) = log(Modes.DEBUG_LOW, message)

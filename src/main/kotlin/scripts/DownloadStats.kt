@@ -53,10 +53,10 @@ class DownloadStats {
         return msg
     }
 
-    fun log(location: String) {
+    fun log(location: String, logLevel: Log.Modes) {
         // Output information
         if (failures() == 0) {
-            Log.medium(getMessage(location))
+            Log.log(logLevel, getMessage(location))
         } else {
             Log.warn(getMessage(location))
         }

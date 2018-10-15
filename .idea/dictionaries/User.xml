@@ -2,6 +2,7 @@
   <dictionary name="User">
     <words>
       <w>ajalt</w>
+      <w>archiver</w>
       <w>clikt</w>
       <w>codegen</w>
       <w>convo</w>
@@ -14,6 +15,7 @@
       <w>okhttp</w>
       <w>squareup</w>
       <w>subcommands</w>
+      <w>userid</w>
     </words>
   </dictionary>
 </component>
