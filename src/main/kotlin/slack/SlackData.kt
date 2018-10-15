@@ -2,10 +2,11 @@
 
 package slack
 
+import scripts.DownloadStats
 import slackjson.*
-import utils.Api
-import utils.Http
 import utils.Log
+import utils.ensureFolderExists
+import java.nio.file.Path
 
 abstract class SlackData(val settings: Settings) {
     // Constants
@@ -71,5 +72,34 @@ abstract class SlackData(val settings: Settings) {
     // Data retrieval methods
     fun getUsername(userId: String?) = users[userId]?.name ?: "Unknown user"
     fun getConversationName(convoId: String?) = conversations[convoId]?.getFullName(this) ?: "Unknown conversation"
+
+    // Download methods
+    fun downloadFiles(outDir: Path) {
+        // Process conversations alphabetically
+        Log.high("Downloading files")
+        var downloadStats = DownloadStats()
+        filesByConvo.keys.sortedBy { getConversationName(it) }.forEach { convoID ->
+            val filesInConvo = filesByConvo[convoID]!!
+
+            // Get location to put files in
+            val convoName = getConversationName(convoID)
+            val convoFolder = outDir.resolve(convoName)
+
+            // Create folder if it doesn't exist
+            ensureFolderExists(convoFolder)
+
+            // Download files
+            val channelStats = DownloadStats()
+            Log.medium("Downloading ${filesInConvo.size} files from $convoName")
+            filesInConvo.sortedBy { it.timestamp }.forEach { file ->
+                channelStats.update(file.download(convoFolder, this))
+            }
+
+            channelStats.log(convoName)
+            downloadStats += channelStats
+        }
+
+        downloadStats.log("slack")
+    }
 }
 
