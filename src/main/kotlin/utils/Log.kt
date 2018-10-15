@@ -14,14 +14,26 @@ object Log {
     }
     val mode = Modes.MEDIUM
 
+    private val tokenSet = mutableSetOf<String>()
+
+    fun addToken(token: String) {
+        // Ignore any token below an arbitrary length. I think tokens are about 30 chars long
+        if (token.length > 10) {
+            tokenSet.add(token)
+        }
+    }
+
     fun log(mode: Modes, message: String) {
-        /*if (mode >= Log.mode) {
-            val msg = Http.token?.let {
-                message.replace(it, "T-O-K-E-N")
-            } ?: message
-*/
-            println("[${mode.tag}] $message")
-        //}
+        if (mode < Log.mode) {
+            return
+        }
+
+        var msg = message
+        for (token in tokenSet) {
+            msg = msg.replace(token, "T-O-K-E-N")
+        }
+
+        println("[${mode.tag}] $msg")
     }
 
     fun debugLow(message: String) = log(Modes.DEBUG_LOW, message)

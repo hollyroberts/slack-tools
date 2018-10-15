@@ -24,6 +24,11 @@ class Http(val token: String) {
     // Enums to indicate method response
     enum class GetStatus { SUCCESS, FAILURE, RATE_LIMITED }
 
+    init {
+        // Register token with Log
+        Log.addToken(token)
+    }
+
     /**
      * Downloads a file
      * @return Whether the operation was successful or not
