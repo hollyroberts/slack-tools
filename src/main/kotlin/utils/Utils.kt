@@ -1,10 +1,9 @@
 package utils
 
-import sun.plugin2.util.PojoUtil.toJson
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import okio.Buffer
+import java.nio.file.Path
 import java.text.DecimalFormat
 import kotlin.math.log
 import kotlin.math.max
@@ -52,4 +51,11 @@ fun formatSize(size: Long, precision: Int = 2) : String {
     val df = DecimalFormat("#.0" + "#".repeat(max(0, precision - 1)))
     val formattedSize = df.format(size / (1024.0).pow(exp))
     return "$formattedSize ${prefix}iB"
+}
+
+fun ensureFolderExists(location: Path) {
+    if (!location.toFile().exists()) {
+        Log.debugHigh("Creating directory ' ${location.fileName}'")
+        location.toFile().mkdir()
+    }
 }

@@ -2,6 +2,7 @@ import utils.Log
 import slack.SlackDataFromApi
 import slack.Settings
 import slackjson.DownloadStatus
+import utils.ensureFolderExists
 import java.nio.file.Paths
 
 fun main(args: Array<String>) {
@@ -22,10 +23,7 @@ fun main(args: Array<String>) {
         val convoFolder = outDir.resolve(convoName)
 
         // Create folder if it doesn't exist
-        if (!convoFolder.toFile().exists()) {
-            Log.debugHigh("Creating directory ' ${convoFolder.fileName}'")
-            convoFolder.toFile().mkdir()
-        }
+        ensureFolderExists(convoFolder)
 
         // Download files
         val channelStats = DownloadStats()
