@@ -2,6 +2,7 @@ package slackjson
 
 import com.squareup.moshi.*
 import com.squareup.moshi.JsonReader
+import utils.Http
 
 data class User(
         // Strings and profile
@@ -14,13 +15,14 @@ data class User(
         val is_bot: Boolean
 )
 
+@Suppress("unused")
 object ProfileJsonAdapter {
     /**
      * Takes a JsonReader representing a profile
      * @return a profile with display_name and map of images
      */
     @FromJson fun jsonToProfile(reader: JsonReader) : Profile {
-        var display_name: String? = null
+        var displayName: String? = null
         val images = mutableMapOf<String, String>()
 
         // Loop to iterate over and consume object
@@ -29,7 +31,7 @@ object ProfileJsonAdapter {
             val name = reader.nextName()
 
             when {
-                name == "display_name" -> display_name = reader.nextString()
+                name == "display_name" -> displayName = reader.nextString()
                 name.startsWith("image_") -> images[name.removePrefix("image_")] = reader.nextString()
                 else -> reader.skipValue()
             }
@@ -37,19 +39,19 @@ object ProfileJsonAdapter {
         reader.endObject()
 
         // Check that we've got what we want
-        if (display_name == null) {
+        if (displayName == null) {
             throw JsonDataException("No display_name for profile")
         }
         if (images.isEmpty()) {
             throw JsonDataException("No images found for profile")
         }
 
-        return Profile(display_name, images)
+        return Profile(displayName, images)
     }
 }
 
 data class Profile(
-        val display_name: String,
+        val displayName: String,
         val images: Map<String, String>
 ) {
 
