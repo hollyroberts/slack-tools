@@ -26,6 +26,10 @@
 build/
 out/
 
+# Note sure about this
+.idea/slack-tools.iml
+.idea/encodings.xml
+
 ##### Project
 
 ##### Random bits and bobs
