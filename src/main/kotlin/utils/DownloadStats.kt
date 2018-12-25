@@ -1,7 +1,6 @@
-package scripts
+package utils
 
-import slackjson.DownloadStatus
-import utils.Log
+enum class DownloadStatus { SUCCESS, SUCCESS_OVERWRITE, ALREADY_EXISTED, LINK, FAILURE }
 
 /**
  * Records occurrences of enum

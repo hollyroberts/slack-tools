@@ -2,11 +2,7 @@
 
 package slack
 
-import scripts.DownloadStats
 import slackjson.*
-import utils.Log
-import utils.ensureFolderExists
-import java.nio.file.Path
 
 abstract class SlackData(val settings: Settings) {
     // Raw data

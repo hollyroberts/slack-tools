@@ -2,6 +2,7 @@ package slackjson
 
 import slack.SlackData
 import utils.Api
+import utils.DownloadStatus
 import utils.Http
 import utils.Log
 import java.io.File
@@ -82,5 +83,3 @@ class CompleteFile(sf: SlackFile, private val api: Api, infer: Boolean = true) :
         val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH;mm")!!
     }
 }
-
-enum class DownloadStatus { SUCCESS, SUCCESS_OVERWRITE, ALREADY_EXISTED, LINK, FAILURE }

@@ -1,6 +1,6 @@
 package slack
 
-import scripts.DownloadStats
+import utils.DownloadStats
 import slackjson.CompleteFile
 import utils.Api
 import utils.Http
@@ -51,6 +51,7 @@ class SlackDataFromApi(private val token: String, settings: Settings) : SlackDat
     }
 
     // Download methods
+    // TODO move into SlackData, as this should be possible for both the API and export
     fun downloadFiles(outDir: Path) {
         // Process conversations alphabetically
         Log.high("Downloading files")

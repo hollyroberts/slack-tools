@@ -48,6 +48,7 @@ open class ParsedFile (
 
     /**
      * Infers the share location based on the timestamps provided by addLocationTimestamp
+     * Returns null if no timestamps were given
      */
     fun inferLocFromTimestamps() = custTimestamps.minBy { it.value }?.key
 
