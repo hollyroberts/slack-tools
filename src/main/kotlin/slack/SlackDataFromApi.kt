@@ -90,7 +90,7 @@ class SlackDataFromApi(private val token: String, settings: Settings) : SlackDat
             val url = avatarURLs[mapEntry.key]!!
             val saveLoc = outDir.resolve(mapEntry.value.name + guessImageExtFromURL(url))
 
-            http.downloadFile(url, saveLoc, ignoreIfExists = true)
+            http.downloadFile(url, saveLoc, ignoreIfExists = true, addAuthToken = false)
         }
 
         Log.high("Avatars downloaded")

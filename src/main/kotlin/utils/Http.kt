@@ -32,7 +32,7 @@ class Http(val token: String) {
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true) : DownloadStatus {
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true, addAuthToken: Boolean = true) : DownloadStatus {
         // Don't overwrite files
         val fileExists = saveLoc.toFile().exists()
         if (fileExists && ignoreIfExists) {
@@ -43,10 +43,9 @@ class Http(val token: String) {
         Log.medium("Downloading: '$url' as '${saveLoc.fileName}'"
             + if (size != null) " (${formatSize(size)})" else " (unknown size)")
 
-        val request = Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer $token")
-                .build()
+        val requestBuilder = Request.Builder().url(url)
+        if (addAuthToken) requestBuilder.addHeader("Authorization", "Bearer $token")
+        val request = requestBuilder.build()
 
         try {
             // Download file using GET request
