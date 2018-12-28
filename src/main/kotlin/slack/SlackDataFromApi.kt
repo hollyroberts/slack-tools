@@ -1,11 +1,10 @@
 package slack
 
-import utils.DownloadStats
 import slackjson.CompleteFile
-import utils.Api
-import utils.Http
-import utils.Log
-import utils.ensureFolderExists
+import utils.*
+import java.io.File
+import java.net.URL
+import java.net.URLConnection
 import java.nio.file.Path
 
 class SlackDataFromApi(private val token: String, settings: Settings) : SlackData(settings) {
@@ -16,7 +15,7 @@ class SlackDataFromApi(private val token: String, settings: Settings) : SlackDat
     override val conversations by lazy { api.getConversations() }
     override val filesParsed by lazy { api.getFiles() }
     override val users by lazy { api.getUsers() }
-    
+
     override val filesComplete by lazy {
         // Get files parsed first so we do things 'in order'
         val filesParsed = filesParsed
@@ -78,6 +77,23 @@ class SlackDataFromApi(private val token: String, settings: Settings) : SlackDat
         }
 
         downloadStats.log("slack", Log.Modes.HIGH)
+    }
+
+    fun downloadAvatars(outDir: Path, ignoreInactives: Boolean = true) {
+        ensureFolderExists(outDir)
+        val avatarURLs = users.mapValues { it.value.profile.getLargestImage() }
+        val http = Http(token)
+
+        // Process conversations alphabetically
+        Log.high("Downloading avatars")
+        users.entries.sortedBy { it.value.name }.forEach { mapEntry ->
+            val url = avatarURLs[mapEntry.key]!!
+            val saveLoc = outDir.resolve(mapEntry.value.name + guessImageExtFromURL(url))
+
+            http.downloadFile(url, saveLoc, ignoreIfExists = true)
+        }
+
+        Log.high("Avatars downloaded")
     }
 }
 

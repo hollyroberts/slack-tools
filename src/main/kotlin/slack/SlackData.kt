@@ -1,7 +1,6 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
 package slack
-
 import slackjson.*
 
 abstract class SlackData(val settings: Settings) {
@@ -31,7 +30,7 @@ abstract class SlackData(val settings: Settings) {
         return@lazy filesConvo.toMap()
     }
 
-    // Data retrieval methods
+    // Basic data retrieval methods
     fun getUsername(userId: String?) = users[userId]?.name ?: "Unknown user"
     fun getConversationName(convoId: String?) = conversations[convoId]?.getFullName(this) ?: "Unknown conversation"
 }

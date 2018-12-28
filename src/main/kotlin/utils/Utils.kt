@@ -3,6 +3,7 @@ package utils
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.JsonReader
 import okio.Buffer
+import java.net.URLConnection
 import java.nio.file.Path
 import java.text.DecimalFormat
 import kotlin.math.log
@@ -16,7 +17,7 @@ import kotlin.math.pow
  */
 @Suppress("unused")
 sealed class Result<out R> {
-    data class Success<out T>(val value: T) : Result<T>()
+    data class Success<out T>(val value: T): Result<T>()
     data class Failure(val msg: String)
 }
 
@@ -31,7 +32,7 @@ fun ordinal(number: Int): String {
 /**
  * Prettifies json string to be nicely indented
  */
-fun prettyFormat(json: String) : String {
+fun prettyFormat(json: String): String {
     val source = Buffer().writeUtf8(json)
     val reader = JsonReader.of(source)
     val value = reader.readJsonValue()
@@ -43,7 +44,7 @@ fun prettyFormat(json: String) : String {
  * Formats the size of the file into a human readable version
  * @param precision Number of decimal places to return (there will be at least 1)
  */
-fun formatSize(size: Long, precision: Int = 2) : String {
+fun formatSize(size: Long, precision: Int = 2): String {
     if (size < 1024) return "$size B"
     val exp = log(size.toDouble(), 1024.0).toInt()
     val prefix = "KMGTPE"[exp - 1]
@@ -53,9 +54,28 @@ fun formatSize(size: Long, precision: Int = 2) : String {
     return "$formattedSize ${prefix}iB"
 }
 
+/**
+ * If the folder doesn't exist, then create it
+ */
 fun ensureFolderExists(location: Path) {
     if (!location.toFile().exists()) {
         Log.debugHigh("Creating directory ' ${location.fileName}'")
         location.toFile().mkdir()
     }
+}
+
+/**
+ * Guess image extension from URL. Contains dot prefixed
+ * Converts to lowercase and also converts jpeg -> jpg
+ */
+fun guessImageExtFromURL(url: String): String {
+    val guess = URLConnection.guessContentTypeFromName(url) ?: return ""
+    if (!guess.startsWith("image/")) return ""
+
+    var filetype = guess.removePrefix("image/").toLowerCase()
+    if (filetype == "jpeg") {
+        filetype = "jpg"
+    }
+
+    return ".$filetype"
 }

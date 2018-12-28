@@ -7,7 +7,6 @@ import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import slackjson.DownloadStatus
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -57,7 +56,7 @@ class Http(val token: String) {
 
             Log.debugLow("Response code: $code")
             if (code != 200) {
-                Log.error("Code was not 200 when downloading file (given $code")
+                Log.error("Code was not 200 when downloading file (given $code)")
                 return DownloadStatus.FAILURE
             }
 
