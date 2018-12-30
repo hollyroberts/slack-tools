@@ -7,7 +7,7 @@ import java.net.URL
 import java.net.URLConnection
 import java.nio.file.Path
 
-class SlackDataFromApi(private val token: String, settings: Settings) : SlackData(settings) {
+class SlackWebApi(private val token: String, settings: Settings) : SlackData(settings) {
     private val LOCATION_INTERVAL = 3000
 
     private val api = Api(token)

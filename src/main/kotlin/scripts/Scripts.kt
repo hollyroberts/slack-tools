@@ -1,4 +1,4 @@
-import slack.SlackDataFromApi
+import slack.SlackWebApi
 import slack.Settings
 import java.nio.file.Paths
 
@@ -11,7 +11,7 @@ object Scripts {
         // Basic setup
         val token = args[0]
         val settings = Settings()
-        val slack = SlackDataFromApi(token, settings)
+        val slack = SlackWebApi(token, settings)
 
         slack.downloadAvatars(Paths.get("avatars"))
     }
@@ -20,7 +20,7 @@ object Scripts {
         // Basic setup
         val token = args[0]
         val settings = Settings()
-        val slack = SlackDataFromApi(token, settings)
+        val slack = SlackWebApi(token, settings)
 
         slack.downloadFiles(Paths.get("files"))
     }
