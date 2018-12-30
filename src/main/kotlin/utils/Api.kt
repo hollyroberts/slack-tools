@@ -61,13 +61,19 @@ class Api(val token: String) {
     /**
      * Returns a list of parsed files (which may be incomplete) in a time range
      */
-    fun getFiles(startTime: Int = 0, endTime: Int? = null) : List<ParsedFile> {
+    fun getFiles(startTime: Int = 0, endTime: Int? = null, channel: String? = null, user: String? = null) : List<ParsedFile> {
         val params = mutableMapOf(
                 "page" to "1",
                 "count" to FILE_LIST_LIMIT.toString(),
                 "start_ts" to startTime.toString(),
                 "end_ts" to (endTime?.toString() ?: "now")
         )
+        channel?.let {
+            params["channel"] = it
+        }
+        user?.let {
+            params["user"] = it
+        }
         val adapter = moshi.adapter(FileListResponse::class.java)!!
 
 

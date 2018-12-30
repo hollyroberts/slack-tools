@@ -102,8 +102,3 @@ class SlackWebApi(private val token: String, settings: Settings) : SlackData(set
         Log.high("Avatars downloaded")
     }
 }
-
-data class Settings(
-        val inferFileLocation: Boolean = true,
-        val ignoreDownloadedFiles: Boolean = true
-)

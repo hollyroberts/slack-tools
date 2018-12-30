@@ -35,3 +35,7 @@ abstract class SlackData(val settings: Settings) {
     fun getConversationName(convoId: String?) = conversations[convoId]?.getFullName(this) ?: "Unknown conversation"
 }
 
+data class Settings(
+        val inferFileLocation: Boolean = true,
+        val ignoreDownloadedFiles: Boolean = true
+)

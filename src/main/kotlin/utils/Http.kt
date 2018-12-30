@@ -23,8 +23,8 @@ class Http(val token: String) {
     // Enums to indicate method response
     enum class GetStatus { SUCCESS, FAILURE, RATE_LIMITED }
 
+    // Register token with Log
     init {
-        // Register token with Log
         Log.addToken(token)
     }
 
