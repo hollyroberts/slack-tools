@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.2.71"
-    kotlin("kapt") version "1.2.71"
+    kotlin("jvm") version "1.3.10"
+    kotlin("kapt") version "1.3.10"
 }
 
 version = "0.1-DEV"
@@ -14,12 +14,12 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
-    compile("com.squareup.okhttp3:okhttp:3.11.0")
-    compile("com.github.ajalt:clikt:1.4.0")
+    compile("com.squareup.okhttp3:okhttp:3.12.1")
+    compile("com.github.ajalt:clikt:1.5.0")
 
-    compile("com.squareup.moshi:moshi:1.7.0")
-    compile("com.squareup.moshi:moshi-kotlin:1.7.0")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.7.0")
+    compile("com.squareup.moshi:moshi:1.8.0")
+    compile("com.squareup.moshi:moshi-kotlin:1.8.0")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.8.0")
 
     testCompile("junit", "junit", "4.12")
 }
