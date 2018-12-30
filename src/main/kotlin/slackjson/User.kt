@@ -2,7 +2,6 @@ package slackjson
 
 import com.squareup.moshi.*
 import com.squareup.moshi.JsonReader
-import utils.Http
 
 data class User(
         // Strings and profile
@@ -12,6 +11,7 @@ data class User(
         val profile: Profile,
 
         // Booleans
+        val deleted: Boolean,
         val is_bot: Boolean
 )
 
