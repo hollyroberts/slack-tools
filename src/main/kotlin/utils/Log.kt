@@ -12,6 +12,7 @@ object Log {
         WARN("WARN"),
         ERROR("ERROR")
     }
+    @Suppress("MemberVisibilityCanBePrivate")
     val mode = Modes.MEDIUM
 
     private val tokenSet = mutableSetOf<String>()

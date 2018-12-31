@@ -13,12 +13,12 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
-class Http() {
+class Http {
     companion object {
         private const val RETRY_ATTEMPTS = 3
     }
 
-    val client = OkHttpClient()
+    private val client = OkHttpClient()
 
     // Enums to indicate method response
     enum class GetStatus { SUCCESS, FAILURE, RATE_LIMITED }

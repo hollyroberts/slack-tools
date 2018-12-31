@@ -7,7 +7,7 @@ import utils.ensureFolderExists
 import utils.guessImageExtFromURL
 import java.nio.file.Path
 
-class Avatars(val users: Map<String, User>) {
+class Avatars(private val users: Map<String, User>) {
     fun downloadAvatars(outDir: Path, ignoreDeleted: Boolean = true, ignoreBots: Boolean = true) {
         ensureFolderExists(outDir)
         val avatarURLs = users.mapValues { it.value.profile.getLargestImage() }

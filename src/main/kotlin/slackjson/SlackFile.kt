@@ -1,10 +1,5 @@
 package slackjson
 
-import java.text.DecimalFormat
-import kotlin.math.log
-import kotlin.math.max
-import kotlin.math.pow
-
 interface SlackFile {
     // Identification
     val id: String

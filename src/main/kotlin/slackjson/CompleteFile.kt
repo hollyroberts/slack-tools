@@ -1,10 +1,9 @@
 package slackjson
 
 import slack.SlackData
-import utils.WebApi
 import utils.DownloadStatus
-import utils.Http
 import utils.Log
+import utils.WebApi
 import java.io.File
 import java.nio.file.Path
 import java.time.Instant

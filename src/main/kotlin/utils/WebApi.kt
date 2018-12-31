@@ -2,14 +2,10 @@ package utils
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-import okhttp3.Request
 import slackjson.*
-import java.io.IOException
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 
-class WebApi(val token: String) {
+class WebApi(private val token: String) {
     companion object {
         // URLs
         private const val URL_CONVO_LIST = "https://slack.com/api/conversations.list"

@@ -4,10 +4,13 @@ import slackjson.CompleteFile
 import utils.*
 import java.nio.file.Path
 
-class SlackWebApi(private val token: String, settings: Settings) : SlackData(settings) {
+class SlackWebApi(token: String, settings: Settings) : SlackData(settings) {
     private val LOCATION_INTERVAL = 3000
-
     private val api = WebApi(token)
+
+    init {
+        Log.addToken(token)
+    }
     
     override val conversations by lazy { api.getConversations() }
     override val filesParsed by lazy { api.getFiles() }
@@ -74,7 +77,4 @@ class SlackWebApi(private val token: String, settings: Settings) : SlackData(set
 
         downloadStats.log("slack", Log.Modes.HIGH)
     }
-
-    // TODO move into SlackData, as this should be possible for both the API and export
-
 }
