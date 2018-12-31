@@ -65,7 +65,7 @@ class SlackWebApi(private val token: String, settings: Settings) : SlackData(set
             val channelStats = DownloadStats()
             Log.high("Downloading ${filesInConvo.size} files from $convoName")
             filesInConvo.sortedBy { it.timestamp }.forEach { file ->
-                channelStats.update(file.download(convoFolder, this, Http(token)))
+                channelStats.update(file.download(convoFolder, this, api))
             }
 
             channelStats.log(convoName, Log.Modes.HIGH)
@@ -76,25 +76,5 @@ class SlackWebApi(private val token: String, settings: Settings) : SlackData(set
     }
 
     // TODO move into SlackData, as this should be possible for both the API and export
-    fun downloadAvatars(outDir: Path, ignoreDeleted: Boolean = true, ignoreBots: Boolean = true) {
-        ensureFolderExists(outDir)
-        val avatarURLs = users.mapValues { it.value.profile.getLargestImage() }
-        val http = Http(token)
 
-        Log.high("Downloading avatars")
-
-        // Filter users to process, then sort alphabetically
-        users.entries.filter { mapEntry ->
-            if (ignoreDeleted && mapEntry.value.deleted) {
-                false
-            } else !(ignoreBots && mapEntry.value.is_bot)
-        }.sortedBy { it.value.name }.forEach { mapEntry ->
-            val url = avatarURLs[mapEntry.key]!!
-            val saveLoc = outDir.resolve(mapEntry.value.name + guessImageExtFromURL(url))
-
-            http.downloadFile(url, saveLoc, ignoreIfExists = true, addAuthToken = false)
-        }
-
-        Log.high("Avatars downloaded")
-    }
 }

@@ -29,7 +29,7 @@ class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile {
     override val groups = sf.groups
     override val ims = sf.ims
 
-    fun download(folder: Path, slack: SlackData, http: Http) : DownloadStatus {
+    fun download(folder: Path, slack: SlackData, webApi: WebApi) : DownloadStatus {
         // Assemble file name
         val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC"))
         var formattedName = "[${dtf.format(datetime)}] - ${slack.getUsername(user)} - $title"
@@ -45,7 +45,7 @@ class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile {
 
         // Download
         urlPrivateDownload?.let {
-            return http.downloadFile(it, folder.resolve(formattedName), size, slack.settings.inferFileLocation)
+            return webApi.downloadFile(it, folder.resolve(formattedName), size, slack.settings.inferFileLocation)
         } ?: urlPrivate.let {
             Log.low("File $id does not have the property url_private_download. Saving external link to '$formattedName'")
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")

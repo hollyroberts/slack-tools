@@ -13,26 +13,21 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
-class Http(val token: String) {
+class Http() {
     companion object {
         private const val RETRY_ATTEMPTS = 3
     }
 
-    private val client = OkHttpClient()
+    val client = OkHttpClient()
 
     // Enums to indicate method response
     enum class GetStatus { SUCCESS, FAILURE, RATE_LIMITED }
-
-    // Register token with Log
-    init {
-        Log.addToken(token)
-    }
 
     /**
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true, addAuthToken: Boolean = true) : DownloadStatus {
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true, authToken: String? = null) : DownloadStatus {
         // Don't overwrite files
         val fileExists = saveLoc.toFile().exists()
         if (fileExists && ignoreIfExists) {
@@ -41,10 +36,10 @@ class Http(val token: String) {
         }
 
         Log.medium("Downloading: '$url' as '${saveLoc.fileName}'"
-            + if (size != null) " (${formatSize(size)})" else " (unknown size)")
+                + if (size != null) " (${formatSize(size)})" else " (unknown size)")
 
         val requestBuilder = Request.Builder().url(url)
-        if (addAuthToken) requestBuilder.addHeader("Authorization", "Bearer $token")
+        if (authToken != null) requestBuilder.addHeader("Authorization", "Bearer $authToken")
         val request = requestBuilder.build()
 
         try {
@@ -115,7 +110,6 @@ class Http(val token: String) {
     private fun <T : SlackResponse> getInternal(url: String, adapter: JsonAdapter<T>, params: Map<String, String>): Pair<GetStatus, T?> {
         // Add params to url (including token)
         val httpUrl = HttpUrl.parse(url)!!.newBuilder()
-        httpUrl.addQueryParameter("token", token)
         params.forEach { key, value ->
             httpUrl.addQueryParameter(key, value)
         }

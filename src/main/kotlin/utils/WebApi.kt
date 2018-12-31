@@ -2,7 +2,12 @@ package utils
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import okhttp3.Request
 import slackjson.*
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 class WebApi(val token: String) {
     companion object {
@@ -24,7 +29,7 @@ class WebApi(val token: String) {
         private const val RETRY_TIER_4 = 1
     }
 
-    private val http = Http(token)
+    private val http = Http()
     
     val moshi = Moshi.Builder()
             .add(ProfileJsonAdapter)
@@ -32,11 +37,19 @@ class WebApi(val token: String) {
             .build()!!
 
     /**
+     * Equivalent to Http.downloadFile, but manages token for us
+     */
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true) : DownloadStatus {
+        return http.downloadFile(url, saveLoc, size, ignoreIfExists)
+    }
+
+    /**
      * Returns a map conversations (channels, groups, ims). Key is conversation id
      */
     fun getConversations() : Map<String, Conversation> {
         val convos = mutableMapOf<String, Conversation>()
         val params = mutableMapOf(
+                "token" to token,
                 "limit" to CONVO_LIST_LIMIT.toString(),
                 "types" to "public_channel, private_channel, im",
                 "cursor" to "")
@@ -63,6 +76,7 @@ class WebApi(val token: String) {
      */
     fun getFiles(startTime: Int = 0, endTime: Int? = null, channel: String? = null, user: String? = null) : List<ParsedFile> {
         val params = mutableMapOf(
+                "token" to token,
                 "page" to "1",
                 "count" to FILE_LIST_LIMIT.toString(),
                 "start_ts" to startTime.toString(),
@@ -96,7 +110,9 @@ class WebApi(val token: String) {
      * TODO make it a complete file
      */
     fun getFile(fileId: String) : ParsedFile {
-        val params = mapOf("file" to fileId)
+        val params = mapOf(
+                "token" to token,
+                "file" to fileId)
         val adapter = moshi.adapter(FileResponse::class.java)!!
         val response = (http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
 
@@ -110,6 +126,7 @@ class WebApi(val token: String) {
     fun getUsers() : Map<String, User> {
         val userMap = mutableMapOf<String, User>()
         val params = mutableMapOf(
+                "token" to token,
                 "limit" to USERS_LIST_LIMIT.toString(),
                 "cursor" to "")
         val adapter = moshi.adapter(UserListResponse::class.java)!!
