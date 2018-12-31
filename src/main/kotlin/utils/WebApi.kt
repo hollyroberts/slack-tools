@@ -4,7 +4,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import slackjson.*
 
-class Api(val token: String) {
+class WebApi(val token: String) {
     companion object {
         // URLs
         private const val URL_CONVO_LIST = "https://slack.com/api/conversations.list"
@@ -93,6 +93,7 @@ class Api(val token: String) {
 
     /**
      * Returns a file from id (files.info)
+     * TODO make it a complete file
      */
     fun getFile(fileId: String) : ParsedFile {
         val params = mapOf("file" to fileId)

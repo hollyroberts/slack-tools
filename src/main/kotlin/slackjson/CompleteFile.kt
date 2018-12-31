@@ -1,7 +1,7 @@
 package slackjson
 
 import slack.SlackData
-import utils.Api
+import utils.WebApi
 import utils.DownloadStatus
 import utils.Http
 import utils.Log
@@ -13,7 +13,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
-class CompleteFile(sf: SlackFile, private val api: Api, infer: Boolean = true) : SlackFile {
+class CompleteFile(sf: SlackFile, private val webApi: WebApi, infer: Boolean = true) : SlackFile {
     override val id = sf.id
     override val user = sf.user
     override val title = sf.title
@@ -75,7 +75,7 @@ class CompleteFile(sf: SlackFile, private val api: Api, infer: Boolean = true) :
      * Returns id of channel that file was first seen in
      */
     private fun resolveMultipleLocations(cf: CompleteFile) : String? {
-        val pf = api.getFile(cf.id)
+        val pf = webApi.getFile(cf.id)
         return pf.inferLocFromShares()
     }
 

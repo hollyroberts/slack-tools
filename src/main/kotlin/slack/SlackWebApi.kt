@@ -2,15 +2,12 @@ package slack
 
 import slackjson.CompleteFile
 import utils.*
-import java.io.File
-import java.net.URL
-import java.net.URLConnection
 import java.nio.file.Path
 
 class SlackWebApi(private val token: String, settings: Settings) : SlackData(settings) {
     private val LOCATION_INTERVAL = 3000
 
-    private val api = Api(token)
+    private val api = WebApi(token)
     
     override val conversations by lazy { api.getConversations() }
     override val filesParsed by lazy { api.getFiles() }
