@@ -13,7 +13,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
-class CompleteFile(sf: SlackFile, private val webApi: WebApi, infer: Boolean = true) : SlackFile {
+class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile {
     override val id = sf.id
     override val user = sf.user
     override val title = sf.title
@@ -28,22 +28,6 @@ class CompleteFile(sf: SlackFile, private val webApi: WebApi, infer: Boolean = t
     override val channels = sf.channels
     override val groups = sf.groups
     override val ims = sf.ims
-
-    val uploadLoc = if (infer) {
-        when {
-            channelsUploadedIn() == 1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
-            channelsUploadedIn() == 0 -> {
-                Log.warn("File $id belongs to no channels")
-                null
-            }
-            else -> {
-                Log.debugHigh("File $id belongs to more than one channel, requires API call to resolve")
-                resolveMultipleLocations(this)
-            }
-        }
-    } else {
-        resolveMultipleLocations(this)
-    }
 
     fun download(folder: Path, slack: SlackData, http: Http) : DownloadStatus {
         // Assemble file name
@@ -67,16 +51,6 @@ class CompleteFile(sf: SlackFile, private val webApi: WebApi, infer: Boolean = t
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")
             return DownloadStatus.LINK
         }
-    }
-
-    /**
-     * Parsed files can have multiple channels, we want to figure out where it was shared to first
-     * Used during initialisation
-     * Returns id of channel that file was first seen in
-     */
-    private fun resolveMultipleLocations(cf: CompleteFile) : String? {
-        val pf = webApi.getFile(cf.id)
-        return pf.inferLocFromShares()
     }
 
     companion object {

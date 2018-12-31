@@ -23,10 +23,9 @@ class SlackWebApi(private val token: String, settings: Settings) : SlackData(set
 
         // Iterate over objects, create map of file id to file objects
         val files = mutableMapOf<String, CompleteFile>()
-        for ((index, obj) in filesParsed.withIndex()) {
-            // Cast file and add to list
-            val cf = CompleteFile(obj, api, true)
-            files[cf.id] = cf
+        for ((index, pf) in filesParsed.withIndex()) {
+            // Convert file to complete file
+            files[pf.id] = pf.toCompleteFileByInference(api)
 
             // Print out how many objects have been processed
             if (System.currentTimeMillis() > nextOutputTime) {

@@ -1,6 +1,8 @@
 package slackjson
 
 import com.squareup.moshi.*
+import utils.Log
+import utils.WebApi
 import kotlin.math.min
 
 @JsonClass(generateAdapter = true)
@@ -50,12 +52,52 @@ open class ParsedFile (
      * Infers the share location based on the timestamps provided by addLocationTimestamp
      * Returns null if no timestamps were given
      */
-    fun inferLocFromTimestamps() = custTimestamps.minBy { it.value }?.key
+    private fun inferLocFromTimestamps() = custTimestamps.minBy { it.value }?.key
 
     /**
      * If API call returned shared data then this is the most accurate way to infer where the file was uploaded
+     * However files.list does not return this data, only files.info
      */
-    fun inferLocFromShares() = shares?.firstSeen?.minBy { it.value }?.key
+    private fun inferLocFromShares() = shares?.firstSeen?.minBy { it.value }?.key
+
+    /**
+     * Gets the exact upload location by querying a single file
+     */
+    private fun getLocationFromApi(webApi: WebApi) = webApi.getFile(this.id).inferLocFromShares()
+
+    /**
+     * Returns a new complete file instance
+     * The upload location is based upon the earliest timestamp given
+     */
+    fun toCompleteFileFromTimestamps() = CompleteFile(this, inferLocFromTimestamps())
+
+    /**
+     * Returns a new complete file instance
+     * Infers location based on share locations. This could be inaccurate if the message was deleted but not the file and then shared elsewhere
+     * However in most cases we wouldn't be able to figure out it's location anyway
+     */
+    fun toCompleteFileByInference(webApi: WebApi) : CompleteFile {
+        val location = inferLocFromShares() ?: when {
+            channelsUploadedIn() == 1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
+            channelsUploadedIn() == 0 -> {
+                Log.warn("File $id belongs to no channels")
+                null
+            } else -> {
+                Log.debugHigh("File $id belongs to more than one channel, requires API call to resolve")
+                webApi.getFile(this.id).inferLocFromShares()
+            }
+        }
+
+        return CompleteFile(this, location)
+    }
+
+    /**
+     * Returns a new complete file instance with the most accurate location possible
+     */
+    fun toCompleteFileFromApi(webApi: WebApi) : CompleteFile {
+        val location = webApi.getFile(this.id).inferLocFromShares()
+        return CompleteFile(this, location)
+    }
 }
 
 object ShareJsonAdapter {
