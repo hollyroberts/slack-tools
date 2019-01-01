@@ -26,11 +26,14 @@ class WebApi(private val token: String) {
     }
 
     private val http = Http()
-    
     val moshi = Moshi.Builder()
             .add(ProfileJsonAdapter)
             .add(ShareJsonAdapter)
             .build()!!
+
+    init {
+        Log.addToken(token)
+    }
 
     /**
      * Equivalent to Http.downloadFile, but manages token for us

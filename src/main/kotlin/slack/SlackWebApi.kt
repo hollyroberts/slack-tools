@@ -7,10 +7,6 @@ import java.nio.file.Path
 class SlackWebApi(token: String, settings: Settings) : SlackData(settings) {
     private val LOCATION_INTERVAL = 3000
     private val api = WebApi(token)
-
-    init {
-        Log.addToken(token)
-    }
     
     override val conversations by lazy { api.getConversations() }
     override val filesParsed by lazy { api.getFiles() }
