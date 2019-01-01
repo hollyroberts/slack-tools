@@ -13,6 +13,7 @@ open class ParsedFile (
         override val title: String,
 
         // Metadata
+        override val mode: String,
         override val filetype: String,
         override val size: Long,
         @Json(name = "created")
@@ -30,7 +31,7 @@ open class ParsedFile (
 
         // Non inherited properties
         val shares: FileShare?
-) : SlackFile {
+) : SlackFile() {
     @Transient
     private val custTimestamps = mutableMapOf<String, Double>()
 

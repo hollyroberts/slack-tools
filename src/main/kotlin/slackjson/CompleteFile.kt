@@ -12,11 +12,12 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
-class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile {
+class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile() {
     override val id = sf.id
     override val user = sf.user
     override val title = sf.title
 
+    override val mode = sf.mode
     override val filetype = sf.filetype
     override val size = sf.size
     override val timestamp = sf.timestamp
