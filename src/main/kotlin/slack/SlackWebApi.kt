@@ -43,34 +43,4 @@ class SlackWebApi(token: String, settings: Settings) : SlackData(settings) {
 
         return@lazy files.toMap()
     }
-
-    // Download methods
-    // TODO move into SlackData, as this should be possible for both the API and export
-    fun downloadFiles(outDir: Path) {
-        // Process conversations alphabetically
-        Log.high("Downloading files")
-        var downloadStats = DownloadStats()
-        filesByConvo.keys.sortedBy { getConversationName(it) }.forEach { convoID ->
-            val filesInConvo = filesByConvo[convoID]!!
-
-            // Get location to put files in
-            val convoName = getConversationName(convoID)
-            val convoFolder = outDir.resolve(convoName)
-
-            // Create folder if it doesn't exist
-            ensureFolderExists(convoFolder)
-
-            // Download files
-            val channelStats = DownloadStats()
-            Log.high("Downloading ${filesInConvo.size} files from $convoName")
-            filesInConvo.sortedBy { it.timestamp }.forEach { file ->
-                channelStats.update(file.download(convoFolder, this, api))
-            }
-
-            channelStats.log(convoName, Log.Modes.HIGH)
-            downloadStats += channelStats
-        }
-
-        downloadStats.log("slack", Log.Modes.HIGH)
-    }
 }

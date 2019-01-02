@@ -13,6 +13,7 @@ object Scripts {
         val settings = Settings()
         val slack = SlackWebApi(token, settings)
 
+        // TODO
         // slack.downloadAvatars(Paths.get("avatars"))
     }
 
@@ -22,6 +23,7 @@ object Scripts {
         val settings = Settings()
         val slack = SlackWebApi(token, settings)
 
-        slack.downloadFiles(Paths.get("files"))
+        // TODO
+        // slack.downloadFiles(Paths.get("files"))
     }
 }
