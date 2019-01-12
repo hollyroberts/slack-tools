@@ -39,7 +39,7 @@ class WebApi(private val token: String) {
      * Equivalent to Http.downloadFile, but manages token for us
      */
     fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true) : DownloadStatus {
-        return http.downloadFile(url, saveLoc, size, ignoreIfExists)
+        return http.downloadFile(url, saveLoc, size, ignoreIfExists, token)
     }
 
     /**
