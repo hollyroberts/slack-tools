@@ -1,5 +1,6 @@
 import slack.SlackWebApi
 import slack.Settings
+import slack.Avatars
 import java.nio.file.Paths
 
 fun main(args: Array<String>) {
@@ -14,7 +15,7 @@ object Scripts {
         val slack = SlackWebApi(token, settings)
 
         // TODO
-        // slack.downloadAvatars(Paths.get("avatars"))
+        Avatars(slack).downloadAvatars(Paths.get("avatars"))
     }
 
     fun downloadFiles(args: Array<String>) {

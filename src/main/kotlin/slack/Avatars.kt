@@ -8,6 +8,8 @@ import utils.guessImageExtFromURL
 import java.nio.file.Path
 
 class Avatars(private val users: Map<String, User>) {
+    constructor(slackWebApi: SlackWebApi) : this(slackWebApi.users)
+
     fun downloadAvatars(outDir: Path, ignoreDeleted: Boolean = true, ignoreBots: Boolean = true) {
         ensureFolderExists(outDir)
         val avatarURLs = users.mapValues { it.value.profile.getLargestImage() }
