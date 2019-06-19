@@ -6,6 +6,7 @@ import java.nio.file.Path
 
 class SlackWebApi(token: String, settings: Settings) : SlackData(settings) {
     private val LOCATION_INTERVAL = 3000
+
     private val api = WebApi(token)
     
     override val conversations by lazy { api.getConversations() }
@@ -16,6 +17,7 @@ class SlackWebApi(token: String, settings: Settings) : SlackData(settings) {
         // Get files parsed first so we do things 'in order'
         val filesParsed = filesParsed
 
+        // Start timer
         Log.high("Locating upload location of files (this may take a while, especially if inference is disabled)")
         val startTime = System.currentTimeMillis()
         var nextOutputTime = startTime + LOCATION_INTERVAL
