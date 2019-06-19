@@ -33,7 +33,7 @@ class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile() {
     fun download(folder: Path, slack: SlackData, webApi: WebApi?) : DownloadStatus {
         // Assemble file name
         val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC"))
-        var formattedName = "[${dtf.format(datetime)}] - ${slack.getUsername(user)} - $title"
+        var formattedName = "[${dtf.format(datetime)}] - ${slack.getUserUsername(user)} - $title"
 
         // Strip out/replace illegal chars
         formattedName = Regex("""[/*?"<>|]""").replace(formattedName, "")

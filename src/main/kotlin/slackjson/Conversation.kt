@@ -47,7 +47,11 @@ class Conversation(
         return if (isChannel || isGroup) {
             "#$name"
         } else {
-            "@${slack.getUsername(user)}"
+            return if (slack.settings.useProfileNamesForConversationNames) {
+                "@${slack.getUserProfilename(user)}"
+            } else {
+                "@${slack.getUserUsername(user)}"
+            }
         }
     }
 }

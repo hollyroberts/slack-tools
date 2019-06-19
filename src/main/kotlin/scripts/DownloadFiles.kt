@@ -1,13 +1,9 @@
 package scripts
 
-import slack.Settings
-import slack.SlackWebApi
-import slack.toCompleteFiles
+import slack.*
 import utils.Log
 import java.nio.file.Paths
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
 
 fun main(args: Array<String>) {
     // Basic setup
@@ -20,7 +16,8 @@ fun main(args: Array<String>) {
     println(Instant.now().minusSeconds(86_400).epochSecond)
 
     val parsedFiles = slack.api.getFiles(startTime = Instant.now().minusSeconds(86_400).epochSecond)
-    val completeFiles = parsedFiles.toCompleteFiles(slack)
+    val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
+    completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
 
     // slack.downloadFiles(Paths.get("files"))
 }
