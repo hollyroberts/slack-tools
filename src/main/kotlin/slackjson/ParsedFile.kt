@@ -85,7 +85,7 @@ open class ParsedFile (
                 null
             } else -> {
                 Log.debugHigh("File $id belongs to more than one channel, requires API call to resolve")
-                webApi.getFile(this.id).inferLocFromShares()
+                getLocationFromApi(webApi)
             }
         }
 
