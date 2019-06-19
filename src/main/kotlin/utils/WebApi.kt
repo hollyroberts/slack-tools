@@ -78,9 +78,11 @@ class WebApi(private val token: String) {
                 "token" to token,
                 "page" to "1",
                 "count" to FILE_LIST_LIMIT.toString(),
-                "ts_from" to startTime.toString(),
-                "ts_to" to (endTime?.toString() ?: "now")
+                "ts_from" to startTime.toString()
         )
+        endTime?.let {
+            params["ts_to"] = it.toString()
+        }
         channel?.let {
             params["channel"] = it
         }

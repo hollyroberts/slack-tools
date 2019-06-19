@@ -3,6 +3,7 @@ package scripts
 import slack.Settings
 import slack.SlackWebApi
 import slack.toCompleteFiles
+import utils.Log
 import java.nio.file.Paths
 import java.time.Instant
 import java.time.LocalDateTime
@@ -10,6 +11,7 @@ import java.time.ZonedDateTime
 
 fun main(args: Array<String>) {
     // Basic setup
+    Log.mode = Log.Modes.LOW
     val token = args[0]
     val settings = Settings()
     val slack = SlackWebApi(token, settings)
