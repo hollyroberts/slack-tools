@@ -8,14 +8,15 @@ import utils.WebApi
 import utils.ensureFolderExists
 import java.nio.file.Path
 
-fun List<ParsedFile>.toCompleteFiles(slackWebApi: SlackWebApi) : Map<String, CompleteFile> {
-    @Suppress("LocalVariableName")
-    val LOCATION_INTERVAL = 3000
+private object Files {
+    const val LOCATION_INTERVAL = 3000
+}
 
+fun List<ParsedFile>.toCompleteFiles(slackWebApi: SlackWebApi) : Map<String, CompleteFile> {
     // Start timer
     Log.high("Locating upload location of files (this may take a while, especially if inference is disabled)")
     val startTime = System.currentTimeMillis()
-    var nextOutputTime = startTime + LOCATION_INTERVAL
+    var nextOutputTime = startTime + Files.LOCATION_INTERVAL
 
     // Iterate over objects, create map of file id to file objects
     val files = mutableMapOf<String, CompleteFile>()
@@ -26,13 +27,13 @@ fun List<ParsedFile>.toCompleteFiles(slackWebApi: SlackWebApi) : Map<String, Com
         // Print out how many objects have been processed
         if (System.currentTimeMillis() > nextOutputTime) {
             Log.medium("Processed ${index + 1}/${files.size} files")
-            nextOutputTime = System.currentTimeMillis() + LOCATION_INTERVAL
+            nextOutputTime = System.currentTimeMillis() + Files.LOCATION_INTERVAL
         }
     }
 
     // Output timed messages if took more than LOCATION_INTERVAL
     val timeTaken = System.currentTimeMillis() - startTime
-    if (timeTaken > LOCATION_INTERVAL) {
+    if (timeTaken > Files.LOCATION_INTERVAL) {
         Log.high(String.format("Located the upload location of all files in %,.1f seconds", timeTaken.toFloat() / 1000))
     } else {
         Log.medium("Files located")
