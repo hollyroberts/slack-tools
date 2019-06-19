@@ -110,7 +110,7 @@ class Http {
     private fun <T : SlackResponse> getInternal(url: String, adapter: JsonAdapter<T>, params: Map<String, String>): Pair<GetStatus, T?> {
         // Add params to url (including token)
         val httpUrl = HttpUrl.parse(url)!!.newBuilder()
-        params.forEach { key, value ->
+        params.forEach { (key, value) ->
             httpUrl.addQueryParameter(key, value)
         }
 
@@ -121,7 +121,7 @@ class Http {
 
         // Send request
         try {
-            Log.debugHigh("GET '" + httpUrl.toString() + "'")
+            Log.debugHigh("GET '$httpUrl'")
             client.newCall(request).execute().use {
                 return processResponse(it, adapter, url)
             }
