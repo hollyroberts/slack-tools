@@ -15,7 +15,7 @@ repositories {
 dependencies {
     compile(kotlin("stdlib-jdk8"))
     compile("com.squareup.okhttp3:okhttp:3.14.2")
-    compile("com.github.ajalt:clikt:1.5.0")
+    compile("com.github.ajalt:clikt:2.0.0")
 
     compile("com.squareup.moshi:moshi:1.8.0")
     compile("com.squareup.moshi:moshi-kotlin:1.8.0")

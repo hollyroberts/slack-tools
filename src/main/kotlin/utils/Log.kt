@@ -17,9 +17,21 @@ object Log {
 
     private val tokenSet = mutableSetOf<String>()
 
+    fun argStringMap() : LinkedHashMap<String, Modes> {
+        val values = Modes.values().map{ it.name.replace("_", "-") to it }
+        return linkedMapOf(*values.toTypedArray())
+    }
+
+    /**
+     * Add a 'token' to the token set
+     * Every instance of the token will be replaced with 'T-O-K-E-N' when encountered in logging
+     * Used to remove sensitive information from logs
+     *
+     * Note that if the token is too small (eg. length less than 10) then it is not added to the set
+     */
     fun addToken(token: String) {
         // Ignore any token below an arbitrary length. I think tokens are about 30 chars long
-        if (token.length > 10) {
+        if (token.length >= 10) {
             tokenSet.add(token)
         }
     }

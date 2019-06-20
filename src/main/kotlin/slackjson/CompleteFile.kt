@@ -56,7 +56,7 @@ class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile() {
                         Http().downloadFile(it, folder.resolve(formattedName), size, slack.settings.ignoreDownloadedFiles)
                     }
         } ?: urlPrivate.let {
-            Log.low("File $id does not have the property url_private_download. Saving external link to '$formattedName'")
+            Log.low("File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'")
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")
             return DownloadStatus.LINK
         }
