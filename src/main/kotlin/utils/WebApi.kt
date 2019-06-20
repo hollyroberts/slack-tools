@@ -26,6 +26,7 @@ class WebApi(private val token: String) {
     }
 
     private val http = Http()
+
     val moshi = Moshi.Builder()
             .add(ProfileJsonAdapter)
             .add(ShareJsonAdapter)
