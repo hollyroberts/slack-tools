@@ -21,6 +21,8 @@ abstract class SlackData(val settings: Settings) {
 
 data class Settings(
         val useProfileNamesForConversationNames: Boolean = true,
+        val useProfileNamesForFiles: Boolean = false,
+
         val inferFileLocation: Boolean = true,
         val ignoreDownloadedFiles: Boolean = true
 )
