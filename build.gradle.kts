@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.3.31"
-    kotlin("kapt") version "1.3.31"
+    kotlin("jvm") version "1.3.40"
+    kotlin("kapt") version "1.3.40"
 }
 
 version = "0.1-DEV"
