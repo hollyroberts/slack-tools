@@ -31,15 +31,19 @@ class Conversation(
      * Instead we call this in ConversationList to verify all the objects
      */
     fun verify() {
+        val numTrues = booleanArrayOf(isChannel, isGroup, isIm).sumBy { if (it) 1 else 0 }
+        val conversationStr = "Conversation $id" + if (name != null) " ($name)" else ""
+
         // Must be a channel, group, or dm
-        if (!isChannel && !isGroup && !isIm) {
-            throw JsonDataException("Channel $id" + if (name != null) " ($name)" else ""
-            + " is not a channel, private group, or dm")
+        if (numTrues == 0) {
+            throw JsonDataException("$conversationStr is not a channel, private group, or dm")
+        } else if (numTrues > 1) {
+            throw JsonDataException("$conversationStr has more than 1 channel type")
         }
 
         // If it's a dm, then we must know the user
         if (isIm && user == null) {
-            throw JsonDataException("Conversation $id is a dm, but does not contain a user field")
+            throw JsonDataException("$conversationStr is a dm, but does not contain a user field")
         }
     }
 
