@@ -5,6 +5,10 @@ import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonDataException
 import slack.SlackData
 
+enum class ConversationTypes {
+    PUBLIC_CHANNEL, PRIVATE_CHANNEL, DIRECT_MESSAGE
+}
+
 @JsonClass(generateAdapter = true)
 class Conversation(
         // Main data we're interested in
@@ -40,14 +44,22 @@ class Conversation(
     }
 
     /**
+     * Returns enum indicating channel type
+     */
+    fun getConversationType() = when {
+        isChannel -> ConversationTypes.PUBLIC_CHANNEL
+        isGroup -> ConversationTypes.PRIVATE_CHANNEL
+        else -> ConversationTypes.DIRECT_MESSAGE
+    }
+
+    /**
      * Returns conversation name prefixed with # or @ depending on whether it's a channel or dm
-     * TODO convert ids
      */
     fun getFullName(slack: SlackData) : String {
         return if (isChannel || isGroup) {
             "#$name"
         } else {
-            return if (slack.settings.useProfileNamesForConversationNames) {
+            if (slack.settings.useProfileNamesForConversationNames) {
                 "@${slack.getUserProfilename(user)}"
             } else {
                 "@${slack.getUserUsername(user)}"

@@ -7,6 +7,7 @@ import com.squareup.moshi.JsonClass
 data class ConversationListResponse(
         val channels: List<Conversation>
 ) : CursorResponse() {
+    // We want to perform additional verification after parsing
     init {
         channels.forEach {
             it.verify()
