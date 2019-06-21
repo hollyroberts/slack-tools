@@ -10,12 +10,12 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
-class Http(private val authToken: String?) {
+class Http(authToken: String? = null) {
     companion object {
         private const val RETRY_ATTEMPTS = 3
     }
 
-    private val client = if (authToken != null) {
+    private val client = if (authToken == null) {
         OkHttpClient()
     } else {
         OkHttpClient.Builder()
