@@ -3,22 +3,29 @@ package utils
 import slackjson.SlackResponse
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonDataException
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import kotlin.system.exitProcess
 
-class Http {
+class Http(private val authToken: String?) {
     companion object {
         private const val RETRY_ATTEMPTS = 3
     }
 
-    private val client = OkHttpClient()
+    private val client = if (authToken != null) {
+        OkHttpClient()
+    } else {
+        OkHttpClient.Builder()
+                .addNetworkInterceptor { chain ->
+                    chain.proceed(chain.request()
+                            .newBuilder()
+                            .header("Authorization", "Bearer $authToken")
+                            .build())
+                }.build()
+    }
 
     // Enums to indicate method response
     enum class GetStatus { SUCCESS, FAILURE, RATE_LIMITED }
@@ -27,7 +34,7 @@ class Http {
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true, authToken: String? = null) : DownloadStatus {
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true, authToken: String? = null): DownloadStatus {
         // Don't overwrite files
         val fileExists = saveLoc.toFile().exists()
         if (fileExists && ignoreIfExists) {
