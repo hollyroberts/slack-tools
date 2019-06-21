@@ -73,12 +73,12 @@ fun Map<String?, List<CompleteFile>>.downloadFiles(slack: SlackData, outDir: Pat
 
         // Download files
         val channelStats = DownloadStats()
-        Log.high("Downloading ${filesInConvo.size} files from $convoName")
+        Log.medium("Downloading ${filesInConvo.size} files from $convoName")
         filesInConvo.sortedBy { it.timestamp }.forEach { file ->
             channelStats.update(file.download(convoFolder, slack, webApi))
         }
 
-        channelStats.log(convoName, Log.Modes.HIGH)
+        channelStats.log(convoName, Log.Modes.MEDIUM)
         downloadStats += channelStats
     }
 
