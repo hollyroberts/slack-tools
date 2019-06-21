@@ -61,11 +61,11 @@ fun Map<String?, List<CompleteFile>>.downloadFiles(slack: SlackData, outDir: Pat
     // Process conversations alphabetically
     Log.high("Downloading files")
     var downloadStats = DownloadStats()
-    this.keys.sortedBy { slack.getConversationName(it) }.forEach { convoID ->
+    this.keys.sortedBy { slack.conversationName(it) }.forEach { convoID ->
         val filesInConvo = this.getValue(convoID)
 
         // Get location to put files in
-        val convoName = slack.getConversationName(convoID)
+        val convoName = slack.conversationName(convoID)
         val convoFolder = outDir.resolve(convoName)
 
         // Create folder if it doesn't exist

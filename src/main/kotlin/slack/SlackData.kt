@@ -9,19 +9,19 @@ abstract class SlackData(val settings: Settings) {
     abstract val users: Map<String, User>
 
     // Basic data retrieval methods
-    fun getConversationName(convoId: String?) = conversations[convoId]?.getFullName(this) ?: "Unknown conversation"
-    fun getConversationType(convoId: String) : ConversationTypes {
+    fun conversationName(convoId: String?) = conversations[convoId]?.fullName(this) ?: "Unknown conversation"
+    fun conversationType(convoId: String) : ConversationTypes {
         val convo = conversations[convoId] ?: error("Unknown conversation ID '$convoId'")
-        return convo.getConversationType()
+        return convo.conversationType()
     }
 
-    fun getUserUsername(userId: String?) = users[userId]?.name ?: "Unknown user"
-    fun getUserProfilename(userId: String?) = users[userId]?.profile?.displayName ?: "Unknown name"
+    fun userUsername(userId: String?) = users[userId]?.name ?: "Unknown user"
+    fun userDisplayname(userId: String?) = users[userId]?.profile?.displayName ?: "Unknown name"
 }
 
 data class Settings(
-        val useProfileNamesForConversationNames: Boolean = true,
-        val useProfileNamesForFiles: Boolean = false,
+        val useDisplayNamesForConversationNames: Boolean = true,
+        val useDisplayNamesForFiles: Boolean = false,
 
         val inferFileLocation: Boolean = true,
         val ignoreDownloadedFiles: Boolean = true

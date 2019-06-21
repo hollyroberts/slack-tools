@@ -50,24 +50,30 @@ class Conversation(
     /**
      * Returns enum indicating channel type
      */
-    fun getConversationType() = when {
+    fun conversationType() = when {
         isChannel -> ConversationTypes.PUBLIC_CHANNEL
         isGroup -> ConversationTypes.PRIVATE_CHANNEL
         else -> ConversationTypes.DIRECT_MESSAGE
     }
 
     /**
+     * Returns name depending on settings given
+     */
+    fun name(slack: SlackData) = if (slack.settings.useDisplayNamesForConversationNames) {
+        slack.userDisplayname(user)
+    } else {
+        slack.userUsername(user)
+    }
+
+    /**
      * Returns conversation name prefixed with # or @ depending on whether it's a channel or dm
      */
-    fun getFullName(slack: SlackData) : String {
+    fun fullName(slack: SlackData) : String {
         return if (isChannel || isGroup) {
             "#$name"
         } else {
-            if (slack.settings.useProfileNamesForConversationNames) {
-                "@${slack.getUserProfilename(user)}"
-            } else {
-                "@${slack.getUserUsername(user)}"
-            }
+            "@${name(slack)}"
+
         }
     }
 }
