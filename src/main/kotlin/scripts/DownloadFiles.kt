@@ -11,12 +11,14 @@ import java.nio.file.Paths
 import java.time.Instant
 
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
+import java.time.ZonedDateTime
 
 fun main(args: Array<String>) = ScriptDownloadFiles().main(args)
 
 class ScriptDownloadFiles : CliktCommand(
         name="download-files"
 ) {
+    // Arguments/options
     private val topLevelArgs by TopLevelArgs()
     private val token by argument(
             help="Authorisation token for slacks web api"
@@ -37,9 +39,19 @@ class ScriptDownloadFiles : CliktCommand(
 
 }
 
-open class TopLevelArgs : OptionGroup(
-        name="Top level arguments",
-        help="Arguments that are common across all scripts") {
+class TimeArgs : OptionGroup(
+        name="Time options",
+        help="Options for controlling how time is used"
+) {
+    private val startTime by option("--start-time", "-ts",
+            help="Include anything after this time (inclusive)")
+    private val endTime by option("--end-time", "-te",
+            help="Exclude anything after this time (exclusive)")
+}
+
+class TopLevelArgs : OptionGroup(
+        name="Top level options",
+        help="Options that are common across all scripts") {
 
     companion object {
         val LOG_OPTIONS = Log.argStringMap().keys
