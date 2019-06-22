@@ -11,14 +11,16 @@ import java.nio.file.Paths
 import java.time.Instant
 
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
-import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.flag
 
 fun main(args: Array<String>) = ScriptDownloadFiles().main(args)
 
-class ScriptDownloadFiles : CliktCommand() {
-    private val token by argument()
+class ScriptDownloadFiles : CliktCommand(
+        name="download-files"
+) {
     private val topLevelArgs by TopLevelArgs()
+    private val token by argument(
+            help="Authorisation token for slacks web api"
+    )
 
     override fun run() {
         topLevelArgs.run()
@@ -49,7 +51,7 @@ open class TopLevelArgs : OptionGroup(
             help = "The logging mode to be used. Prints out the available options if called")
             .convert {
                 Log.argStringMap()[it.toUpperCase()] ?: run {
-                    fail("Unknown log level '$it'. Available options are:\n" + LOG_OPTIONS.joinToString("\n\t"))
+                    fail("Unknown log level '$it'\nAvailable options are: " + LOG_OPTIONS.joinToString(", "))
                 }
             }
 
