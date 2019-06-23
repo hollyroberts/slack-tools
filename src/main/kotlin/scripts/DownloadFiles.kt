@@ -25,7 +25,7 @@ class ScriptDownloadFiles : CliktCommand(
     // TODO user, channel, channel type
     val user by option("--user", "-u",
             help = "Filters to files only by this user. " +
-                    "Checks user IDs first, otherwise attempts to resolve the username to ID")
+                    "Checks user IDs first, otherwise attempts to resolve the username then display name to ID")
     val convo by option("--channel", "-c",
             help = "Filters files to those only by this channel. Can be public/private channel or DM" +
                     "Checks channel IDs first, otherwise attempts to resolve the name (with #/@) to ID")
@@ -41,21 +41,29 @@ class ScriptDownloadFiles : CliktCommand(
 
         // Resolve user/conversation ID
         val userID = user?.let { optionStr ->
+            // User ID first
             if (slack.users.containsKey(optionStr)) {
                 optionStr
             } else {
+                // Username if it exists
                 slack.users.asSequence().filter {
-                    it.value.name == optionStr
-                }.first().key
+                    it.value.username() == optionStr
+                }.firstOrNull()?.key ?: run {
+                    // Else try displayname
+                    slack.users.asSequence().filter {
+                        it.value.displayname() == optionStr
+                    }.firstOrNull()?.key
+                }
             }
         }
+        println(userID)
 
-        val parsedFiles = slack.api.getFiles(
-                startTime = timeOptions.startTime?.toEpochSecond(),
-                endTime = timeOptions.endTime?.toEpochSecond()
-        )
-        val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
-        completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
+//        val parsedFiles = slack.api.getFiles(
+//                startTime = timeOptions.startTime?.toEpochSecond(),
+//                endTime = timeOptions.endTime?.toEpochSecond()
+//        )
+//        val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
+//        completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
     }
 
 }
