@@ -22,9 +22,9 @@ class Avatars(private val users: Map<String, User>) {
             if (ignoreDeleted && mapEntry.value.deleted) {
                 false
             } else !(ignoreBots && mapEntry.value.is_bot)
-        }.sortedBy { it.value.name }.forEach { mapEntry ->
+        }.sortedBy { it.value.username() }.forEach { mapEntry ->
             val url = avatarURLs.getValue(mapEntry.key)
-            val saveLoc = outDir.resolve(mapEntry.value.name + guessImageExtFromURL(url))
+            val saveLoc = outDir.resolve(mapEntry.value.username() + guessImageExtFromURL(url))
 
             http.downloadFile(url, saveLoc, ignoreIfExists = true)
         }

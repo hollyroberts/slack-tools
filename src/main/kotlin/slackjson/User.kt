@@ -7,13 +7,16 @@ data class User(
         // Strings and profile
         val id: String,
         val team_id: String,
-        val name: String,
+        private val name: String,
         val profile: Profile,
 
         // Booleans
         val deleted: Boolean,
         val is_bot: Boolean
-)
+) {
+    fun username() = name
+    fun displayname() = profile.displayName
+}
 
 @Suppress("unused")
 object ProfileJsonAdapter {

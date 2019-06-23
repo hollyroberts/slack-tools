@@ -15,8 +15,8 @@ abstract class SlackData(val settings: Settings) {
         return convo.conversationType()
     }
 
-    fun userUsername(userId: String?) = users[userId]?.name ?: "Unknown user"
-    fun userDisplayname(userId: String?) = users[userId]?.profile?.displayName ?: "Unknown name"
+    fun userUsername(userId: String?) = users[userId]?.username() ?: "Unknown user"
+    fun userDisplayname(userId: String?) = users[userId]?.displayname() ?: "Unknown name"
 }
 
 data class Settings(
