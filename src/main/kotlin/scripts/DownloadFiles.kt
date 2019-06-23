@@ -4,6 +4,7 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import slack.*
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
+import java.nio.file.Paths
 
 fun main(args: Array<String>) = ScriptDownloadFiles().main(args)
 
@@ -26,10 +27,12 @@ class ScriptDownloadFiles : CliktCommand(
         val settings = Settings()
         val slack = SlackWebApi(token, settings)
 
-//
-//        val parsedFiles = slack.api.getFiles(startTime = Instant.now().minusSeconds(86_400).epochSecond)
-//        val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
-//        completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
+        val parsedFiles = slack.api.getFiles(
+                startTime = timeOptions.startTime?.toEpochSecond(),
+                endTime = timeOptions.endTime?.toEpochSecond()
+        )
+        val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
+        completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
     }
 
 }

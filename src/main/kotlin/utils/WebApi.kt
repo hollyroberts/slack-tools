@@ -69,21 +69,20 @@ class WebApi(token: String) {
     /**
      * Returns a list of parsed files (which may be incomplete) in a time range
      */
-    fun getFiles(startTime: Long = 0, endTime: Long? = null, channel: String? = null, user: String? = null) : List<ParsedFile> {
+    fun getFiles(startTime: Long? = null, endTime: Long? = null,
+                 channel: String? = null, user: String? = null)
+            : List<ParsedFile> {
+
+        // Params setup
         val params = mutableMapOf(
                 "page" to "1",
-                "count" to FILE_LIST_LIMIT.toString(),
-                "ts_from" to startTime.toString()
+                "count" to FILE_LIST_LIMIT.toString()
         )
-        endTime?.let {
-            params["ts_to"] = it.toString()
-        }
-        channel?.let {
-            params["channel"] = it
-        }
-        user?.let {
-            params["user"] = it
-        }
+        startTime?.let { params["ts_from"] = it.toString() }
+        endTime?.let { params["ts_to"] = it.toString() }
+        channel?.let { params["channel"] = it }
+        user?.let { params["user"] = it }
+
         val adapter = moshi.adapter(FileListResponse::class.java)!!
 
         // Get results
