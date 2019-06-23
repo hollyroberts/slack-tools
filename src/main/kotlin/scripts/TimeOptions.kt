@@ -13,24 +13,27 @@ import java.time.format.DateTimeFormatter
  */
 class TimeOptions : OptionGroup(
         name="Time options",
-        help="Options for controlling how time is used"
+        help="Options for controlling how time is used\n" +
+                "datetime is the format used (eg. dd/MM/yy)"
 ) {
     data class Options(
             val startTime: ZonedDateTime?,
             val endTime: ZonedDateTime?
     )
 
+    private val dtf = DateTimeFormatter.ofPattern("dd/MM/yy")
     private val startTimeStr by option("--start-time", "-ts",
-            help="Include anything after this time (inclusive)")
+            help="Include anything after this time (inclusive)",
+            metavar = "datetime")
     private val endTimeStr by option("--end-time", "-te",
-            help="Exclude anything after this time (exclusive)")
+            help="Exclude anything after this time (exclusive)",
+            metavar = "datetime")
 
     /**
      * Return the data class of parsed options
      */
     fun options() : Options {
         val timeZone = ZoneId.systemDefault()
-        val dtf = DateTimeFormatter.ofPattern("dd/MM/yy")
 
         val startTime = startTimeStr?.let {
             val startTimeLocal = LocalDateTime.parse(it, dtf)
