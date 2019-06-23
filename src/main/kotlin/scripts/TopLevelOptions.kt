@@ -6,8 +6,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import utils.Log
 
 class TopLevelOptions : OptionGroup(
-        name="Top level options",
-        help="Options that are common across all scripts") {
+        name = "Top level options",
+        help = "Options that are common across all scripts") {
 
     companion object {
         val LOG_OPTIONS = Log.argStringMap().keys
