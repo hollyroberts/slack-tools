@@ -23,10 +23,10 @@ class ScriptDownloadFiles : CliktCommand(
 
     // Options
     // TODO user, channel, channel type
-    val user by option("--user", "-u",
+    private val user by option("--user", "-u",
             help = "Filters to files only by this user. " +
                     "Checks user IDs first, otherwise attempts to resolve the username then display name to ID")
-    val convo by option("--channel", "-c",
+    private val convo by option("--channel", "-c",
             help = "Filters files to those only by this channel. Can be public/private channel or DM" +
                     "Checks channel IDs first, otherwise attempts to resolve the name (with #/@) to ID")
 
@@ -69,12 +69,14 @@ class ScriptDownloadFiles : CliktCommand(
         println(userID)
         println(convoID)
 
-//        val parsedFiles = slack.api.getFiles(
-//                startTime = timeOptions.startTime?.toEpochSecond(),
-//                endTime = timeOptions.endTime?.toEpochSecond()
-//        )
-//        val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
-//        completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
+        val parsedFiles = slack.api.getFiles(
+                startTime = timeOptions.startTime?.toEpochSecond(),
+                endTime = timeOptions.endTime?.toEpochSecond(),
+                user = userID,
+                channel = convoID
+        )
+        val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
+        completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
     }
 
 }
