@@ -1,3 +1,5 @@
+package scripts
+
 import slack.SlackWebApi
 import slack.Settings
 import slack.Avatars
