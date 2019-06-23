@@ -46,17 +46,28 @@ class ScriptDownloadFiles : CliktCommand(
                 optionStr
             } else {
                 // Username if it exists
-                slack.users.asSequence().filter {
+                slack.users.asSequence().firstOrNull {
                     it.value.username() == optionStr
-                }.firstOrNull()?.key ?: run {
+                }?.key ?: run {
                     // Else try displayname
-                    slack.users.asSequence().filter {
+                    slack.users.asSequence().firstOrNull {
                         it.value.displayname() == optionStr
-                    }.firstOrNull()?.key
+                    }?.key
                 }
             }
         }
+
+        val convoID = convo?.let { optionStr ->
+            if (slack.conversations.containsKey(optionStr)) {
+                optionStr
+            } else {
+                slack.conversations.asSequence().firstOrNull {
+                    it.value.fullName(slack) == optionStr
+                }?.key
+            }
+        }
         println(userID)
+        println(convoID)
 
 //        val parsedFiles = slack.api.getFiles(
 //                startTime = timeOptions.startTime?.toEpochSecond(),
