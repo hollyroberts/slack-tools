@@ -11,8 +11,8 @@ class ScriptDownloadFiles : CliktCommand(
         name="download-files"
 ) {
     // Top level options
-    private val topLevelArgs by TopLevelOptions()
-    private val timeArgs by TimeOptions()
+    private val topLevelOptions by TopLevelOptions()
+    private val timeOptionsParser by TimeOptions()
 
     //
     private val token by argument(
@@ -20,14 +20,12 @@ class ScriptDownloadFiles : CliktCommand(
     )
 
     override fun run() {
-        topLevelArgs.run()
-        timeArgs.options()
+        topLevelOptions.run()
+        val timeOptions = timeOptionsParser.options()
 
         val settings = Settings()
         val slack = SlackWebApi(token, settings)
 
-        // TODO
-//        Log.high(Instant.now().minusSeconds(86_400).epochSecond.toString())
 //
 //        val parsedFiles = slack.api.getFiles(startTime = Instant.now().minusSeconds(86_400).epochSecond)
 //        val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
