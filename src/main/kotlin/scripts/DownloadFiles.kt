@@ -40,32 +40,8 @@ class ScriptDownloadFiles : CliktCommand(
         val slack = SlackWebApi(token, settings)
 
         // Resolve user/conversation ID
-        val userID = user?.let { optionStr ->
-            // User ID first
-            if (slack.users.containsKey(optionStr)) {
-                optionStr
-            } else {
-                // Username if it exists
-                slack.users.asSequence().firstOrNull {
-                    it.value.username() == optionStr
-                }?.key ?: run {
-                    // Else try displayname
-                    slack.users.asSequence().firstOrNull {
-                        it.value.displayname() == optionStr
-                    }?.key
-                }
-            }
-        }
-
-        val convoID = convo?.let { optionStr ->
-            if (slack.conversations.containsKey(optionStr)) {
-                optionStr
-            } else {
-                slack.conversations.asSequence().firstOrNull {
-                    it.value.fullName(slack) == optionStr
-                }?.key
-            }
-        }
+        val userID = user?.let { slack.inferUserID(it) }
+        val convoID = convo?.let { slack.inferChannelID(it) }
         println(userID)
         println(convoID)
 
