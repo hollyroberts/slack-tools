@@ -16,7 +16,7 @@ class TopLevelOptions : OptionGroup(
     private val logMode: Log.Modes? by option(
             "--log-mode", "-lm",
             metavar = LOG_OPTIONS.joinToString(", "),
-            help = "The logging mode to be used. Prints out the available options if called")
+            help = "The logging mode to be used")
             .convert {
                 Log.argStringMap()[it.toUpperCase()]
                         ?: fail("Unknown log level '$it'\n" +
