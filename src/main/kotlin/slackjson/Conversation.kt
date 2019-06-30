@@ -5,8 +5,14 @@ import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonDataException
 import slack.SlackData
 
-enum class ConversationTypes {
-    PUBLIC_CHANNEL, PRIVATE_CHANNEL, DIRECT_MESSAGE
+enum class ConversationTypes(val shortName: String) {
+    PUBLIC_CHANNEL("public"),
+    PRIVATE_CHANNEL("private"),
+    DIRECT_MESSAGE("dm");
+
+    companion object {
+        fun optionStr() = values().joinToString(", ", transform = { it.shortName.toUpperCase() })
+    }
 }
 
 @JsonClass(generateAdapter = true)

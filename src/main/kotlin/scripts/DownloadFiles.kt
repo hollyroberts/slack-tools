@@ -4,7 +4,10 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import slack.*
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
+import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.split
+import slackjson.ConversationTypes
 import java.nio.file.Paths
 
 fun main(args: Array<String>) = ScriptDownloadFiles().main(args)
@@ -30,6 +33,16 @@ class ScriptDownloadFiles : CliktCommand(
             help = "Filters files to those only by this channel. Can be public/private channel or DM" +
                     "Checks channel IDs first, otherwise attempts to resolve the name (with #/@) to ID")
 
+    private val convoTypes by option("--channel-type", "-ct",
+            help = "The types of channels to include. Use ',' to separate types. By default all types are included",
+            metavar = ConversationTypes.optionStr())
+            .convert { inputStr ->
+                inputStr.split(",").map { arg ->
+                    ConversationTypes.values().find { arg.toLowerCase() == it.shortName }
+                            ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationTypes.optionStr())
+                }.toSet()
+            }
+
     override fun run() {
         // Fetch additional options
         topLevelOptions.run()
@@ -42,8 +55,6 @@ class ScriptDownloadFiles : CliktCommand(
         // Resolve user/conversation ID
         val userID = user?.let { slack.inferUserID(it) }
         val convoID = convo?.let { slack.inferChannelID(it) }
-        println(userID)
-        println(convoID)
 
         val parsedFiles = slack.api.getFiles(
                 startTime = timeOptions.startTime?.toEpochSecond(),
@@ -54,5 +65,4 @@ class ScriptDownloadFiles : CliktCommand(
         val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
         completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
     }
-
 }

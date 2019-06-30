@@ -13,8 +13,8 @@ import java.time.format.DateTimeFormatter
  */
 class TimeOptions : OptionGroup(
         name = "Time options",
-        help = "Options for controlling how time is used\n" +
-                "datetime is the format used (eg. dd/MM/yy)"
+        help = "Options for controlling how time is used." +
+                "Datetime is the format used (eg. dd/MM/yy)"
 ) {
     data class Options(
             val startTime: ZonedDateTime?,

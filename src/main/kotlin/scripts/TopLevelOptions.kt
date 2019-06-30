@@ -18,9 +18,9 @@ class TopLevelOptions : OptionGroup(
             metavar = LOG_OPTIONS.joinToString(", "),
             help = "The logging mode to be used. Prints out the available options if called")
             .convert {
-                Log.argStringMap()[it.toUpperCase()] ?: run {
-                    fail("Unknown log level '$it'\nAvailable options are: " + LOG_OPTIONS.joinToString(", "))
-                }
+                Log.argStringMap()[it.toUpperCase()]
+                        ?: fail("Unknown log level '$it'\n" +
+                                "Available options are: " + LOG_OPTIONS.joinToString(", "))
             }
 
     /**
