@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 class TimeOptions : OptionGroup(
         name = "Time options",
         help = "Options for controlling how time is used." +
-                "Datetime is the format used (eg. dd/MM/yy)"
+                "DATETIME is the format used (eg. dd/MM/yy)"
 ) {
     data class Options(
             val startTime: ZonedDateTime?,
@@ -24,10 +24,10 @@ class TimeOptions : OptionGroup(
     private val dtf = DateTimeFormatter.ofPattern("dd/MM/yy")
     private val startTimeStr by option("--start-time", "-ts",
             help = "Include anything after this time (inclusive)",
-            metavar = "datetime")
+            metavar = "DATETIME")
     private val endTimeStr by option("--end-time", "-te",
             help = "Exclude anything after this time (exclusive)",
-            metavar = "datetime")
+            metavar = "DATETIME")
 
     /**
      * Return the data class of parsed options
