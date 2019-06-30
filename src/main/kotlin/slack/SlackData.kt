@@ -10,7 +10,11 @@ abstract class SlackData(val settings: Settings) {
 
     // Basic data retrieval methods
     fun conversationName(convoId: String?) = conversations[convoId]?.fullName(this) ?: "Unknown conversation"
-    fun conversationType(convoId: String) : ConversationTypes {
+    fun conversationType(convoId: String?) : ConversationTypes {
+        if (convoId == null) {
+            return ConversationTypes.UNKNOWN
+        }
+
         val convo = conversations[convoId] ?: error("Unknown conversation ID '$convoId'")
         return convo.conversationType()
     }

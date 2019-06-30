@@ -8,7 +8,8 @@ import slack.SlackData
 enum class ConversationTypes(val shortName: String) {
     PUBLIC_CHANNEL("public"),
     PRIVATE_CHANNEL("private"),
-    DIRECT_MESSAGE("dm");
+    DIRECT_MESSAGE("dm"),
+    UNKNOWN("unknown");
 
     companion object {
         fun optionStr() = values().joinToString(", ", transform = { it.shortName.toUpperCase() })

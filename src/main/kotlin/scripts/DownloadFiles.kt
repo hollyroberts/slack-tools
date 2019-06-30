@@ -62,7 +62,10 @@ class ScriptDownloadFiles : CliktCommand(
                 user = userID,
                 channel = convoID
         )
-        val completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
+        var completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
+        if (convoTypes != null) {
+            completeFiles = completeFiles.filterKeys { convoTypes!!.contains(slack.conversationType(it)) }
+        }
         completeFiles.downloadFiles(slack, Paths.get("files"), slack.api)
     }
 }
