@@ -6,14 +6,13 @@ import slack.*
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.split
 import slackjson.ConversationTypes
 import java.nio.file.Paths
 
-fun main(args: Array<String>) = ScriptDownloadFiles().main(args)
+fun main(args: Array<String>) = ScriptDownloadByChannel().main(args)
 
-class ScriptDownloadFiles : CliktCommand(
-        name = "download-files"
+class ScriptDownloadByChannel : CliktCommand(
+        name = "download-files-by-channel"
 ) {
     // Top level options
     private val topLevelOptions by TopLevelOptions()
@@ -25,7 +24,6 @@ class ScriptDownloadFiles : CliktCommand(
     )
 
     // Options
-    // TODO user, channel, channel type
     private val user by option("--user", "-u",
             help = "Filters to files only by this user. " +
                     "Checks user IDs first, otherwise attempts to resolve the username then display name to ID")
