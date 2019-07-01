@@ -1,5 +1,17 @@
 package slackjson
 
+import slack.SlackData
+import utils.DownloadStatus
+import utils.Http
+import utils.Log
+import utils.WebApi
+import java.io.File
+import java.nio.file.Path
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 abstract class SlackFile : BaseFile() {
     // Identification
     abstract val id: String
@@ -20,4 +32,52 @@ abstract class SlackFile : BaseFile() {
     abstract val ims: List<String>?
 
     fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
+
+    fun download(folder: Path, slack: SlackData, webApi: WebApi?, formatting: FormattingType = FormattingType.STANDARD) : DownloadStatus {
+        // Strip out/replace illegal chars
+        var formattedName = formattedDownloadName(formatting, slack)
+        formattedName = Regex("""[/*?"<>|]""").replace(formattedName, "")
+        formattedName =  formattedName.replace(":", ";")
+
+        // Add extension if it doesn't exist
+        if (File(formattedName).extension.isEmpty() && filetype.isNotEmpty()) {
+            formattedName += ".$filetype"
+        }
+
+        // Download
+        urlPrivateDownload?.let {
+            return webApi?.downloadFile(it, folder.resolve(formattedName), size, slack.settings.ignoreDownloadedFiles)
+                    ?: run {
+                        Http().downloadFile(it, folder.resolve(formattedName), size, slack.settings.ignoreDownloadedFiles)
+                    }
+        } ?: urlPrivate.let {
+            Log.low("File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'")
+            folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")
+            return DownloadStatus.LINK
+        }
+    }
+
+    private fun formattedDownloadName(type: FormattingType, slack: SlackData) : String {
+        // Calculate intermediate strings
+        val username = if (slack.settings.useDisplayNamesForFiles) {
+            slack.userDisplayname(user)
+        } else {
+            slack.userUsername(user)
+        }
+        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault())
+
+        return when(type) {
+            FormattingType.STANDARD -> "[${dtf.format(datetime)}] - $username - $title"
+            FormattingType.WITHOUT_NAME -> "[${dtf.format(datetime)}] - $title"
+        }
+    }
+
+    enum class FormattingType {
+        STANDARD,
+        WITHOUT_NAME
+    }
+
+    companion object {
+        val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH;mm")!!
+    }
 }
