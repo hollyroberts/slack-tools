@@ -2,6 +2,7 @@ package slack
 
 import slackjson.CompleteFile
 import slackjson.ParsedFile
+import slackjson.SlackFile
 import utils.DownloadStats
 import utils.Log
 import utils.WebApi
@@ -57,7 +58,41 @@ fun Map<String, CompleteFile>.filesByConvo() : Map<String?, List<CompleteFile>> 
     return filesConvo.toMap()
 }
 
-fun Map<String?, List<CompleteFile>>.downloadFiles(slack: SlackData, outDir: Path, webApi: WebApi?) {
+/**
+ * Takes a map of UserID --> List of files and downloads them into folders by displayname
+ */
+fun Map<String?, List<CompleteFile>>.downloadByUser(slack: SlackData, outDir: Path, webApi: WebApi?) {
+    // Process conversations alphabetically
+    Log.high("Downloading files")
+    var downloadStats = DownloadStats()
+    this.keys.sortedBy { slack.userDisplayname(it) }.forEach { userID ->
+        val filesInConvo = this.getValue(userID)
+
+        // Get location to put files in
+        val name = slack.userDisplayname(userID)
+        val userFolder = outDir.resolve(name)
+
+        // Create folder if it doesn't exist
+        ensureFolderExists(userFolder)
+
+        // Download files
+        val channelStats = DownloadStats()
+        Log.medium("Downloading ${filesInConvo.size} files from $name")
+        filesInConvo.sortedBy { it.timestamp }.forEach { file ->
+            channelStats.update(file.download(userFolder, slack, webApi, formatting = SlackFile.FormattingType.WITHOUT_NAME))
+        }
+
+        channelStats.log(name, Log.Modes.MEDIUM)
+        downloadStats += channelStats
+    }
+
+    downloadStats.log("slack", Log.Modes.HIGH)
+}
+
+/**
+ * Takes a map of ConvoID --> List of files and downloads them into folders by displayname
+ */
+fun Map<String?, List<CompleteFile>>.downloadByChannel(slack: SlackData, outDir: Path, webApi: WebApi?) {
     // Process conversations alphabetically
     Log.high("Downloading files")
     var downloadStats = DownloadStats()
