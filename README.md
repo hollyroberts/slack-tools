@@ -1,2 +1,1 @@
-An attempt at unifying the codebase of slack-export-tools and slack-dm-archiver
-But now written in Kotlin because change is fun
+An attempt at unifying the codebase of slack-export-tools and slack-dm-archiver, but now written in Kotlin because change is fun! Progress has been slow because of architecture experimentation and real life. But downloading files is nearly complete.
