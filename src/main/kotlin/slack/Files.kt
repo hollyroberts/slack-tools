@@ -59,9 +59,22 @@ fun Map<String, CompleteFile>.filesByConvo() : Map<String?, List<CompleteFile>> 
 }
 
 /**
+ * Map of UserID --> list of files
+ */
+fun List<SlackFile>.filesByUser() : Map<String?, List<SlackFile>> {
+    val filesUser = mutableMapOf<String?, MutableList<SlackFile>>()
+
+    this.forEach {
+        filesUser.getOrPut(it.user) { mutableListOf() }.add(it)
+    }
+
+    return filesUser.toMap()
+}
+
+/**
  * Takes a map of UserID --> List of files and downloads them into folders by displayname
  */
-fun Map<String?, List<CompleteFile>>.downloadByUser(slack: SlackData, outDir: Path, webApi: WebApi?) {
+fun <F : SlackFile> Map<String?, List<F>>.downloadByUser(slack: SlackData, outDir: Path, webApi: WebApi?) {
     // Process conversations alphabetically
     Log.high("Downloading files")
     var downloadStats = DownloadStats()

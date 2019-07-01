@@ -19,7 +19,7 @@ class ScriptDownloadByChannel : CliktCommand(
     private val timeOptionsParser by TimeOptions()
 
     // Auth
-    private val token by argument(
+    private val token by argument(name = "token",
             help = "Authorisation token for slacks web api"
     )
 
@@ -28,7 +28,7 @@ class ScriptDownloadByChannel : CliktCommand(
             help = "Filters to files only by this user. " +
                     "Checks user IDs first, otherwise attempts to resolve the username then display name to ID")
     private val convo by option("--channel", "-c",
-            help = "Filters files to those only by this channel. Can be public/private channel or DM" +
+            help = "Filters files to those only by this channel. Can be public/private channel or DM. " +
                     "Checks channel IDs first, otherwise attempts to resolve the name (with #/@) to ID")
 
     private val convoTypes by option("--channel-type", "-ct",
