@@ -1,7 +1,9 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
 package slack
+import scripts.TimeOptions
 import slackjson.*
+import java.time.ZoneId
 
 abstract class SlackData(val settings: Settings) {
     // Raw data
@@ -66,5 +68,9 @@ data class Settings(
         val useDisplayNamesForFiles: Boolean = false,
 
         val inferFileLocation: Boolean = true,
-        val ignoreDownloadedFiles: Boolean = true
-)
+        val ignoreDownloadedFiles: Boolean = true,
+
+        val outTz: ZoneId = ZoneId.systemDefault()
+) {
+    constructor(timeOptions: TimeOptions.Options): this(outTz = timeOptions.outTz)
+}

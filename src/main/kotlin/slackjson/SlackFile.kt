@@ -65,7 +65,7 @@ abstract class SlackFile : BaseFile() {
         } else {
             slack.userUsername(user)
         }
-        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault())
+        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), slack.settings.outTz)
 
         return when(type ?: defaultType()) {
             FormattingType.STANDARD -> "[${dtf.format(datetime)}] - $username - $title"

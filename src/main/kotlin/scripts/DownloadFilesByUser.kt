@@ -42,7 +42,7 @@ class ScriptDownloadByUser : CliktCommand(
         val timeOptions = timeOptionsParser.options()
 
         // Setup
-        val settings = Settings()
+        val settings = Settings(timeOptions)
         val slack = SlackWebApi(token, settings)
 
         // Resolve user/conversation ID

@@ -3,6 +3,8 @@ package scripts
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
+import slack.Settings
+import slack.SlackData
 import utils.Log
 import java.time.LocalDateTime
 import java.time.ZoneId
