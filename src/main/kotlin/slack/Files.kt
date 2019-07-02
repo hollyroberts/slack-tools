@@ -76,7 +76,7 @@ fun List<SlackFile>.filesByUser() : Map<String?, List<SlackFile>> {
  */
 fun <F : SlackFile> Map<String?, List<F>>.downloadByUser(slack: SlackData, outDir: Path, webApi: WebApi?) {
     // Process conversations alphabetically
-    Log.high("Downloading files")
+    Log.high("Downloading files to '$outDir'")
     var downloadStats = DownloadStats()
     this.keys.sortedBy { slack.userDisplayname(it) }.forEach { userID ->
         val filesInConvo = this.getValue(userID)
@@ -107,7 +107,7 @@ fun <F : SlackFile> Map<String?, List<F>>.downloadByUser(slack: SlackData, outDi
  */
 fun Map<String?, List<CompleteFile>>.downloadByChannel(slack: SlackData, outDir: Path, webApi: WebApi?) {
     // Process conversations alphabetically
-    Log.high("Downloading files")
+    Log.high("Downloading files to '$outDir'")
     var downloadStats = DownloadStats()
     this.keys.sortedBy { slack.conversationName(it) }.forEach { convoID ->
         val filesInConvo = this.getValue(convoID)
