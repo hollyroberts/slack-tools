@@ -7,6 +7,7 @@ import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import slackjson.ConversationTypes
 import java.io.File
@@ -14,7 +15,7 @@ import java.nio.file.Paths
 
 fun main(args: Array<String>) = ScriptDownloadByChannel().main(args)
 
-class ScriptDownloadByChannel : CliktCommand(
+class ScriptDownloadByChannel: CliktCommand(
         name = "download-files-by-channel"
 ) {
     // Top level options
@@ -22,9 +23,10 @@ class ScriptDownloadByChannel : CliktCommand(
     private val timeOptionsParser by TimeOptions()
 
     // Auth
-    private val token by argument(name = "token",
+    private val token by option("--",
+            envvar = "SlackToken",
             help = "Authorisation token for slacks web api"
-    )
+    ).required()
 
     // Options
     private val user by option("--user", "-u",
