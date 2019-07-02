@@ -5,6 +5,7 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import slack.Settings
 import slack.SlackWebApi
@@ -23,9 +24,10 @@ class ScriptDownloadByUser : CliktCommand(
     private val timeOptionsParser by TimeOptions()
 
     // Auth
-    private val token by argument(name = "token",
+    private val token by option("--token", "-t",
+            envvar = "SlackToken",
             help = "Authorisation token for slacks web api"
-    )
+    ).required()
 
     // Options
     private val convo by argument(name = "channel",
