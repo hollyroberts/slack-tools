@@ -5,8 +5,11 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import slack.*
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.convert
+import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.file
 import slackjson.ConversationTypes
+import java.io.File
 import java.nio.file.Paths
 
 fun main(args: Array<String>) = ScriptDownloadByChannel().main(args)
@@ -40,6 +43,10 @@ class ScriptDownloadByChannel : CliktCommand(
                             ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationTypes.optionStr())
                 }.toSet()
             }
+    private val output by option("--output", "-o",
+            help = "Location to output files")
+            .file(fileOkay = false)
+            .default(File("files"))
 
     override fun run() {
         // Fetch additional options
@@ -64,6 +71,6 @@ class ScriptDownloadByChannel : CliktCommand(
         if (convoTypes != null) {
             completeFiles = completeFiles.filterKeys { convoTypes!!.contains(slack.conversationType(it)) }
         }
-        completeFiles.downloadByChannel(slack, Paths.get("files"), slack.api)
+        completeFiles.downloadByChannel(slack, output.toPath(), slack.api)
     }
 }
