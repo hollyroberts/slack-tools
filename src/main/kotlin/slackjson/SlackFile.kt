@@ -1,6 +1,7 @@
 package slackjson
 
 import slack.SlackData
+import slackjson.SlackFile.FormattingType.Companion.defaultType
 import utils.DownloadStatus
 import utils.Http
 import utils.Log
@@ -33,7 +34,7 @@ abstract class SlackFile : BaseFile() {
 
     fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
 
-    fun download(folder: Path, slack: SlackData, webApi: WebApi?, formatting: FormattingType = FormattingType.STANDARD) : DownloadStatus {
+    fun download(folder: Path, slack: SlackData, webApi: WebApi?, formatting: FormattingType? = null) : DownloadStatus {
         // Strip out/replace illegal chars
         var formattedName = formattedDownloadName(formatting, slack)
         formattedName = Regex("""[/*?"<>|]""").replace(formattedName, "")
@@ -57,7 +58,7 @@ abstract class SlackFile : BaseFile() {
         }
     }
 
-    private fun formattedDownloadName(type: FormattingType, slack: SlackData) : String {
+    private fun formattedDownloadName(type: FormattingType?, slack: SlackData) : String {
         // Calculate intermediate strings
         val username = if (slack.settings.useDisplayNamesForFiles) {
             slack.userDisplayname(user)
@@ -66,7 +67,7 @@ abstract class SlackFile : BaseFile() {
         }
         val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault())
 
-        return when(type) {
+        return when(type ?: defaultType()) {
             FormattingType.STANDARD -> "[${dtf.format(datetime)}] - $username - $title"
             FormattingType.WITHOUT_NAME -> "[${dtf.format(datetime)}] - $title"
         }
@@ -74,7 +75,11 @@ abstract class SlackFile : BaseFile() {
 
     enum class FormattingType {
         STANDARD,
-        WITHOUT_NAME
+        WITHOUT_NAME;
+
+        companion object {
+            fun defaultType() = STANDARD
+        }
     }
 
     companion object {

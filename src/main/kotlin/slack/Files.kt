@@ -3,6 +3,7 @@ package slack
 import slackjson.CompleteFile
 import slackjson.ParsedFile
 import slackjson.SlackFile
+import slackjson.SlackFile.FormattingType
 import utils.DownloadStats
 import utils.Log
 import utils.WebApi
@@ -75,58 +76,37 @@ fun List<SlackFile>.filesByUser() : Map<String?, List<SlackFile>> {
  * Takes a map of UserID --> List of files and downloads them into folders by displayname
  */
 fun <F : SlackFile> Map<String?, List<F>>.downloadByUser(slack: SlackData, outDir: Path, webApi: WebApi?) {
-    // Process conversations alphabetically
-    Log.high("Downloading files to '$outDir'")
-    var downloadStats = DownloadStats()
-    this.keys.sortedBy { slack.userDisplayname(it) }.forEach { userID ->
-        val filesInConvo = this.getValue(userID)
-
-        // Get location to put files in
-        val name = slack.userDisplayname(userID)
-        val userFolder = outDir.resolve(name)
-
-        // Create folder if it doesn't exist
-        ensureFolderExists(userFolder)
-
-        // Download files
-        val channelStats = DownloadStats()
-        Log.medium("Downloading ${filesInConvo.size} files from $name")
-        filesInConvo.sortedBy { it.timestamp }.forEach { file ->
-            channelStats.update(file.download(userFolder, slack, webApi, formatting = SlackFile.FormattingType.WITHOUT_NAME))
-        }
-
-        channelStats.log(name, Log.Modes.MEDIUM)
-        downloadStats += channelStats
-    }
-
-    downloadStats.log("slack", Log.Modes.HIGH)
+    val mappedKeys = this.mapKeys { slack.userDisplayname(it.key) }
+    mappedKeys.downloadToFolders(slack, outDir, webApi, formatting = FormattingType.WITHOUT_NAME)
 }
 
 /**
- * Takes a map of ConvoID --> List of files and downloads them into folders by displayname
+ * Takes a map of ConvoID --> List of files and downloads them into folders by channel name
  */
 fun Map<String?, List<CompleteFile>>.downloadByChannel(slack: SlackData, outDir: Path, webApi: WebApi?) {
+    val mappedKeys = this.mapKeys { slack.conversationName(it.key) }
+    mappedKeys.downloadToFolders(slack, outDir, webApi)
+}
+
+fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(slack: SlackData, outDir: Path, webApi: WebApi?,
+                                                           formatting: FormattingType? = null) {
     // Process conversations alphabetically
     Log.high("Downloading files to '$outDir'")
     var downloadStats = DownloadStats()
-    this.keys.sortedBy { slack.conversationName(it) }.forEach { convoID ->
-        val filesInConvo = this.getValue(convoID)
 
-        // Get location to put files in
-        val convoName = slack.conversationName(convoID)
-        val convoFolder = outDir.resolve(convoName)
-
-        // Create folder if it doesn't exist
-        ensureFolderExists(convoFolder)
+    this.keys.sorted().forEach { key ->
+        val filesInConvo = this.getValue(key)
+        val folder = outDir.resolve(key)
+        ensureFolderExists(folder)
 
         // Download files
         val channelStats = DownloadStats()
-        Log.medium("Downloading ${filesInConvo.size} files from $convoName")
+        Log.medium("Downloading ${filesInConvo.size} files from $key")
         filesInConvo.sortedBy { it.timestamp }.forEach { file ->
-            channelStats.update(file.download(convoFolder, slack, webApi))
+            channelStats.update(file.download(folder, slack, webApi, formatting = formatting))
         }
 
-        channelStats.log(convoName, Log.Modes.MEDIUM)
+        channelStats.log(key, Log.Modes.MEDIUM)
         downloadStats += channelStats
     }
 
