@@ -15,8 +15,8 @@ data class User(
 
         // Booleans
         val deleted: Boolean,
-        @Json(name = "is_bot")
-        val isBot: Boolean
+        @Deprecated(message = "Use username() instead")
+        val is_bot: Boolean
 ) {
     @Suppress("DEPRECATION")
     fun username() = name
@@ -25,6 +25,8 @@ data class User(
     } else {
         profile.realName
     }
+    @Suppress("DEPRECATION")
+    fun isBot() = is_bot || id == "USLACKBOT"
 }
 
 @Suppress("unused")

@@ -37,7 +37,7 @@ class ScriptDownloadAvatars : CliktCommand(
     private val useDisplayname by option("--displayname", "-dn",
             help = "Use the display name instead of username").flag()
     private val includeDate by option("--add-date", "-ad",
-            help = "Adds the date in format ' - yy\\.mm\\.dd' to the folder").flag()
+            help = "Adds the date in format ' - yyyy\\.mm\\.dd' to the folder").flag()
 
     private val includeBots by option("--include-bots", "-ib",
             help = "Download the avatar images of bots").flag()
@@ -53,13 +53,13 @@ class ScriptDownloadAvatars : CliktCommand(
         val users = WebApi(token).getUsers().entries.filter { mapEntry ->
             if (!includeDeleted && mapEntry.value.deleted) {
                 false
-            } else !(!includeBots && mapEntry.value.isBot)
+            } else !(!includeBots && mapEntry.value.isBot())
         }.sortedBy { getName(useDisplayname, it.value) }
 
         // Setup folder
         val outDir = if (includeDate) {
             val timeNow = Instant.now().atZone(timeOptions.outTz)
-            val folderTimeFormatter = DateTimeFormatter.ofPattern("yy.MM.dd")
+            val folderTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
             val extraStr = " - " + folderTimeFormatter.format(timeNow)
             output.toPath().resolveSibling(output.name + extraStr)
         } else {
