@@ -21,7 +21,7 @@ class Avatars(private val users: Map<String, User>) {
         users.entries.filter { mapEntry ->
             if (ignoreDeleted && mapEntry.value.deleted) {
                 false
-            } else !(ignoreBots && mapEntry.value.is_bot)
+            } else !(ignoreBots && mapEntry.value.isBot)
         }.sortedBy { it.value.username() }.forEach { mapEntry ->
             val url = avatarURLs.getValue(mapEntry.key)
             val saveLoc = outDir.resolve(mapEntry.value.username() + guessImageExtFromURL(url))

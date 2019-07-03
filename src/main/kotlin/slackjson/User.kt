@@ -3,17 +3,22 @@ package slackjson
 import com.squareup.moshi.*
 import com.squareup.moshi.JsonReader
 
+@JsonClass(generateAdapter = true)
 data class User(
         // Strings and profile
         val id: String,
         val team_id: String,
-        private val name: String,
+
+        @Deprecated(message = "Use username() instead")
+        val name: String,
         val profile: Profile,
 
         // Booleans
         val deleted: Boolean,
-        val is_bot: Boolean
+        @Json(name = "is_bot")
+        val isBot: Boolean
 ) {
+    @Suppress("DEPRECATION")
     fun username() = name
     fun displayname() = if (profile.displayName.isNotEmpty()) {
         profile.displayName
