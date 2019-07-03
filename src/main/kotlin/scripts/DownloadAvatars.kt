@@ -7,8 +7,7 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
-import utils.Log
-import utils.WebApi
+import utils.*
 import java.io.File
 
 fun main(args: Array<String>) = ScriptDownloadAvatars().main(args)
@@ -39,18 +38,25 @@ class ScriptDownloadAvatars : CliktCommand(
         // Fetch additional options
         topLevelOptions.run()
 
-        // Setup
-        var users = WebApi(token).getUsers()
-        if (!includeBots) {
-            users = users.filter { !it.value.isBot }
-        }
-        if (!includeDeleted) {
-            users = users.filter { !it.value.deleted }
-        }
+        // Get users
+        val users = WebApi(token).getUsers().entries.filter { mapEntry ->
+            if (!includeDeleted && mapEntry.value.deleted) {
+                false
+            } else !(!includeBots && mapEntry.value.isBot)
+        }.sortedBy { it.value.username() }
 
-        // Resolve user/conversation ID
-        users.forEach {
-            Log.medium(it.value.username() + " - " + it.value.displayname())
+        // Setup
+        val outDir = output.toPath()
+        ensureFolderExists(outDir)
+        val http = Http()
+
+        Log.high("Downloading avatars")
+        users.forEach { mapEntry ->
+            val url = mapEntry.value.profile.getLargestImage()
+            val saveLoc = outDir.resolve(mapEntry.value.username() + guessImageExtFromURL(url))
+
+            http.downloadFile(url, saveLoc, ignoreIfExists = true)
         }
+        Log.high("Avatars downloaded")
     }
 }
