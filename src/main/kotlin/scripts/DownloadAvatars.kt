@@ -25,10 +25,14 @@ class ScriptDownloadAvatars : CliktCommand(
     ).required()
 
     // Options
+    // Output information
     private val output by option("--output", "-o",
             help = "Location to output files")
             .file(fileOkay = false)
-            .default(File("files"))
+            .default(File("avatars"))
+    private val useDisplayname by option("--displayname", "-dn",
+            help = "Use the display name instead of username").flag()
+
     private val includeBots by option("--include-bots", "-ib",
             help = "Download the avatar images of bots").flag()
     private val includeDeleted by option("--include-deleted", "-id",
@@ -53,7 +57,13 @@ class ScriptDownloadAvatars : CliktCommand(
         Log.high("Downloading avatars")
         users.forEach { mapEntry ->
             val url = mapEntry.value.profile.getLargestImage()
-            val saveLoc = outDir.resolve(mapEntry.value.username() + guessImageExtFromURL(url))
+            val name = if (useDisplayname) {
+                mapEntry.value.displayname()
+            } else {
+                mapEntry.value.username()
+            }
+
+            val saveLoc = outDir.resolve(name + guessImageExtFromURL(url))
 
             http.downloadFile(url, saveLoc, ignoreIfExists = true)
         }
