@@ -15,7 +15,11 @@ data class User(
         val is_bot: Boolean
 ) {
     fun username() = name
-    fun displayname() = profile.displayName
+    fun displayname() = if (profile.displayName.isNotEmpty()) {
+        profile.displayName
+    } else {
+        profile.realName
+    }
 }
 
 @Suppress("unused")
@@ -26,6 +30,7 @@ object ProfileJsonAdapter {
      */
     @FromJson fun jsonToProfile(reader: JsonReader) : Profile {
         var displayName: String? = null
+        var realName: String? = null
         val images = mutableMapOf<String, String>()
 
         // Loop to iterate over and consume object
@@ -35,6 +40,7 @@ object ProfileJsonAdapter {
 
             when {
                 name == "display_name" -> displayName = reader.nextString()
+                name == "real_name" -> realName = reader.nextString()
                 name.startsWith("image_") -> images[name.removePrefix("image_")] = reader.nextString()
                 else -> reader.skipValue()
             }
@@ -45,16 +51,20 @@ object ProfileJsonAdapter {
         if (displayName == null) {
             throw JsonDataException("No display_name for profile")
         }
+        if (realName == null) {
+            throw JsonDataException("No real_name for profile")
+        }
         if (images.isEmpty()) {
             throw JsonDataException("No images found for profile")
         }
 
-        return Profile(displayName, images)
+        return Profile(displayName, realName, images)
     }
 }
 
 data class Profile(
         val displayName: String,
+        val realName: String,
         val images: Map<String, String>
 ) {
 
