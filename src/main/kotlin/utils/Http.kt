@@ -27,14 +27,15 @@ class Http(authToken: String? = null) {
                 }.build()
     }
 
-    // Enums to indicate method response
-    enum class GetStatus { SUCCESS, FAILURE, RATE_LIMITED }
+    /** Enum to indicate method response */
+    enum class GETStatus { SUCCESS, FAILURE, RATE_LIMITED }
 
     /**
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, ignoreIfExists: Boolean = true, authToken: String? = null): DownloadStatus {
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null,
+                     ignoreIfExists: Boolean = true, authToken: String? = null): DownloadStatus {
         // Don't overwrite files
         val fileExists = saveLoc.toFile().exists()
         if (fileExists && ignoreIfExists) {
@@ -89,12 +90,12 @@ class Http(authToken: String? = null) {
 
             // Handle status codes
             when (status) {
-                GetStatus.SUCCESS -> return Result.Success(json!!)
-                GetStatus.FAILURE -> {
+                GETStatus.SUCCESS -> return Result.Success(json!!)
+                GETStatus.FAILURE -> {
                     Log.error("Exiting due to response failure")
                     exitProcess(-1)
                 }
-                GetStatus.RATE_LIMITED -> Log.warn("Rate limited, waiting " + "%,d".format(waitTime) + "s")
+                GETStatus.RATE_LIMITED -> Log.warn("Rate limited, waiting " + "%,d".format(waitTime) + "s")
             }
 
             if (i < RETRY_ATTEMPTS) {
@@ -114,7 +115,7 @@ class Http(authToken: String? = null) {
      *
      * @throws IOException
      */
-    private fun <T : SlackResponse> getInternal(url: String, adapter: JsonAdapter<T>, params: Map<String, String>): Pair<GetStatus, T?> {
+    private fun <T : SlackResponse> getInternal(url: String, adapter: JsonAdapter<T>, params: Map<String, String>): Pair<GETStatus, T?> {
         // Add params to url (including token)
         val httpUrl = HttpUrl.parse(url)!!.newBuilder()
         params.forEach { (key, value) ->
@@ -134,24 +135,24 @@ class Http(authToken: String? = null) {
             }
         } catch (e: IOException) {
             Log.error(e.toString())
-            return Pair(GetStatus.FAILURE, null)
+            return Pair(GETStatus.FAILURE, null)
         }
     }
 
     /**
      * Handles the checking of the response
      */
-    private fun <T : SlackResponse> processResponse(response: Response, adapter: JsonAdapter<T>, url: String): Pair<GetStatus, T?> {
+    private fun <T : SlackResponse> processResponse(response: Response, adapter: JsonAdapter<T>, url: String): Pair<GETStatus, T?> {
         val errBaseMsg = "Request for '$url' failed."
 
         // HTTP status codes
         if (response.code() == 429) {
             Log.warn("$errBaseMsg Rate limited.")
-            return Pair(GetStatus.RATE_LIMITED, null)
+            return Pair(GETStatus.RATE_LIMITED, null)
         }
         if (response.code() != 200) {
             Log.error("Request for '$url' failed. Status code: " + response.code().toString() + " (" + response.message() + ")")
-            return Pair(GetStatus.FAILURE, null)
+            return Pair(GETStatus.FAILURE, null)
         }
 
         // Parse JSON to moshi representation
@@ -174,7 +175,7 @@ class Http(authToken: String? = null) {
             }
 
             Log.error(msg)
-            return Pair(GetStatus.FAILURE, null)
+            return Pair(GETStatus.FAILURE, null)
         }
 
         // Check for warnings, but do not fail on them
@@ -182,6 +183,6 @@ class Http(authToken: String? = null) {
             Log.warn("Slack response contained warning for request '$url'. Message: " + parsedJson.warning)
         }
 
-        return Pair(GetStatus.SUCCESS, parsedJson)
+        return Pair(GETStatus.SUCCESS, parsedJson)
     }
 }
