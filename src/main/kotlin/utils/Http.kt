@@ -65,7 +65,7 @@ class Http(authToken: String? = null) {
         if (authToken != null) requestBuilder.addHeader("Authorization", "Bearer $authToken")
         val request = requestBuilder.build()
 
-        try {
+        val response = try {
             // Download file using GET request
             Log.debugHigh("Retrieving file from URL: '$url'")
             val response = client.newCall(request).execute()
@@ -77,21 +77,23 @@ class Http(authToken: String? = null) {
                 return DownloadStatus.FAILURE
             }
 
-            // Save to disk
-            Log.debugLow("Writing to $saveLoc")
-            saveLoc.parent?.toFile()?.mkdirs()
-            response.body()!!.byteStream().use {
-                Files.copy(it, saveLoc, StandardCopyOption.REPLACE_EXISTING)
-            }
-
-            return if (fileExists) {
-                DownloadStatus.SUCCESS_OVERWRITE
-            } else {
-                DownloadStatus.SUCCESS
-            }
+            response
         } catch (e: IOException) {
             Log.error("Error downloading file. ${e.javaClass.canonicalName}: ${e.message}")
             return DownloadStatus.FAILURE
+        }
+
+        // Save to disk
+        Log.debugLow("Writing to $saveLoc")
+        saveLoc.parent?.toFile()?.mkdirs()
+        response.body()!!.byteStream().use {
+            Files.copy(it, saveLoc, StandardCopyOption.REPLACE_EXISTING)
+        }
+
+        return if (fileExists) {
+            DownloadStatus.SUCCESS_OVERWRITE
+        } else {
+            DownloadStatus.SUCCESS
         }
     }
 
