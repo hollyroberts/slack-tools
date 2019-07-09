@@ -51,15 +51,22 @@ class Http(authToken: String? = null) {
      */
     fun downloadFile(url: String, saveLoc: Path, size: Long? = null, strategy: ConflictStrategy,
                      authToken: String? = null): DownloadStatus {
-        // Don't overwrite files
+        // Intermediary vars
         val fileExists = saveLoc.toFile().exists()
-        if (fileExists && strategy == ConflictStrategy.IGNORE) {
-            Log.low("File exists already: '${saveLoc.fileName}'")
-            return DownloadStatus.ALREADY_EXISTED
-        }
-
         val sizeStr = if (size != null) "(${formatSize(size)})" else "(unknown size)"
-        Log.medium("Downloading: '$url' as '${saveLoc.fileName}' $sizeStr")
+
+        if (!fileExists) {
+            Log.medium("Downloading: '$url' as '${saveLoc.fileName}' $sizeStr")
+        } else {
+            when (strategy) {
+                ConflictStrategy.IGNORE -> {
+                    Log.low("File exists already: '${saveLoc.fileName}'")
+                    return DownloadStatus.ALREADY_EXISTED
+                }
+                ConflictStrategy.OVERWRITE -> Log.medium("Downloading and overwriting $url as '${saveLoc.fileName}' $sizeStr")
+                ConflictStrategy.HASH -> Log.medium("Downloading $url $sizeStr and then handling conflict with ${saveLoc.filename}")
+            }
+        }
 
         // Download file to response
         val response = try {
