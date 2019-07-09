@@ -58,15 +58,15 @@ class Http(authToken: String? = null) {
             return DownloadStatus.ALREADY_EXISTED
         }
 
-        Log.medium("Downloading: '$url' as '${saveLoc.fileName}'"
-                + if (size != null) " (${formatSize(size)})" else " (unknown size)")
+        val sizeStr = if (size != null) "(${formatSize(size)})" else "(unknown size)"
+        Log.medium("Downloading: '$url' as '${saveLoc.fileName}' $sizeStr")
 
-        val requestBuilder = Request.Builder().url(url)
-        if (authToken != null) requestBuilder.addHeader("Authorization", "Bearer $authToken")
-        val request = requestBuilder.build()
-
+        // Download file to response
         val response = try {
-            // Download file using GET request
+            val requestBuilder = Request.Builder().url(url)
+            if (authToken != null) requestBuilder.addHeader("Authorization", "Bearer $authToken")
+            val request = requestBuilder.build()
+
             Log.debugHigh("Retrieving file from URL: '$url'")
             val response = client.newCall(request).execute()
             val code = response.code()
@@ -90,10 +90,10 @@ class Http(authToken: String? = null) {
             Files.copy(it, saveLoc, StandardCopyOption.REPLACE_EXISTING)
         }
 
-        return if (fileExists) {
-            DownloadStatus.SUCCESS_OVERWRITE
-        } else {
-            DownloadStatus.SUCCESS
+        return when (strategy) {
+            ConflictStrategy.IGNORE -> DownloadStatus.SUCCESS
+            ConflictStrategy.OVERWRITE -> DownloadStatus.SUCCESS_OVERWRITE
+            ConflictStrategy.HASH -> DownloadStatus.SUCCESS // TODO change
         }
     }
 
