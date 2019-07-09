@@ -23,7 +23,7 @@ class ScriptDownloadByChannel: CliktCommand(
     private val timeOptionsParser by TimeOptions()
 
     // Auth
-    private val token by option("--",
+    private val token by option("--token", "-t",
             envvar = "SlackToken",
             help = "Authorisation token for slacks web api"
     ).required()
