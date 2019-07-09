@@ -31,14 +31,29 @@ class Http(authToken: String? = null) {
     enum class GETStatus { SUCCESS, FAILURE, RATE_LIMITED }
 
     /**
+     * Controls how conflicts with existing files are handled when files are downloaded
+     *      IGNORE - Skips the file
+     *      OVERWRITE - Overwrites the existing file
+     *      HASH - Compares the hashes of the 2 files. If they differ then the downloaded file is saved as filename (2) etc.
+     * */
+    enum class ConflictStrategy {
+        IGNORE, OVERWRITE, HASH;
+
+        companion object {
+            fun default() = OVERWRITE
+        }
+    }
+
+
+    /**
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path, size: Long? = null,
-                     ignoreIfExists: Boolean = true, authToken: String? = null): DownloadStatus {
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, strategy: ConflictStrategy,
+                     authToken: String? = null): DownloadStatus {
         // Don't overwrite files
         val fileExists = saveLoc.toFile().exists()
-        if (fileExists && ignoreIfExists) {
+        if (fileExists && strategy == ConflictStrategy.IGNORE) {
             Log.low("File exists already: '${saveLoc.fileName}'")
             return DownloadStatus.ALREADY_EXISTED
         }
