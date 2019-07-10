@@ -64,7 +64,7 @@ class Http(authToken: String? = null) {
                     return DownloadStatus.ALREADY_EXISTED
                 }
                 ConflictStrategy.OVERWRITE -> Log.medium("Downloading and overwriting $url as '${saveLoc.fileName}' $sizeStr")
-                ConflictStrategy.HASH -> Log.medium("Downloading $url $sizeStr and then handling conflict with ${saveLoc.filename}")
+                ConflictStrategy.HASH -> Log.medium("Downloading $url $sizeStr and then handling conflict with ${saveLoc.fileName}")
             }
         }
 

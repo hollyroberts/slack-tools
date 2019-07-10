@@ -60,7 +60,7 @@ fun formatSize(size: Long, precision: Int = 2): String {
 fun ensureFolderExists(location: Path) {
     if (!location.toFile().exists()) {
         Log.debugHigh("Creating directory ' ${location.fileName}'")
-        location.toFile().mkdir()
+        location.toFile().mkdirs()
     }
 }
 
