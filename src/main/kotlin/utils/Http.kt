@@ -130,7 +130,7 @@ class Http(authToken: String? = null) {
         // Just save
         Log.debugLow("Writing to $actualSaveLoc")
         actualSaveLoc.parent?.toFile()?.mkdirs()
-        Files.write(saveLoc, downloadedBytes)
+        Files.write(actualSaveLoc, downloadedBytes)
 
         return when (strategy) {
             ConflictStrategy.IGNORE -> DownloadStatus.SUCCESS
