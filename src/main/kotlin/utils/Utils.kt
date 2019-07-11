@@ -3,6 +3,7 @@ package utils
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.JsonReader
 import okio.Buffer
+import java.io.File
 import java.net.URLConnection
 import java.nio.file.Path
 import java.text.DecimalFormat
@@ -78,4 +79,27 @@ fun guessImageExtFromURL(url: String): String {
     }
 
     return ".$filetype"
+}
+
+fun bytesToHex(bytes: ByteArray): String {
+    val builder = StringBuilder()
+    for (b in bytes) {
+        builder.append(String.format("%02x", b))
+    }
+    return builder.toString()
+}
+
+/**
+ * Splits the input string into stem + extension
+ */
+fun renameFilename(fileName: String, suffix: String) : String {
+    val tokens = fileName.split("\\.(?=[^\\.]+$)")
+    val separator = if (tokens.size == 2) "." else ""
+    val startAndExt = when (tokens.size) {
+        0 ->  "" to ""
+        1 -> tokens[0] to ""
+        else -> tokens[0] to tokens[1]
+    }
+
+    return startAndExt.first + suffix + separator + startAndExt.second
 }

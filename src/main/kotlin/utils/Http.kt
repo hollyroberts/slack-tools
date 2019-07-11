@@ -8,6 +8,7 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
 import kotlin.system.exitProcess
 
 class Http(authToken: String? = null) {
@@ -91,6 +92,36 @@ class Http(authToken: String? = null) {
         }
 
         // Save to disk
+        var actualSaveLoc = saveLoc
+        if (strategy == ConflictStrategy.HASH) {
+            // Hash downloaded file
+            val downloadedBytes = response.body()!!.bytes()
+            val hashAlgorithm = MessageDigest.getInstance("SHA-256")
+            val downloadedHash = hashAlgorithm.digest(downloadedBytes)
+            Log.debugLow("Downloaded hash: " + bytesToHex(downloadedHash))
+
+            val extraFileCount = 0
+
+            // Ensure that we either have the same hash as an existing file, or a unique filename
+            do {
+                if (!actualSaveLoc.toFile().exists()) {
+                    break
+                }
+
+                val fileHash = hashAlgorithm.digest(Files.readAllBytes(actualSaveLoc))
+                Log.debugLow("File hash of '$actualSaveLoc': " + bytesToHex(fileHash))
+
+                if (fileHash contentEquals downloadedHash) {
+                    Log.debugLow("Hashes are the same, ignoring")
+                    return DownloadStatus.ALREADY_EXISTED
+                }
+
+                val newFileName = renameFilename(saveLoc.fileName.toString(), " ($extraFileCount)")
+                actualSaveLoc = saveLoc.parent.resolve(newFileName)
+            } while(true)
+        }
+
+        // Just save
         Log.debugLow("Writing to $saveLoc")
         saveLoc.parent?.toFile()?.mkdirs()
         response.body()!!.byteStream().use {
