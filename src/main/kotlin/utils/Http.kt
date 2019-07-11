@@ -7,7 +7,6 @@ import okhttp3.*
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import kotlin.system.exitProcess
 
@@ -91,23 +90,25 @@ class Http(authToken: String? = null) {
             return DownloadStatus.FAILURE
         }
 
-        // Save to disk
         var actualSaveLoc = saveLoc
+        val downloadedBytes = response.body()!!.bytes()
+
+        // Save to disk
         if (strategy == ConflictStrategy.HASH) {
             // Hash downloaded file
-            val downloadedBytes = response.body()!!.bytes()
             val hashAlgorithm = MessageDigest.getInstance("SHA-256")
-            val downloadedHash = hashAlgorithm.digest(downloadedBytes)
-            Log.debugLow("Downloaded hash: " + bytesToHex(downloadedHash))
+            val downloadedHash by lazy { hashAlgorithm.digest(downloadedBytes) }
 
             val extraFileCount = 0
 
             // Ensure that we either have the same hash as an existing file, or a unique filename
             do {
                 if (!actualSaveLoc.toFile().exists()) {
+                    Log.debugLow("'$actualSaveLoc' doesn't exist")
                     break
                 }
 
+                Log.debugLow("Downloaded hash: " + bytesToHex(downloadedHash))
                 val fileHash = hashAlgorithm.digest(Files.readAllBytes(actualSaveLoc))
                 Log.debugLow("File hash of '$actualSaveLoc': " + bytesToHex(fileHash))
 
@@ -124,9 +125,7 @@ class Http(authToken: String? = null) {
         // Just save
         Log.debugLow("Writing to $saveLoc")
         saveLoc.parent?.toFile()?.mkdirs()
-        response.body()!!.byteStream().use {
-            Files.copy(it, saveLoc, StandardCopyOption.REPLACE_EXISTING)
-        }
+        Files.write(saveLoc, downloadedBytes)
 
         return when (strategy) {
             ConflictStrategy.IGNORE -> DownloadStatus.SUCCESS
