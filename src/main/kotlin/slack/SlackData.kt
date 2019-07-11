@@ -3,6 +3,7 @@
 package slack
 import scripts.TimeOptions
 import slackjson.*
+import utils.Http
 import java.time.ZoneId
 
 abstract class SlackData(val settings: Settings) {
@@ -67,7 +68,7 @@ data class Settings(
         val useDisplayNamesForConversationNames: Boolean = true,
         val useDisplayNamesForFiles: Boolean = false,
 
-        val inferFileLocation: Boolean = true,
+        val fileConflictStrategy: Http.ConflictStrategy = Http.ConflictStrategy.default(),
         val ignoreDownloadedFiles: Boolean = true,
 
         val outTz: ZoneId = ZoneId.systemDefault()

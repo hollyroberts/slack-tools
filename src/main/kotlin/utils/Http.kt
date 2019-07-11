@@ -50,7 +50,7 @@ class Http(authToken: String? = null) {
      * Downloads a file
      * @return Whether the operation was successful or not
      */
-    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, strategy: ConflictStrategy,
+    fun downloadFile(url: String, saveLoc: Path, size: Long? = null, strategy: ConflictStrategy = ConflictStrategy.default(),
                      authToken: String? = null): DownloadStatus {
         // Intermediary vars
         val fileExists = saveLoc.toFile().exists()

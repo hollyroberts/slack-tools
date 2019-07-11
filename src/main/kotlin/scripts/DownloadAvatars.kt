@@ -74,7 +74,7 @@ class ScriptDownloadAvatars : CliktCommand(
             val name = getName(useDisplayname, mapEntry.value)
             val saveLoc = outDir.resolve(name + guessImageExtFromURL(url))
 
-            http.downloadFile(url, saveLoc, ignoreIfExists = true)
+            http.downloadFile(url, saveLoc)
         }
         Log.high("Avatars downloaded")
     }

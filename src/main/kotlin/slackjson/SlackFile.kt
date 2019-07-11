@@ -47,9 +47,9 @@ abstract class SlackFile : BaseFile() {
 
         // Download
         urlPrivateDownload?.let {
-            return webApi?.downloadFile(it, folder.resolve(formattedName), size, slack.settings.ignoreDownloadedFiles)
+            return webApi?.downloadFile(it, folder.resolve(formattedName), size, slack.settings.fileConflictStrategy)
                     ?: run {
-                        Http().downloadFile(it, folder.resolve(formattedName), size, slack.settings.ignoreDownloadedFiles)
+                        Http().downloadFile(it, folder.resolve(formattedName), size, slack.settings.fileConflictStrategy)
                     }
         } ?: urlPrivate.let {
             Log.low("File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'")
