@@ -10,6 +10,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import slackjson.ConversationTypes
+import utils.Http
 import java.io.File
 import java.nio.file.Paths
 
@@ -56,7 +57,7 @@ class ScriptDownloadByChannel: CliktCommand(
         val timeOptions = timeOptionsParser.options()
 
         // Setup
-        val settings = Settings(timeOptions)
+        val settings = Settings(fileConflictStrategy = Http.ConflictStrategy.HASH).applyTimeOptions(timeOptions)
         val slack = SlackWebApi(token, settings)
 
         // Resolve user/conversation ID

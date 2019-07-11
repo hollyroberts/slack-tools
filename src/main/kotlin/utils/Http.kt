@@ -124,7 +124,7 @@ class Http(authToken: String? = null) {
 
         // Just save
         Log.debugLow("Writing to $saveLoc")
-        saveLoc.parent?.toFile()?.mkdirs()
+        actualSaveLoc.parent?.toFile()?.mkdirs()
         Files.write(saveLoc, downloadedBytes)
 
         return when (strategy) {

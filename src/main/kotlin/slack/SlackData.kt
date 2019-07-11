@@ -65,13 +65,16 @@ abstract class SlackData(val settings: Settings) {
 }
 
 data class Settings(
-        val useDisplayNamesForConversationNames: Boolean = true,
-        val useDisplayNamesForFiles: Boolean = false,
+        var useDisplayNamesForConversationNames: Boolean = true,
+        var useDisplayNamesForFiles: Boolean = false,
 
-        val fileConflictStrategy: Http.ConflictStrategy = Http.ConflictStrategy.default(),
-        val ignoreDownloadedFiles: Boolean = true,
+        var fileConflictStrategy: Http.ConflictStrategy = Http.ConflictStrategy.default(),
+        var ignoreDownloadedFiles: Boolean = true,
 
-        val outTz: ZoneId = ZoneId.systemDefault()
+        var outTz: ZoneId = ZoneId.systemDefault()
 ) {
-    constructor(timeOptions: TimeOptions.Options): this(outTz = timeOptions.outTz)
+    fun applyTimeOptions(timeOptions: TimeOptions.Options) : Settings  {
+        outTz = timeOptions.outTz
+        return this
+    }
 }

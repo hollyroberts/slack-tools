@@ -11,6 +11,7 @@ import slack.Settings
 import slack.SlackWebApi
 import slack.downloadByUser
 import slack.filesByUser
+import utils.Http
 import utils.Log
 import java.io.File
 
@@ -44,7 +45,7 @@ class ScriptDownloadByUser : CliktCommand(
         val timeOptions = timeOptionsParser.options()
 
         // Setup
-        val settings = Settings(timeOptions)
+        val settings = Settings(fileConflictStrategy = Http.ConflictStrategy.HASH).applyTimeOptions(timeOptions)
         val slack = SlackWebApi(token, settings)
 
         // Resolve user/conversation ID
