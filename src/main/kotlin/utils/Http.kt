@@ -64,7 +64,7 @@ class Http(authToken: String? = null) {
                     return DownloadStatus.ALREADY_EXISTED
                 }
                 ConflictStrategy.OVERWRITE -> Log.medium("Downloading and overwriting $url as '${saveLoc.fileName}' $sizeStr")
-                ConflictStrategy.HASH -> Log.medium("Downloading $url $sizeStr and then handling conflict with ${saveLoc.fileName}")
+                ConflictStrategy.HASH -> Log.medium("Downloading $url $sizeStr and then handling conflict with '${saveLoc.fileName}'")
             }
         }
 
@@ -99,10 +99,11 @@ class Http(authToken: String? = null) {
             val hashAlgorithm = MessageDigest.getInstance("SHA-256")
             val downloadedHash by lazy { hashAlgorithm.digest(downloadedBytes) }
 
-            val extraFileCount = 0
+            var extraFileCount = 0
 
             // Ensure that we either have the same hash as an existing file, or a unique filename
             do {
+                extraFileCount++
                 if (!actualSaveLoc.toFile().exists()) {
                     Log.debugLow("'$actualSaveLoc' doesn't exist")
                     break
@@ -120,10 +121,14 @@ class Http(authToken: String? = null) {
                 val newFileName = renameFilename(saveLoc.fileName.toString(), " ($extraFileCount)")
                 actualSaveLoc = saveLoc.parent.resolve(newFileName)
             } while(true)
+
+            if (saveLoc != actualSaveLoc) {
+                Log.medium("New save location: '$actualSaveLoc'")
+            }
         }
 
         // Just save
-        Log.debugLow("Writing to $saveLoc")
+        Log.debugLow("Writing to $actualSaveLoc")
         actualSaveLoc.parent?.toFile()?.mkdirs()
         Files.write(saveLoc, downloadedBytes)
 

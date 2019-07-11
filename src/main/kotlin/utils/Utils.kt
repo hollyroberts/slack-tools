@@ -93,12 +93,12 @@ fun bytesToHex(bytes: ByteArray): String {
  * Splits the input string into stem + extension
  */
 fun renameFilename(fileName: String, suffix: String) : String {
-    val tokens = fileName.split("\\.(?=[^\\.]+$)")
-    val separator = if (tokens.size == 2) "." else ""
-    val startAndExt = when (tokens.size) {
-        0 ->  "" to ""
-        1 -> tokens[0] to ""
-        else -> tokens[0] to tokens[1]
+    val dotLoc = fileName.lastIndexOf('.')
+    val separator = if (dotLoc == -1) "." else ""
+
+    val startAndExt = when (dotLoc) {
+        -1 -> "" to ""
+        else -> fileName.substring(0, dotLoc) to fileName.substring(dotLoc)
     }
 
     return startAndExt.first + suffix + separator + startAndExt.second
