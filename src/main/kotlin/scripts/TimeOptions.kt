@@ -6,11 +6,15 @@ import com.github.ajalt.clikt.parameters.options.option
 import slack.Settings
 import slack.SlackData
 import utils.Log
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.ResolverStyle
 import java.time.format.TextStyle
+import java.time.temporal.ChronoField
 import java.util.*
 
 /**
@@ -28,7 +32,14 @@ class TimeOptions : OptionGroup(
             val outTz: ZoneId
     )
 
-    private val dtf = DateTimeFormatter.ofPattern("dd/MM/yy")
+    private val dtf = DateTimeFormatterBuilder()
+            .appendPattern("dd/MM/[yyyy][yy]")
+            .optionalStart()
+            .appendPattern(" HH:mm")
+            .optionalEnd()
+            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+            .toFormatter()
 
     // Date input options
     private val printTzs by option("--timezone-list", "-tzl",
