@@ -102,7 +102,8 @@ open class ParsedFile (
 }
 
 object ShareJsonAdapter {
-    @FromJson fun extractShareInfo(reader: JsonReader) : FileShare {
+    @FromJson
+    fun extractShareInfo(reader: JsonReader) : FileShare {
         val map = mutableMapOf<String, Double>()
 
         reader.beginObject()
@@ -125,6 +126,12 @@ object ShareJsonAdapter {
         reader.endObject()
 
         return FileShare(map)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    @ToJson
+    fun shareToJson(fileShare: FileShare) : String {
+        throw UnsupportedOperationException("Serialisation of FileShare is not supported")
     }
 
     private fun processChannel(reader: JsonReader) : Pair<String, Double> {

@@ -67,6 +67,12 @@ object ProfileJsonAdapter {
 
         return Profile(displayName, realName, images)
     }
+
+    @Suppress("UNUSED_PARAMETER")
+    @ToJson
+    fun profileToJson(profile: Profile) : String {
+        throw UnsupportedOperationException("Serialisation of profiles not supported")
+    }
 }
 
 data class Profile(
