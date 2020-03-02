@@ -45,7 +45,7 @@ object BaseMessageCustomAdapter {
         if (type != "message") {
             throw JsonDataException("Message type was not 'message', but was '$type'")
         }
-        val subtypeEnum = MessageSubtype.enmMap.getOrElse(subtype, { return null })
+        val subtypeEnum = MessageSubtype.enumMap.getOrElse(subtype, { return null })
 
         // TODO extend this
         return when (subtypeEnum) {
@@ -69,23 +69,6 @@ enum class MessageSubtype(val label: String?) {
     CHANNEL_TOPIC("channel_topic");
 
     companion object {
-        val enmMap = values().associateBy { it.label }
+        val enumMap = values().associateBy { it.label }
     }
-}
-
-fun main() {
-    val text: String = """{
-    "type": "message",
-    "channel": "C2147483705",
-    "user": "U2147483697",
-    "text": "Hello world",
-    "ts": "1355517523.000005"
-}"""
-
-    val adapter = Moshi.Builder()
-            .add(BaseMessageCustomAdapter)
-            .build()
-            .adapter(BaseMessage::class.java)
-
-    val parsed = adapter.fromJson(text)!!
 }

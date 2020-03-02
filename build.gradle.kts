@@ -26,6 +26,10 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.15.0")
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_12
 }
