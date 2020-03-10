@@ -1,7 +1,6 @@
 package slackjson.message
 
 import com.squareup.moshi.*
-import slackjson.message.MessageSubtype.STANDARD_MESSAGE
 
 interface BaseMessage {
     val ts: String
@@ -14,6 +13,7 @@ interface BaseUserMessage : BaseMessage {
 object BaseMessageCustomAdapter {
     private val moshi = Moshi.Builder().build()
     private val textMessageAdapter = moshi.adapter(TextMessage::class.java)
+    private val channelMessageAdapter = moshi.adapter(ChannelMessage::class.java)
 
     private val keys = JsonReader.Options.of("type", "subtype")
 
@@ -39,36 +39,27 @@ object BaseMessageCustomAdapter {
                 break
             }
         }
-        peekedReader.endObject()
+        // Don't call endObject on the peeked reader
 
         // Parse message into actual type
         if (type != "message") {
             throw JsonDataException("Message type was not 'message', but was '$type'")
         }
-        val subtypeEnum = MessageSubtype.enumMap.getOrElse(subtype, { return null })
 
         // TODO extend this
-        return when (subtypeEnum) {
-            STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
-            else -> null
+        return when (MessageType.lookup(subtype)) {
+            Other.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
+            ChannelType.CHANNEL_JOIN -> channelMessageAdapter.fromJson(reader)
+            else -> {
+                // TODO add a test for this condition?
+                reader.skipValue()
+                null
+            }
         }
     }
 
     @ToJson
     fun toJson(baseMessage: BaseMessage) : String {
         throw JsonEncodingException("Encoding to Json not supported")
-    }
-}
-
-enum class MessageSubtype(val label: String?) {
-    STANDARD_MESSAGE(null),
-    CHANNEL_JOIN("channel_join"),
-    CHANNEL_LEAVE("channel_leave"),
-    CHANNEL_NAME("channel_name"),
-    CHANNEL_PURPOSE("channel_purpose"),
-    CHANNEL_TOPIC("channel_topic");
-
-    companion object {
-        val enumMap = values().associateBy { it.label }
     }
 }
