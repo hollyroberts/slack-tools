@@ -1,0 +1,15 @@
+[
+  {
+    "type": "message",
+    "user": "U2147483697",
+    "text": "Hello world",
+    "ts": "1355517523.000005"
+  },
+  {
+    "type": "message",
+    "subtype": "channel_join",
+    "ts": "1410264453.000002",
+    "user": "U02JQMMED",
+    "text": "<@U02JQMMED> has joined the channel"
+  }
+]

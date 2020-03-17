@@ -1,0 +1,7 @@
+{
+  "type": "messagee",
+  "subtype": "channel_join",
+  "ts": "1410264453.000002",
+  "user": "U02JQMMED",
+  "text": "<@U02JQMMED> has joined the channel"
+}

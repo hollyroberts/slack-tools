@@ -11,8 +11,12 @@ interface MessageType {
                 .flatten()
                 .associateBy { it.label }
 
-        fun lookup(subtype: String?): MessageType {
+        fun lookupStrict(subtype: String?): MessageType {
             return typeMap[subtype] ?: throw IllegalArgumentException("Unrecognised subtype '$subtype'")
+        }
+
+        fun lookup(subtype: String?): MessageType? {
+            return typeMap[subtype]
         }
     }
 }

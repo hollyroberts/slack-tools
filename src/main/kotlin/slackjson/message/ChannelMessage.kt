@@ -15,5 +15,5 @@ class ChannelMessage(
         val text: String
 ) : BaseUserMessage {
     @Suppress("DEPRECATION")
-    val subtype = MessageType.lookup(subtypeRaw) as ChannelType
+    val subtype: ChannelType = MessageType.lookupStrict(subtypeRaw) as ChannelType
 }
