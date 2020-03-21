@@ -3,19 +3,19 @@ package slack
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
 import okio.Okio
+import slackjson.MoshiAdapter
 import slackjson.User
-import utils.WebApi
 import utils.Log
 import java.nio.file.Path
 
 class SlackExport private constructor() {
     // Factory method
     companion object {
-        fun loadFromFolder(folder: Path) : SlackExport {
+        fun loadFromFolder(folder: Path): SlackExport {
             val dataType = Types.newParameterizedType(List::class.java, User::class.java)
-            val adapter: JsonAdapter<List<User>> = WebApi("").moshi.adapter(dataType)!!
+            val adapter: JsonAdapter<List<User>> = MoshiAdapter.adapter.adapter(dataType)
             val userList = loadJson(folder.resolve("users.json"), adapter)
-            val userMap = userList.associateBy({it.id}, {it})
+            val userMap = userList.associateBy({ it.id }, { it })
 
             // TODO users
             // TODO channel JSON
@@ -24,7 +24,7 @@ class SlackExport private constructor() {
             return SlackExport()
         }
 
-        private fun<T> loadJson(location: Path, adapter: JsonAdapter<T>) : T {
+        private fun <T> loadJson(location: Path, adapter: JsonAdapter<T>): T {
             Log.debugLow("Loading $location")
             val file = location.toFile()
             val bufferedSource = Okio.buffer(Okio.source(file))

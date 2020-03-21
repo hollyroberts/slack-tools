@@ -1,7 +1,6 @@
 package utils
 
 import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
 import slackjson.*
 import slackjson.message.BaseMessage
 import java.nio.file.Path
@@ -28,11 +27,6 @@ class WebApi(token: String) {
 
     private val http = Http(token)
 
-    val moshi = Moshi.Builder()
-            .add(ProfileJsonAdapter)
-            .add(ShareJsonAdapter)
-            .build()!!
-
     /**
      * Equivalent to Http.downloadFile, but manages token for us
      */
@@ -49,8 +43,8 @@ class WebApi(token: String) {
                 "limit" to CONVO_LIST_LIMIT.toString(),
                 "types" to "public_channel, private_channel, im",
                 "cursor" to "")
-        val adapter = moshi.adapter(ConversationListResponse::class.java)!!
 
+        val adapter = MoshiAdapter.forClass(ConversationListResponse::class.java)
 
         Log.medium("Retrieving conversations (channels)")
         callCursorApi<ConversationListResponse>(
@@ -84,7 +78,7 @@ class WebApi(token: String) {
         channel?.let { params["channel"] = it }
         user?.let { params["user"] = it }
 
-        val adapter = moshi.adapter(FileListResponse::class.java)!!
+        val adapter = MoshiAdapter.forClass(FileListResponse::class.java)
 
         // Get results
         Log.high("Retrieving list of files")
@@ -107,7 +101,7 @@ class WebApi(token: String) {
     fun getFile(fileId: String) : ParsedFile {
         val params = mapOf(
                 "file" to fileId)
-        val adapter = moshi.adapter(FileResponse::class.java)!!
+        val adapter = MoshiAdapter.forClass(FileResponse::class.java)
         val response = (http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
 
         return response.file
@@ -122,10 +116,11 @@ class WebApi(token: String) {
         val params = mutableMapOf(
                 "limit" to USERS_LIST_LIMIT.toString(),
                 "cursor" to "")
-        val adapter = moshi.adapter(UserListResponse::class.java)!!
+
+        val adapter = MoshiAdapter.forClass(UserListResponse::class.java)
 
         Log.medium("Retrieving user results")
-        callCursorApi<UserListResponse>(
+        callCursorApi(
                 URL_USERS_LIST, adapter, params, RETRY_TIER_2
         ) { response ->
             // Add entries to map and output message

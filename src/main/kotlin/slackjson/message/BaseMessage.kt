@@ -51,7 +51,6 @@ object BaseMessageCustomAdapter {
             Other.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
             ChannelType.CHANNEL_JOIN -> channelMessageAdapter.fromJson(reader)
             else -> {
-                // TODO add a test for this condition?
                 reader.skipValue()
                 null
             }
