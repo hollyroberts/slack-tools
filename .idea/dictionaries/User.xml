@@ -3,6 +3,7 @@
     <words>
       <w>ajalt</w>
       <w>archiver</w>
+      <w>assertj</w>
       <w>clikt</w>
       <w>codegen</w>
       <w>convo</w>
@@ -19,6 +20,7 @@
       <w>squareup</w>
       <w>subcommands</w>
       <w>userid</w>
+      <w>uslackbot</w>
     </words>
   </dictionary>
 </component>

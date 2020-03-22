@@ -1,9 +1,8 @@
 package utils
 
-import com.squareup.moshi.Moshi
 import com.squareup.moshi.JsonReader
+import com.squareup.moshi.Moshi
 import okio.Buffer
-import java.io.File
 import java.net.URLConnection
 import java.nio.file.Path
 import java.text.DecimalFormat

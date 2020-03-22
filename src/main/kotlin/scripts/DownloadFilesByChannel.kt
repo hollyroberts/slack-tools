@@ -1,18 +1,16 @@
 package scripts
 
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.parameters.arguments.argument
-import slack.*
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
+import slack.*
 import slackjson.ConversationTypes
 import utils.Http
 import java.io.File
-import java.nio.file.Paths
 
 fun main(args: Array<String>) = ScriptDownloadByChannel().main(args)
 

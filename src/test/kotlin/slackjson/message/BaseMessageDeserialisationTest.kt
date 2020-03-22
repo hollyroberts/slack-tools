@@ -31,6 +31,7 @@ internal class BaseMessageDeserialisationTest {
     }
 
     @Test
+    @Suppress("SpellCheckingInspection")
     fun invalidType() {
         val input = readResource("invalid-type.json")
         assertThatThrownBy { adapter.fromJson(input) }

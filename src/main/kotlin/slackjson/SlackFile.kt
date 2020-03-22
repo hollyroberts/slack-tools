@@ -10,7 +10,6 @@ import java.io.File
 import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 abstract class SlackFile : BaseFile() {

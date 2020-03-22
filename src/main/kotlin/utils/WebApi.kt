@@ -47,7 +47,7 @@ class WebApi(token: String) {
         val adapter = MoshiAdapter.forClass(ConversationListResponse::class.java)
 
         Log.medium("Retrieving conversations (channels)")
-        callCursorApi<ConversationListResponse>(
+        callCursorApi(
                 URL_CONVO_LIST, adapter, params, RETRY_TIER_2
         ) { response ->
             // Add entries to map and output message

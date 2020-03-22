@@ -30,6 +30,7 @@ open class ParsedFile (
         override val ims: List<String>?,
 
         // Non inherited properties
+        @Suppress("MemberVisibilityCanBePrivate")
         val shares: FileShare?
 ) : SlackFile() {
     @Transient

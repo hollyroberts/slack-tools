@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Test without resources" pattern="test:*..*&amp;&amp;!file:*.json" />
+</component>
