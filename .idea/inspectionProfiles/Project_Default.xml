@@ -3,12 +3,22 @@
     <option name="myName" value="Project Default" />
     <inspection_tool class="PrivatePropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="SpellCheckingInspection" enabled="true" level="TYPO" enabled_by_default="false">
-      <scope name="Test without resources" level="TYPO" enabled="true">
+      <scope name="Docs" level="TYPO" enabled="true">
         <option name="processCode" value="true" />
         <option name="processLiterals" value="true" />
         <option name="processComments" value="true" />
       </scope>
-      <scope name="Production" level="TYPO" enabled="true">
+      <scope name="Tests without resources" level="TYPO" enabled="true">
+        <option name="processCode" value="true" />
+        <option name="processLiterals" value="true" />
+        <option name="processComments" value="true" />
+      </scope>
+      <scope name="Main" level="TYPO" enabled="true">
+        <option name="processCode" value="true" />
+        <option name="processLiterals" value="true" />
+        <option name="processComments" value="true" />
+      </scope>
+      <scope name="Test without resources" level="TYPO" enabled="true">
         <option name="processCode" value="true" />
         <option name="processLiterals" value="true" />
         <option name="processComments" value="true" />
