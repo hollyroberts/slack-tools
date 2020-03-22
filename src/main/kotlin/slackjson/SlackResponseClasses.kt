@@ -5,16 +5,13 @@ import com.squareup.moshi.JsonClass
 /*
 Top level classes for slack json representations
  */
-
-@JsonClass(generateAdapter = true)
-open class SlackResponse {
+abstract class SlackResponse {
     var ok = false
     var warning: String? = null
     var error: String? = null
 }
 
-@JsonClass(generateAdapter = true)
-open class CursorResponse : SlackResponse() {
+abstract class CursorResponse : SlackResponse() {
     @Suppress("PropertyName")
     lateinit var response_metadata: Cursor
 
@@ -30,8 +27,7 @@ open class CursorResponse : SlackResponse() {
     fun nextCursor() = response_metadata.next_cursor
 }
 
-@JsonClass(generateAdapter = true)
-open class PaginatedResponse : SlackResponse() {
+abstract class PaginatedResponse : SlackResponse() {
     lateinit var paging: Page
 
     /**

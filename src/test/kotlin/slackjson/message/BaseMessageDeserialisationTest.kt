@@ -2,16 +2,14 @@ package slackjson.message
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.Moshi
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import slackjson.MoshiAdapter
+import slackjson.TestUtils
 
-internal class BaseMessageDeserialisationTest {
-    private val adapter: JsonAdapter<BaseMessage> = Moshi.Builder()
-            .add(BaseMessageCustomAdapter)
-            .build()
-            .adapter(BaseMessage::class.java)
+internal class BaseMessageDeserialisationTest : TestUtils {
+    private val adapter: JsonAdapter<BaseMessage> = MoshiAdapter.forClass(BaseMessage::class.java)
 
     @Test
     fun textMessageSerialisation() {
@@ -43,10 +41,5 @@ internal class BaseMessageDeserialisationTest {
     fun unknownType() {
         val input = readResource("unknown-subtype.json")
         assertThat(adapter.fromJson(input)).isNull()
-    }
-
-    private fun readResource(resource: String) : String {
-        val inputStream  = this::class.java.getResourceAsStream(resource)!!
-        return inputStream.reader().readText()
     }
 }

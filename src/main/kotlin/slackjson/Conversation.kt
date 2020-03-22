@@ -33,11 +33,7 @@ class Conversation(
         // User field if dm
         val user: String?
 ) {
-    /**
-     * Workaround because init{} doesn't work with Moshi's codegen (the object is created twice)
-     * Instead we call this in ConversationList to verify all the objects
-     */
-    fun verify() {
+    init {
         val numTrues = booleanArrayOf(isChannel, isGroup, isIm).sumBy { if (it) 1 else 0 }
         val conversationStr = "Conversation $id" + if (name != null) " ($name)" else ""
 

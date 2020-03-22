@@ -2,9 +2,11 @@ package slackjson
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import slackjson.message.BaseMessageCustomAdapter
 
 object MoshiAdapter {
     val adapter: Moshi = Moshi.Builder()
+            .add(BaseMessageCustomAdapter)
             .add(ProfileJsonAdapter)
             .add(ShareJsonAdapter)
             .build()
