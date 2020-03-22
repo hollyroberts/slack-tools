@@ -1,9 +1,12 @@
 package utils
 
-import slackjson.SlackResponse
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonDataException
-import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import slackjson.SlackResponse
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -76,7 +79,7 @@ class Http(authToken: String? = null) {
 
             Log.debugHigh("Retrieving file from URL: '$url'")
             val response = client.newCall(request).execute()
-            val code = response.code()
+            val code = response.code
 
             Log.debugLow("Response code: $code")
             if (code != 200) {
@@ -91,7 +94,7 @@ class Http(authToken: String? = null) {
         }
 
         var actualSaveLoc = saveLoc
-        val downloadedBytes = response.body()!!.bytes()
+        val downloadedBytes = response.body!!.bytes()
 
         // Save to disk
         if (strategy == ConflictStrategy.HASH) {
@@ -176,7 +179,7 @@ class Http(authToken: String? = null) {
      */
     private fun <T : SlackResponse> getInternal(url: String, adapter: JsonAdapter<T>, params: Map<String, String>): Pair<GETStatus, T?> {
         // Add params to url (including token)
-        val httpUrl = HttpUrl.parse(url)!!.newBuilder()
+        val httpUrl = url.toHttpUrlOrNull()!!.newBuilder()
         params.forEach { (key, value) ->
             httpUrl.addQueryParameter(key, value)
         }
@@ -205,18 +208,18 @@ class Http(authToken: String? = null) {
         val errBaseMsg = "Request for '$url' failed."
 
         // HTTP status codes
-        if (response.code() == 429) {
+        if (response.code == 429) {
             Log.warn("$errBaseMsg Rate limited.")
             return Pair(GETStatus.RATE_LIMITED, null)
         }
-        if (response.code() != 200) {
-            Log.error("Request for '$url' failed. Status code: " + response.code().toString() + " (" + response.message() + ")")
+        if (response.code != 200) {
+            Log.error("Request for '$url' failed. Status code: " + response.code.toString() + " (" + response.message + ")")
             return Pair(GETStatus.FAILURE, null)
         }
 
         // Parse JSON to moshi representation
         // Body is guaranteed to be non-null if called from execute()
-        val json = response.body()!!.string()
+        val json = response.body!!.string()
         Log.debugLow("Parsing JSON")
         val parsedJson = try {
             adapter.fromJson(json)!!

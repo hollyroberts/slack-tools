@@ -2,7 +2,8 @@ package slack
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
-import okio.Okio
+import okio.buffer
+import okio.source
 import slackjson.MoshiAdapter
 import slackjson.User
 import utils.Log
@@ -27,7 +28,7 @@ class SlackExport private constructor() {
         private fun <T> loadJson(location: Path, adapter: JsonAdapter<T>): T {
             Log.debugLow("Loading $location")
             val file = location.toFile()
-            val bufferedSource = Okio.buffer(Okio.source(file))
+            val bufferedSource = file.source().buffer()
             return adapter.fromJson(bufferedSource)!!
         }
     }

@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.squareup.okhttp3:okhttp:3.14.2")
+    implementation("com.squareup.okhttp3:okhttp:4.4.1")
     implementation("com.github.ajalt:clikt:2.1.0")
 
     implementation("com.squareup.moshi:moshi:1.9.2")
