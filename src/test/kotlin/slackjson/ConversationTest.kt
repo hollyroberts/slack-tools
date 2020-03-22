@@ -41,8 +41,6 @@ internal class ConversationTest : TestUtils {
     fun incorrectInstantMessage() {
         val input = readResource("conversation-incorrect-im.json")
 
-        //\adapter.fromJson(input)!
-
         assertThatThrownBy { adapter.fromJson(input)!! }
                 .hasRootCauseInstanceOf(JsonDataException::class.java)
                 .hasRootCauseMessage("Conversation D0C0F7S8Y is a dm, but does not contain a user field")

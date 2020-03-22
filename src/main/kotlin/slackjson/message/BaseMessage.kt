@@ -1,6 +1,7 @@
 package slackjson.message
 
 import com.squareup.moshi.*
+import slackjson.MoshiAdapter
 
 interface BaseMessage {
     val ts: String
@@ -11,9 +12,8 @@ interface BaseUserMessage : BaseMessage {
 }
 
 object BaseMessageCustomAdapter {
-    private val moshi = Moshi.Builder().build()
-    private val textMessageAdapter = moshi.adapter(TextMessage::class.java)
-    private val channelMessageAdapter = moshi.adapter(ChannelMessage::class.java)
+    private val textMessageAdapter = MoshiAdapter.forClass(TextMessage::class.java)
+    private val channelMessageAdapter = MoshiAdapter.forClass(ChannelMessage::class.java)
 
     private val keys = JsonReader.Options.of("type", "subtype")
 
@@ -30,9 +30,7 @@ object BaseMessageCustomAdapter {
             when (peekedReader.selectName(keys)) {
                 0 -> type = peekedReader.nextString()
                 1 -> subtype = peekedReader.nextString()
-                -1 -> {
-                    peekedReader.skipValue()
-                }
+                -1 -> peekedReader.skipValue()
             }
 
             if (type != null && subtype != null) {
@@ -49,7 +47,7 @@ object BaseMessageCustomAdapter {
         // TODO extend this
         return when (MessageType.lookup(subtype)) {
             Other.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
-            ChannelType.CHANNEL_JOIN -> channelMessageAdapter.fromJson(reader)
+            is ChannelType -> channelMessageAdapter.fromJson(reader)
             else -> {
                 reader.skipValue()
                 null
