@@ -7,6 +7,7 @@ import slackjson.message.BaseMessageCustomAdapter
 object MoshiAdapter {
     val adapter: Moshi by lazy {
         Moshi.Builder()
+                .add(InjectorAdapter)
                 .add(BaseMessageCustomAdapter)
                 .add(ProfileJsonAdapter)
                 .add(ShareJsonAdapter)

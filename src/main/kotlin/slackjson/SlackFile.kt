@@ -12,7 +12,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-abstract class SlackFile : BaseFile() {
+abstract class SlackFile : BaseFile(), MoshiInjectable {
     // Identification
     abstract val id: String
     abstract val user: String
