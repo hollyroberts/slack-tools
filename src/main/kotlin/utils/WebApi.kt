@@ -4,8 +4,10 @@ import com.squareup.moshi.JsonAdapter
 import slackjson.*
 import slackjson.message.BaseMessage
 import java.nio.file.Path
+import javax.inject.Inject
+import javax.inject.Named
 
-class WebApi(token: String) {
+class WebApi @Inject constructor(@Named("token") token: String) {
     companion object {
         // URLs
         private const val URL_CONVO_LIST = "https://slack.com/api/conversations.list"

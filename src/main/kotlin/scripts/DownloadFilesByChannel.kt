@@ -64,7 +64,7 @@ class ScriptDownloadByChannel: CliktCommand(
                 .settings(settings)
                 .token(token)
                 .build()
-        val slack = daggerComponent.getWebApi()
+        val slack = daggerComponent.getSlackWebApi()
 
         // Resolve user/conversation ID
         val userID = user?.let { slack.inferUserID(it) }

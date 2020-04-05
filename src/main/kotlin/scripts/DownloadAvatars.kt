@@ -7,8 +7,13 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
+import dagger.DaggerMainComponent
+import slack.Settings
 import slackjson.User
-import utils.*
+import utils.Http
+import utils.Log
+import utils.ensureFolderExists
+import utils.guessImageExtFromURL
 import java.io.File
 import java.time.Instant
 import java.time.format.DateTimeFormatter
@@ -49,8 +54,14 @@ class ScriptDownloadAvatars : CliktCommand(
         topLevelOptions.run()
         val timeOptions = timeOptionsParser.options()
 
+        val daggerComponent = DaggerMainComponent.builder()
+                .settings(Settings())
+                .token(token)
+                .build()
+        val webApi = daggerComponent.getWebApi()
+
         // Get users
-        val users = WebApi(token).getUsers().entries.filter { mapEntry ->
+        val users = webApi.getUsers().entries.filter { mapEntry ->
             if (!includeDeleted && mapEntry.value.deleted) {
                 false
             } else !(!includeBots && mapEntry.value.isBot())

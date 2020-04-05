@@ -2,6 +2,7 @@ package dagger
 
 import slack.Settings
 import slack.SlackWebApi
+import utils.WebApi
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -19,5 +20,7 @@ interface MainComponent {
         fun build(): MainComponent
     }
 
-    fun getWebApi(): SlackWebApi
+    fun getSlackWebApi(): SlackWebApi
+
+    fun getWebApi(): WebApi
 }
