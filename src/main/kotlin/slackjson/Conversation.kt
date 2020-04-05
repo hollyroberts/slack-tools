@@ -16,6 +16,7 @@ enum class ConversationTypes(val shortName: String) {
     }
 }
 
+@MoshiInject
 @JsonClass(generateAdapter = true)
 class Conversation(
         // Main data we're interested in
@@ -32,7 +33,7 @@ class Conversation(
 
         // User field if dm
         val user: String?
-) : MoshiInjectable {
+) {
     init {
         val numTrues = booleanArrayOf(isChannel, isGroup, isIm).sumBy { if (it) 1 else 0 }
         val conversationStr = "Conversation $id" + if (name != null) " ($name)" else ""
