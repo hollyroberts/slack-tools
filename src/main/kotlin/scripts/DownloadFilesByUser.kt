@@ -7,8 +7,8 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
+import dagger.DaggerMainComponent
 import slack.Settings
-import slack.SlackWebApi
 import slack.downloadByUser
 import slack.filesByUser
 import utils.Http
@@ -25,7 +25,7 @@ class ScriptDownloadByUser : CliktCommand(
     private val timeOptionsParser by TimeOptions()
 
     // Auth
-    private val token by option("--token", "-t",
+    private val token: String by option("--token", "-t",
             envvar = "SlackToken",
             help = "Authorisation token for slacks web api"
     ).required()
@@ -46,7 +46,11 @@ class ScriptDownloadByUser : CliktCommand(
 
         // Setup
         val settings = Settings(fileConflictStrategy = Http.ConflictStrategy.HASH).applyTimeOptions(timeOptions)
-        val slack = SlackWebApi(token, settings)
+        val daggerComponent = DaggerMainComponent.builder()
+                .settings(settings)
+                .token(token)
+                .build()
+        val slack = daggerComponent.getWebApi()
 
         // Resolve user/conversation ID
         val convoID = convo.let { slack.inferChannelID(it) } ?: run {

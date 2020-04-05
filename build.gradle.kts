@@ -14,6 +14,10 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
+
+    api("com.google.dagger:dagger:2.27")
+    kapt("com.google.dagger:dagger-compiler:2.27")
+
     implementation("com.squareup.okhttp3:okhttp:4.4.1")
     implementation("com.github.ajalt:clikt:2.1.0")
 

@@ -7,7 +7,11 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
-import slack.*
+import dagger.DaggerMainComponent
+import slack.Settings
+import slack.downloadByChannel
+import slack.filesByConvo
+import slack.toCompleteFiles
 import slackjson.ConversationTypes
 import utils.Http
 import java.io.File
@@ -56,7 +60,11 @@ class ScriptDownloadByChannel: CliktCommand(
 
         // Setup
         val settings = Settings(fileConflictStrategy = Http.ConflictStrategy.HASH).applyTimeOptions(timeOptions)
-        val slack = SlackWebApi(token, settings)
+        val daggerComponent = DaggerMainComponent.builder()
+                .settings(settings)
+                .token(token)
+                .build()
+        val slack = daggerComponent.getWebApi()
 
         // Resolve user/conversation ID
         val userID = user?.let { slack.inferUserID(it) }
