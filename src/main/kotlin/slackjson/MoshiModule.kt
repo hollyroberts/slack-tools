@@ -4,17 +4,18 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import slackjson.message.BaseMessageCustomAdapter
-
+import javax.inject.Singleton
 
 @Module
 object MoshiModule {
     @Provides
-    fun provideMoshi(injectorAdapter: InjectorAdapter.Factory, baseMessageCustomAdapter: BaseMessageCustomAdapter): Moshi {
+    @Singleton
+    fun provideMoshi(injectorAdapter: InjectorAdapter.Factory): Moshi {
         return Moshi.Builder()
-            .add(injectorAdapter)
-            .add(baseMessageCustomAdapter)
-            .add(ProfileJsonAdapter)
-            .add(ShareJsonAdapter)
-            .build()
+                .add(injectorAdapter)
+                .add(BaseMessageCustomAdapter)
+                .add(ProfileJsonAdapter)
+                .add(ShareJsonAdapter)
+                .build()
     }
 }

@@ -1,9 +1,6 @@
 package slackjson.message
 
 import com.squareup.moshi.*
-import javax.inject.Inject
-import javax.inject.Provider
-import javax.inject.Singleton
 
 interface BaseMessage {
     val ts: String
@@ -13,15 +10,11 @@ interface BaseUserMessage : BaseMessage {
     val user: String
 }
 
-@Singleton
-class BaseMessageCustomAdapter @Inject constructor(moshiProvider: Provider<Moshi>) {
-    private val textMessageAdapter by lazy { moshiProvider.get().adapter(TextMessage::class.java) }
-    private val channelMessageAdapter by lazy { moshiProvider.get().adapter(ChannelMessage::class.java) }
-
+object BaseMessageCustomAdapter {
     private val keys = JsonReader.Options.of("type", "subtype")
 
     @FromJson
-    fun fromJson(reader: JsonReader): BaseMessage? {
+    fun fromJson(reader: JsonReader, textMessageAdapter: JsonAdapter<TextMessage>, channelMessageAdapter: JsonAdapter<ChannelMessage>): BaseMessage? {
         // Read type/subtype with peeked reader
         val peekedReader = reader.peekJson()
 
