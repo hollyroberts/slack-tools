@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test
 
 @Suppress("UsePropertyAccessSyntax")
 internal class ParsedFileTest : TestUtils {
-    private val adapter = MoshiAdapter.forClass(ParsedFile::class.java)
+    private val moshi = DaggerTestMoshiComponent.create().getMoshi()
+    private val adapter = moshi.adapter(ParsedFile::class.java)
 
     @Test
     fun correctObject() {

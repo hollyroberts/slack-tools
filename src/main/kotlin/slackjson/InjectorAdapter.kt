@@ -2,6 +2,8 @@ package slackjson
 
 import com.squareup.moshi.*
 import java.lang.reflect.Type
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 class InjectorAdapter<T>(private val delegate: JsonAdapter<T>) : JsonAdapter<T>() {
@@ -16,7 +18,8 @@ class InjectorAdapter<T>(private val delegate: JsonAdapter<T>) : JsonAdapter<T>(
         throw UnsupportedOperationException()
     }
 
-    class Factory : JsonAdapter.Factory {
+    @Singleton
+    class Factory @Inject constructor(): JsonAdapter.Factory {
         override fun create(type: Type, annotations: MutableSet<out Annotation>, moshi: Moshi): JsonAdapter<*>? {
             if (Types.getRawType(type).isAnnotationPresent(MoshiInject::class.java)) {
                 val adapter: JsonAdapter<Any> = moshi.nextAdapter(this, type, annotations)

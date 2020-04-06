@@ -1,13 +1,19 @@
 package utils
 
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import slackjson.*
 import slackjson.message.BaseMessage
 import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
-class WebApi @Inject constructor(@Named("token") token: String) {
+@Singleton
+class WebApi @Inject constructor(
+        private val moshi: Moshi,
+        @Named("token") token: String
+) {
     companion object {
         // URLs
         private const val URL_CONVO_LIST = "https://slack.com/api/conversations.list"
@@ -46,7 +52,7 @@ class WebApi @Inject constructor(@Named("token") token: String) {
                 "types" to "public_channel, private_channel, im",
                 "cursor" to "")
 
-        val adapter = MoshiAdapter.forClass(ConversationListResponse::class.java)
+        val adapter = moshi.adapter(ConversationListResponse::class.java)
 
         Log.medium("Retrieving conversations (channels)")
         callCursorApi(
@@ -80,7 +86,7 @@ class WebApi @Inject constructor(@Named("token") token: String) {
         channel?.let { params["channel"] = it }
         user?.let { params["user"] = it }
 
-        val adapter = MoshiAdapter.forClass(FileListResponse::class.java)
+        val adapter = moshi.adapter(FileListResponse::class.java)
 
         // Get results
         Log.high("Retrieving list of files")
@@ -103,7 +109,7 @@ class WebApi @Inject constructor(@Named("token") token: String) {
     fun getFile(fileId: String) : ParsedFile {
         val params = mapOf(
                 "file" to fileId)
-        val adapter = MoshiAdapter.forClass(FileResponse::class.java)
+        val adapter = moshi.adapter(FileResponse::class.java)
         val response = (http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
 
         return response.file
@@ -119,7 +125,7 @@ class WebApi @Inject constructor(@Named("token") token: String) {
                 "limit" to USERS_LIST_LIMIT.toString(),
                 "cursor" to "")
 
-        val adapter = MoshiAdapter.forClass(UserListResponse::class.java)
+        val adapter = moshi.adapter(UserListResponse::class.java)
 
         Log.medium("Retrieving user results")
         callCursorApi(

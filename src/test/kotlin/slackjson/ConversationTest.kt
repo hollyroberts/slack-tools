@@ -6,7 +6,8 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 internal class ConversationTest : TestUtils {
-    private val adapter = MoshiAdapter.forClass(Conversation::class.java)
+    private val moshi = DaggerTestMoshiComponent.create().getMoshi()
+    private val adapter = moshi.adapter(Conversation::class.java)
 
     @Test
     fun correctObject() {
