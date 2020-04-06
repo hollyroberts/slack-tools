@@ -3,7 +3,9 @@ package slackjson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonDataException
+import slack.Settings
 import slack.SlackData
+import javax.inject.Inject
 
 enum class ConversationTypes(val shortName: String) {
     PUBLIC_CHANNEL("public"),
@@ -34,6 +36,14 @@ class Conversation(
         // User field if dm
         val user: String?
 ) {
+    @Transient
+    @Inject
+    lateinit var slackData: SlackData
+
+    @Transient
+    @Inject
+    lateinit var settings: Settings
+
     init {
         val numTrues = booleanArrayOf(isChannel, isGroup, isIm).sumBy { if (it) 1 else 0 }
         val conversationStr = "Conversation $id" + if (name != null) " ($name)" else ""
@@ -63,20 +73,20 @@ class Conversation(
     /**
      * Returns name depending on settings given
      */
-    fun name(slack: SlackData) = if (slack.settings.useDisplayNamesForConversationNames) {
-        slack.userDisplayname(user)
+    fun name() = if (settings.useDisplayNamesForConversationNames) {
+        slackData.userDisplayname(user)
     } else {
-        slack.userUsername(user)
+        slackData.userUsername(user)
     }
 
     /**
      * Returns conversation name prefixed with # or @ depending on whether it's a channel or dm
      */
-    fun fullName(slack: SlackData) : String {
+    fun fullName() : String {
         return if (isChannel || isGroup) {
             "#$name"
         } else {
-            "@${name(slack)}"
+            "@${name()}"
 
         }
     }

@@ -9,6 +9,7 @@ internal class ParsedFileTest : TestUtils {
     private val moshi = DaggerTestMoshiComponent.create().getMoshi()
     private val adapter = moshi.adapter(ParsedFile::class.java)
 
+    @Suppress("SpellCheckingInspection")
     @Test
     fun correctObject() {
         val input = readResource("parsedfile-basic.json")

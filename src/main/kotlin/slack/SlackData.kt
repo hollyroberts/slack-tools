@@ -2,7 +2,9 @@
 
 package slack
 import scripts.TimeOptions
-import slackjson.*
+import slackjson.Conversation
+import slackjson.ConversationTypes
+import slackjson.User
 import utils.Http
 import java.time.ZoneId
 
@@ -12,7 +14,7 @@ abstract class SlackData(val settings: Settings) {
     abstract val users: Map<String, User>
 
     // Basic data retrieval methods
-    fun conversationName(convoId: String?) = conversations[convoId]?.fullName(this) ?: "Unknown conversation"
+    fun conversationName(convoId: String?) = conversations[convoId]?.fullName() ?: "Unknown conversation"
     fun conversationType(convoId: String?) : ConversationTypes {
         if (convoId == null) {
             return ConversationTypes.UNKNOWN
@@ -55,7 +57,7 @@ abstract class SlackData(val settings: Settings) {
         }
 
         conversations.forEach {
-            if (it.value.fullName(this) == channelString) {
+            if (it.value.fullName() == channelString) {
                 return it.key
             }
         }
