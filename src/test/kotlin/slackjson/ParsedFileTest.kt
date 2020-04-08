@@ -1,12 +1,18 @@
 package slackjson
 
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.Test
+import slack.Settings
 
 @Suppress("UsePropertyAccessSyntax")
 internal class ParsedFileTest : TestUtils {
-    private val moshi = DaggerTestMoshiComponent.create().getMoshi()
+    private val moshi = DaggerTestComponent.builder()
+            .settings(Settings())
+            .slackData(mockk())
+            .build()
+            .getMoshi()
     private val adapter = moshi.adapter(ParsedFile::class.java)
 
     @Suppress("SpellCheckingInspection")

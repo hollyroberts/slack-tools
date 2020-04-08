@@ -5,6 +5,7 @@ import utils.Log
 import utils.WebApi
 import kotlin.math.min
 
+@MoshiInject
 @JsonClass(generateAdapter = true)
 open class ParsedFile (
         // Identification

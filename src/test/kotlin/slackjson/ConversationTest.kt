@@ -1,12 +1,18 @@
 package slackjson
 
 import com.squareup.moshi.JsonDataException
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import slack.Settings
 
 internal class ConversationTest : TestUtils {
-    private val moshi = DaggerTestMoshiComponent.create().getMoshi()
+    private val moshi = DaggerTestComponent.builder()
+            .settings(Settings())
+            .slackData(mockk())
+            .build()
+            .getMoshi()
     private val adapter = moshi.adapter(Conversation::class.java)
 
     @Test
@@ -45,5 +51,11 @@ internal class ConversationTest : TestUtils {
         assertThatThrownBy { adapter.fromJson(input)!! }
                 .hasRootCauseInstanceOf(JsonDataException::class.java)
                 .hasRootCauseMessage("Conversation D0C0F7S8Y is a dm, but does not contain a user field")
+    }
+
+    @Test
+    fun injectedSettings() {
+        // TODO inject mock settings and data. Setup data values
+        // TODO mock settings to return true/false
     }
 }

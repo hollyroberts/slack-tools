@@ -73,7 +73,7 @@ class Conversation(
     /**
      * Returns name depending on settings given
      */
-    fun name() = if (settings.useDisplayNamesForConversationNames) {
+    private fun name() = if (settings.useDisplayNamesForConversationNames) {
         slackData.userDisplayname(user)
     } else {
         slackData.userUsername(user)

@@ -1,13 +1,7 @@
 package slackjson
 
-import dagger.Subcomponent
+import dagger.Component
 
-@Subcomponent
+@Component
 interface MoshiComponent {
-    @Subcomponent.Builder
-    interface Builder {
-        fun build(): MoshiComponent
-    }
-
-    fun inject(conversation: Conversation)
 }

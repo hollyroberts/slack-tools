@@ -8,7 +8,7 @@ import slackjson.User
 import utils.Http
 import java.time.ZoneId
 
-abstract class SlackData(val settings: Settings) {
+abstract class SlackData {
     // Raw data
     abstract val conversations: Map<String, Conversation>
     abstract val users: Map<String, User>

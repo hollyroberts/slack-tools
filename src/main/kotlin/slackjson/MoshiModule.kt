@@ -6,7 +6,7 @@ import dagger.Provides
 import slackjson.message.BaseMessageCustomAdapter
 import javax.inject.Singleton
 
-@Module(subcomponents = [MoshiComponent::class])
+@Module
 object MoshiModule {
     @Provides
     @Singleton

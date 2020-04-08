@@ -1,5 +1,6 @@
 package slackjson
 
+import slack.Settings
 import slack.SlackData
 import slackjson.SlackFile.FormattingType.Companion.defaultType
 import utils.DownloadStatus
@@ -11,8 +12,8 @@ import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-@MoshiInject
 abstract class SlackFile : BaseFile() {
     // Identification
     abstract val id: String
@@ -32,11 +33,19 @@ abstract class SlackFile : BaseFile() {
     abstract val groups: List<String>?
     abstract val ims: List<String>?
 
+    @Transient
+    @Inject
+    lateinit var slackData: SlackData
+
+    @Transient
+    @Inject
+    lateinit var settings: Settings
+
     fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
 
-    fun download(folder: Path, slack: SlackData, webApi: WebApi?, formatting: FormattingType? = null) : DownloadStatus {
+    fun download(folder: Path, webApi: WebApi?, formatting: FormattingType? = null) : DownloadStatus {
         // Strip out/replace illegal chars
-        var formattedName = formattedDownloadName(formatting, slack)
+        var formattedName = formattedDownloadName(formatting)
         formattedName = Regex("""[/*?"<>|]""").replace(formattedName, "")
         formattedName =  formattedName.replace(":", ";")
 
@@ -47,9 +56,9 @@ abstract class SlackFile : BaseFile() {
 
         // Download
         urlPrivateDownload?.let {
-            return webApi?.downloadFile(it, folder.resolve(formattedName), size, slack.settings.fileConflictStrategy)
+            return webApi?.downloadFile(it, folder.resolve(formattedName), size, settings.fileConflictStrategy)
                     ?: run {
-                        Http().downloadFile(it, folder.resolve(formattedName), size, slack.settings.fileConflictStrategy)
+                        Http().downloadFile(it, folder.resolve(formattedName), size, settings.fileConflictStrategy)
                     }
         } ?: urlPrivate.let {
             Log.low("File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'")
@@ -58,14 +67,14 @@ abstract class SlackFile : BaseFile() {
         }
     }
 
-    private fun formattedDownloadName(type: FormattingType?, slack: SlackData) : String {
+    private fun formattedDownloadName(type: FormattingType?) : String {
         // Calculate intermediate strings
-        val username = if (slack.settings.useDisplayNamesForFiles) {
-            slack.userDisplayname(user)
+        val username = if (settings.useDisplayNamesForFiles) {
+            slackData.userDisplayname(user)
         } else {
-            slack.userUsername(user)
+            slackData.userUsername(user)
         }
-        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), slack.settings.outTz)
+        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), settings.outTz)
 
         return when(type ?: defaultType()) {
             FormattingType.STANDARD -> "[${dtf.format(datetime)}] - $username - $title"

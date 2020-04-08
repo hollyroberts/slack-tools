@@ -1,14 +1,20 @@
 package slackjson.message
 
 import com.squareup.moshi.JsonDataException
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
-import slackjson.DaggerTestMoshiComponent
+import slack.Settings
+import slackjson.DaggerTestComponent
 import slackjson.TestUtils
 
 internal class BaseMessageDeserialisationTest : TestUtils {
-    private val moshi = DaggerTestMoshiComponent.create().getMoshi()
+    private val moshi = DaggerTestComponent.builder()
+            .settings(Settings())
+            .slackData(mockk())
+            .build()
+            .getMoshi()
     private val adapter = moshi.adapter(BaseMessage::class.java)
 
     @Test

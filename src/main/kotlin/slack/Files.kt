@@ -77,7 +77,7 @@ fun List<SlackFile>.filesByUser() : Map<String?, List<SlackFile>> {
  */
 fun <F : SlackFile> Map<String?, List<F>>.downloadByUser(slack: SlackData, outDir: Path, webApi: WebApi?) {
     val mappedKeys = this.mapKeys { slack.userDisplayname(it.key) }
-    mappedKeys.downloadToFolders(slack, outDir, webApi, formatting = FormattingType.WITHOUT_NAME)
+    mappedKeys.downloadToFolders(outDir, webApi, formatting = FormattingType.WITHOUT_NAME)
 }
 
 /**
@@ -85,10 +85,10 @@ fun <F : SlackFile> Map<String?, List<F>>.downloadByUser(slack: SlackData, outDi
  */
 fun Map<String?, List<CompleteFile>>.downloadByChannel(slack: SlackData, outDir: Path, webApi: WebApi?) {
     val mappedKeys = this.mapKeys { slack.conversationName(it.key) }
-    mappedKeys.downloadToFolders(slack, outDir, webApi)
+    mappedKeys.downloadToFolders(outDir, webApi)
 }
 
-fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(slack: SlackData, outDir: Path, webApi: WebApi?,
+fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(outDir: Path, webApi: WebApi?,
                                                            formatting: FormattingType? = null) {
     // Process conversations alphabetically
     Log.high("Downloading files to '$outDir'")
@@ -103,7 +103,7 @@ fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(slack: SlackData, out
         val channelStats = DownloadStats()
         Log.medium("Downloading ${filesInConvo.size} files from $key")
         filesInConvo.sortedBy { it.timestamp }.forEach { file ->
-            channelStats.update(file.download(folder, slack, webApi, formatting = formatting))
+            channelStats.update(file.download(folder, webApi, formatting = formatting))
         }
 
         channelStats.log(key, Log.Modes.MEDIUM)
