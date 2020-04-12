@@ -3,6 +3,7 @@ package slackjson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonDataException
+import dagger.Lazy
 import slack.Settings
 import slack.SlackData
 import javax.inject.Inject
@@ -36,13 +37,14 @@ class Conversation(
         // User field if dm
         val user: String?
 ) {
+    // TODO can we break this dependency cycle and not need lazy?
     @Transient
     @Inject
-    lateinit var slackData: SlackData
+    lateinit var slackData: Lazy<SlackData>
 
     @Transient
     @Inject
-    lateinit var settings: Settings
+    lateinit var settings: Lazy<Settings>
 
     init {
         val numTrues = booleanArrayOf(isChannel, isGroup, isIm).sumBy { if (it) 1 else 0 }
@@ -73,10 +75,10 @@ class Conversation(
     /**
      * Returns name depending on settings given
      */
-    private fun name() = if (settings.useDisplayNamesForConversationNames) {
-        slackData.userDisplayname(user)
+    private fun name() = if (settings.get().useDisplayNamesForConversationNames) {
+        slackData.get().userDisplayname(user)
     } else {
-        slackData.userUsername(user)
+        slackData.get().userUsername(user)
     }
 
     /**

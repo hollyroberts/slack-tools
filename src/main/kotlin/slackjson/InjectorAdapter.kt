@@ -1,21 +1,25 @@
 package slackjson
 
 import com.squareup.moshi.*
-import dagger.MainComponent
+import dagger.MembersInjector
 import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
-
+/**
+ * The parameterized type here actually doesn't do anything, as it gets erased at runtime
+ * Also the factory method just creates instances that are 'Any' rather than 'T'
+ * But it's nice to have, and the factory method ensures the adapter is only used for the correct types
+ */
 class InjectorAdapter<T>(
-        private val delegate: JsonAdapter<T>,
-        private val injectFun: (T) -> Unit
+        private val injector: MembersInjector<T>,
+        private val delegate: JsonAdapter<T>
 ) : JsonAdapter<T>() {
 
     override fun fromJson(reader: JsonReader): T? {
         val obj: T = delegate.fromJson(reader)!!
-        injectFun.invoke(obj)
+        injector.injectMembers(obj)
         return obj
     }
 
@@ -24,15 +28,11 @@ class InjectorAdapter<T>(
         throw UnsupportedOperationException()
     }
 
+    @Suppress("RemoveRedundantQualifierName")
     @Singleton
-    class Factory @Inject constructor(componentProvider: Provider<MainComponent>) : JsonAdapter.Factory {
-        private val moshiComponent = componentProvider.get()
-
-        private val injectMap: Map<Class<*>, (Any) -> Unit> = mapOf(
-                // The current compiler can't infer this, so we need the it ->
-                Conversation::class.java to { it -> moshiComponent.inject(it as Conversation) },
-                ParsedFile::class.java to { it -> moshiComponent.inject(it as ParsedFile) }
-        )
+    class JsonFactory @Inject constructor(
+            private val injectorMap: Map<Class<*>, @JvmSuppressWildcards Provider<MembersInjector<out Any>>>
+    ) : JsonAdapter.Factory {
 
         override fun create(type: Type, annotations: MutableSet<out Annotation>, moshi: Moshi): JsonAdapter<*>? {
             val javaType = Types.getRawType(type)
@@ -40,9 +40,10 @@ class InjectorAdapter<T>(
                 return null
             }
             val adapter: JsonAdapter<Any> = moshi.nextAdapter(this, type, annotations)
+            val injector = injectorMap[javaType]?.get() ?: error("No injection provider defined in map multibinder for $javaType")
 
-            val injectFun: (Any) -> Unit = injectMap[javaType] ?: error("No injection method defined for $javaType")
-            return InjectorAdapter(adapter, injectFun)
+            @Suppress("UNCHECKED_CAST")
+            return InjectorAdapter(injector as MembersInjector<Any>, adapter)
         }
     }
 }

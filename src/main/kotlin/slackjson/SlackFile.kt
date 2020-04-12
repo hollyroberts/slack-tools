@@ -1,5 +1,6 @@
 package slackjson
 
+import dagger.Lazy
 import slack.Settings
 import slack.SlackData
 import slackjson.SlackFile.FormattingType.Companion.defaultType
@@ -35,11 +36,11 @@ abstract class SlackFile : BaseFile() {
 
     @Transient
     @Inject
-    lateinit var slackData: SlackData
+    lateinit var slackData: Lazy<SlackData>
 
     @Transient
     @Inject
-    lateinit var settings: Settings
+    lateinit var settings: Lazy<Settings>
 
     fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
 
@@ -56,9 +57,9 @@ abstract class SlackFile : BaseFile() {
 
         // Download
         urlPrivateDownload?.let {
-            return webApi?.downloadFile(it, folder.resolve(formattedName), size, settings.fileConflictStrategy)
+            return webApi?.downloadFile(it, folder.resolve(formattedName), size, settings.get().fileConflictStrategy)
                     ?: run {
-                        Http().downloadFile(it, folder.resolve(formattedName), size, settings.fileConflictStrategy)
+                        Http().downloadFile(it, folder.resolve(formattedName), size, settings.get().fileConflictStrategy)
                     }
         } ?: urlPrivate.let {
             Log.low("File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'")
@@ -69,12 +70,12 @@ abstract class SlackFile : BaseFile() {
 
     private fun formattedDownloadName(type: FormattingType?) : String {
         // Calculate intermediate strings
-        val username = if (settings.useDisplayNamesForFiles) {
-            slackData.userDisplayname(user)
+        val username = if (settings.get().useDisplayNamesForFiles) {
+            slackData.get().userDisplayname(user)
         } else {
-            slackData.userUsername(user)
+            slackData.get().userUsername(user)
         }
-        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), settings.outTz)
+        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), settings.get().outTz)
 
         return when(type ?: defaultType()) {
             FormattingType.STANDARD -> "[${dtf.format(datetime)}] - $username - $title"

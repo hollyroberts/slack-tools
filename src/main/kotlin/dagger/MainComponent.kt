@@ -1,17 +1,16 @@
 package dagger
 
 import slack.Settings
+import slack.SlackData
 import slack.SlackWebApi
-import slackjson.Conversation
 import slackjson.MoshiModule
-import slackjson.ParsedFile
 import utils.WebApi
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = [MoshiModule::class, OtherModule::class]
+        modules = [MoshiModule::class, MainModule::class]
 )
 interface MainComponent {
     @Component.Builder
@@ -25,11 +24,15 @@ interface MainComponent {
         fun build(): MainComponent
     }
 
-    fun getThis() = this
-
     fun getSlackWebApi(): SlackWebApi
     fun getWebApi(): WebApi
+}
 
-    fun inject(conversation: Conversation)
-    fun inject(parsedFile: ParsedFile)
+@Module
+object MainModule {
+    @Singleton
+    @Provides
+    fun provideSlackData(slackWebApi: SlackWebApi): SlackData {
+        return slackWebApi
+    }
 }
