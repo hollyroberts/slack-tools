@@ -13,7 +13,6 @@ import java.nio.file.Path
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 
 abstract class SlackFile : BaseFile() {
     // Identification
@@ -34,13 +33,9 @@ abstract class SlackFile : BaseFile() {
     abstract val groups: List<String>?
     abstract val ims: List<String>?
 
-    @Transient
-    @Inject
-    lateinit var slackData: Lazy<SlackData>
-
-    @Transient
-    @Inject
-    lateinit var settings: Lazy<Settings>
+    // To be injected at some point
+    abstract var slackData: Lazy<SlackData>
+    abstract var settings: Settings
 
     fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
 
@@ -57,9 +52,9 @@ abstract class SlackFile : BaseFile() {
 
         // Download
         urlPrivateDownload?.let {
-            return webApi?.downloadFile(it, folder.resolve(formattedName), size, settings.get().fileConflictStrategy)
+            return webApi?.downloadFile(it, folder.resolve(formattedName), size, settings.fileConflictStrategy)
                     ?: run {
-                        Http().downloadFile(it, folder.resolve(formattedName), size, settings.get().fileConflictStrategy)
+                        Http().downloadFile(it, folder.resolve(formattedName), size, settings.fileConflictStrategy)
                     }
         } ?: urlPrivate.let {
             Log.low("File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'")
@@ -70,12 +65,12 @@ abstract class SlackFile : BaseFile() {
 
     private fun formattedDownloadName(type: FormattingType?) : String {
         // Calculate intermediate strings
-        val username = if (settings.get().useDisplayNamesForFiles) {
+        val username = if (settings.useDisplayNamesForFiles) {
             slackData.get().userDisplayname(user)
         } else {
             slackData.get().userUsername(user)
         }
-        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), settings.get().outTz)
+        val datetime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), settings.outTz)
 
         return when(type ?: defaultType()) {
             FormattingType.STANDARD -> "[${dtf.format(datetime)}] - $username - $title"

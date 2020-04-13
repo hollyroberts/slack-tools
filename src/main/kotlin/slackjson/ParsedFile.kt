@@ -1,8 +1,12 @@
 package slackjson
 
 import com.squareup.moshi.*
+import dagger.Lazy
+import slack.Settings
+import slack.SlackData
 import utils.Log
 import utils.WebApi
+import javax.inject.Inject
 import kotlin.math.min
 
 @MoshiInject
@@ -34,6 +38,15 @@ open class ParsedFile (
         @Suppress("MemberVisibilityCanBePrivate")
         val shares: FileShare?
 ) : SlackFile() {
+    @Transient
+    @Inject
+    override lateinit var settings: Settings
+
+    @Transient
+    @Inject
+    override lateinit var slackData: Lazy<SlackData>
+
+
     @Transient
     private val custTimestamps = mutableMapOf<String, Double>()
 

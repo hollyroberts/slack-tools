@@ -39,7 +39,7 @@ internal class ParsedFileTest : TestUtils {
                 .satisfies {
                     assertThat(it!!.firstSeen).contains(entry("C0T8SE4AU", 1531763348.000001))
                 }
-
-        // TODO assert inferred location
     }
+
+    // TODO Test inferred location (using mocks!)
 }
