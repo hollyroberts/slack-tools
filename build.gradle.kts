@@ -1,9 +1,12 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel.CURRENT
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.3.71"
-    kotlin("kapt") version "1.3.71"
+    kotlin("jvm") version "1.3.72"
+    kotlin("kapt") version "1.3.72"
+    id("com.github.ben-manes.versions") version "0.28.0"
 }
 
 version = "0.1-DEV"
@@ -20,8 +23,8 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.27")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-    implementation("com.squareup.okhttp3:okhttp:4.5.0-RC1")
-    implementation("com.github.ajalt:clikt:2.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.5.0")
+    implementation("com.github.ajalt:clikt:2.6.0")
 
     implementation("com.squareup.moshi:moshi:1.9.2")
     implementation("com.squareup.moshi:moshi-kotlin:1.9.2")
@@ -29,7 +32,7 @@ dependencies {
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
 
     // Tests
-    testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
     testImplementation("org.assertj:assertj-core:3.15.0")
 
     testImplementation("net.bytebuddy:byte-buddy") {
@@ -52,4 +55,9 @@ configure<JavaPluginConvention> {
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "12"
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    checkForGradleUpdate = true
+    gradleReleaseChannel = CURRENT.toString()
 }
