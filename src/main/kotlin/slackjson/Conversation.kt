@@ -44,7 +44,7 @@ class Conversation(
 
     @Transient
     @Inject
-    lateinit var settings: Lazy<Settings>
+    lateinit var settings: Settings
 
     init {
         val numTrues = booleanArrayOf(isChannel, isGroup, isIm).sumBy { if (it) 1 else 0 }
@@ -75,7 +75,7 @@ class Conversation(
     /**
      * Returns name depending on settings given
      */
-    private fun name() = if (settings.get().useDisplayNamesForConversationNames) {
+    private fun name() = if (settings.useDisplayNamesForConversationNames) {
         slackData.get().userDisplayname(user)
     } else {
         slackData.get().userUsername(user)

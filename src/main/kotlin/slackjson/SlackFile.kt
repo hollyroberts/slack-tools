@@ -63,7 +63,7 @@ abstract class SlackFile : BaseFile() {
         }
     }
 
-    private fun formattedDownloadName(type: FormattingType?) : String {
+    internal fun formattedDownloadName(type: FormattingType?) : String {
         // Calculate intermediate strings
         val username = if (settings.useDisplayNamesForFiles) {
             slackData.get().userDisplayname(user)
