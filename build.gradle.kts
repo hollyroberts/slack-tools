@@ -15,23 +15,28 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
+    // Common versions
+    val daggerVersion = "2.27"
+    val moshiVersion = "1.9.2"
+
+    // Dependencies
     implementation(kotlin("stdlib-jdk8"))
 
-    // TODO define versions of common libs
-    api("com.google.dagger:dagger:2.27")
-    kapt("com.google.dagger:dagger-compiler:2.27")
+    api("com.google.dagger:dagger:$daggerVersion")
+    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation("com.squareup.okhttp3:okhttp:4.5.0")
     implementation("com.github.ajalt:clikt:2.6.0")
 
-    implementation("com.squareup.moshi:moshi:1.9.2")
-    implementation("com.squareup.moshi:moshi-kotlin:1.9.2")
-    implementation("com.squareup.moshi:moshi-adapters:1.9.2")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.9.2")
+    implementation("com.squareup.moshi:moshi:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-    // Tests
+    // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
     testImplementation("org.assertj:assertj-core:3.15.0")
 
@@ -43,7 +48,7 @@ dependencies {
     }
     testImplementation("io.mockk:mockk:1.9.3")
 
-    kaptTest("com.google.dagger:dagger-compiler:2.27")
+    kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 }
 
 tasks.test {
