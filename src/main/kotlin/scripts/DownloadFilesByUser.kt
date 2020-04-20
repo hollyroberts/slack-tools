@@ -36,7 +36,7 @@ class ScriptDownloadByUser : CliktCommand(
                     "Checks channel IDs first, otherwise attempts to resolve the name (with #/@) to ID")
     private val output by option("--output", "-o",
             help = "Location to output files")
-            .file(fileOkay = false)
+            .file(canBeFile = false)
             .default(File("files"))
 
     override fun run() {

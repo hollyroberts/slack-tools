@@ -37,7 +37,7 @@ class ScriptDownloadAvatars : CliktCommand(
     // Output information
     private val output by option("--output", "-o",
             help = "Location to output files")
-            .file(fileOkay = false)
+            .file(canBeFile = false)
             .default(File("avatars"))
     private val useDisplayname by option("--displayname", "-dn",
             help = "Use the display name instead of username").flag()
