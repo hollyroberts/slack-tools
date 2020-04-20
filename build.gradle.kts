@@ -39,14 +39,7 @@ dependencies {
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
     testImplementation("org.assertj:assertj-core:3.15.0")
-
-    testImplementation("net.bytebuddy:byte-buddy") {
-        // Fix for mockk (https://github.com/mockk/mockk/issues/397)
-        version {
-            strictly("1.10.9")
-        }
-    }
-    testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("io.mockk:mockk:1.10.0")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 }
@@ -65,4 +58,15 @@ tasks.withType<KotlinCompile> {
 tasks.withType<DependencyUpdatesTask> {
     checkForGradleUpdate = true
     gradleReleaseChannel = CURRENT.toString()
+
+    rejectVersionIf {
+        isNonStable(candidate.version) && !isNonStable(currentVersion)
+    }
+}
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
 }
