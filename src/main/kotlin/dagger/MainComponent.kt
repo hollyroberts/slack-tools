@@ -1,5 +1,6 @@
 package dagger
 
+import retrofit.RetrofitModule
 import slack.Settings
 import slack.SlackData
 import slack.SlackWebApi
@@ -10,7 +11,11 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = [MoshiModule::class, MainModule::class]
+        modules = [
+            MainModule::class,
+            MoshiModule::class,
+            RetrofitModule::class
+        ]
 )
 interface MainComponent {
     @Component.Builder

@@ -20,6 +20,7 @@ dependencies {
     // Common versions
     val daggerVersion = "2.27"
     val moshiVersion = "1.9.2"
+    val retrofitVersion = "2.8.1"
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
@@ -29,12 +30,15 @@ dependencies {
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation("com.squareup.okhttp3:okhttp:4.5.0")
-    implementation("com.github.ajalt:clikt:2.6.0")
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
 
     implementation("com.squareup.moshi:moshi:$moshiVersion")
     implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
+
+    implementation("com.github.ajalt:clikt:2.6.0")
 
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
