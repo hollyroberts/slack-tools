@@ -11,7 +11,7 @@ import javax.inject.Singleton
 object RetrofitTestModule {
     @Provides
     @Singleton
-    fun provideTestService(retrofit: Retrofit): TestApi = retrofit.create()
+    fun provideTestService(retrofit: Retrofit): RetrofitTestApi = retrofit.create()
 
     @Provides
     @Singleton

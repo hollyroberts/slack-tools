@@ -20,6 +20,7 @@ dependencies {
     // Common versions
     val daggerVersion = "2.27"
     val moshiVersion = "1.9.2"
+    val okhttpVersion = "4.5.0"
     val retrofitVersion = "2.8.1"
 
     // Dependencies
@@ -29,7 +30,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
 
-    implementation("com.squareup.okhttp3:okhttp:4.5.0")
+    implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
 
@@ -46,6 +47,8 @@ dependencies {
     testImplementation("io.mockk:mockk:1.10.0")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
+
+    testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
 }
 
 tasks.test {

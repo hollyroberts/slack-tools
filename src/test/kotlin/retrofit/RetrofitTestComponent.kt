@@ -17,5 +17,5 @@ interface RetrofitTestComponent {
         fun build(): RetrofitTestComponent
     }
 
-    fun getRetrofit(): TestApi
+    fun getTestApi(): RetrofitTestApi
 }

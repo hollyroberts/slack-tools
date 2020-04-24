@@ -4,21 +4,21 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class RetrofitUrlTest {
-    private val retrofit = DaggerRetrofitTestComponent.builder()
+class UrlTest {
+    private val testApi = DaggerRetrofitTestComponent.builder()
             .url("https://a-fake-url.com/api/".toHttpUrl())
             .build()
-            .getRetrofit()
+            .getTestApi()
 
     @Test
     fun checkUrlConstruction() {
-        val noParamUrl = retrofit.listFiles()
+        val noParamUrl = testApi.listFiles()
                 .request()
                 .url
                 .toString()
         assertThat(noParamUrl).endsWith("list?count=100")
 
-        val paramUrl = retrofit.listFiles(user = "A &User")
+        val paramUrl = testApi.listFiles(user = "A &User")
                 .request()
                 .url
                 .toString()

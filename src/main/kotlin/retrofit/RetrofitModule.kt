@@ -38,6 +38,7 @@ object RetrofitModule {
             return Retrofit.Builder()
                     .baseUrl(baseUrl)
                     .addConverterFactory(MoshiConverterFactory.create(moshi))
+                    .addCallAdapterFactory(SlackAdapter.Factory())
                     .build()
             // TODO add some interceptors
         }
