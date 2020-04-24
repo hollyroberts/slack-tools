@@ -15,7 +15,7 @@ import javax.inject.Singleton
             MainModule::class,
             MoshiModule::class,
             RetrofitModule::class,
-            RetrofitModule.Constants::class
+            RetrofitModule.Defaults::class
         ]
 )
 interface MainComponent {

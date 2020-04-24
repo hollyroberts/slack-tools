@@ -1,15 +1,12 @@
 package retrofit
 
-import io.mockk.mockk
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class RetrofitTest {
+class RetrofitUrlTest {
     private val retrofit = DaggerRetrofitTestComponent.builder()
             .url("https://a-fake-url.com/api/".toHttpUrl())
-            .settings(mockk())
-            .slackData(mockk())
             .build()
             .getRetrofit()
 
@@ -25,6 +22,6 @@ class RetrofitTest {
                 .request()
                 .url
                 .toString()
-        assertThat(paramUrl).endsWith("list?count=100&user=A%20%26User")
+        assertThat(paramUrl).endsWith("list?count=100&fake_user=A%20%26User")
     }
 }
