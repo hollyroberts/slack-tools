@@ -14,7 +14,8 @@ import javax.inject.Singleton
         modules = [
             MainModule::class,
             MoshiModule::class,
-            RetrofitModule::class
+            RetrofitModule::class,
+            RetrofitModule.Constants::class
         ]
 )
 interface MainComponent {

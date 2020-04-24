@@ -2,9 +2,11 @@ package retrofit
 
 import dagger.BindsInstance
 import dagger.Component
+import okhttp3.HttpUrl
 import slack.Settings
 import slack.SlackData
 import slackjson.MoshiModule
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
@@ -12,6 +14,9 @@ import javax.inject.Singleton
 interface RetrofitTestComponent {
     @Component.Builder
     interface Builder {
+        @BindsInstance
+        fun url(@Named("SlackUrl") url: HttpUrl): Builder
+
         @BindsInstance
         fun slackData(slackData: SlackData): Builder
 
