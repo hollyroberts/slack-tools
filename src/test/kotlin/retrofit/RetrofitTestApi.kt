@@ -9,5 +9,5 @@ interface RetrofitTestApi {
     fun listFiles(@Query("fake_user") user: String? = null): Call<List<String>>
 
     @GET("retry.test")
-    fun retryTest(): SlackResult<String>
+    fun retryTest(): SlackResult<List<String>>
 }

@@ -1,14 +1,15 @@
 package retrofit
 
+import retrofit.SlackAdapter.CallResult.FailureMode.RATE_LIMITED
+import retrofit.SlackAdapter.CallResult.FailureMode.UNKNOWN
 import retrofit2.Call
 import retrofit2.CallAdapter
-import retrofit2.Response
 import retrofit2.Retrofit
 import utils.Log
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-internal class SlackAdapter<T>(private val responseType: Type): CallAdapter<T, Any> {
+internal class SlackAdapter<T>(private val responseType: Type) : CallAdapter<T, Any> {
     class Factory : CallAdapter.Factory() {
         /**
          * This method is used by retrofit to handle methods
@@ -28,28 +29,65 @@ internal class SlackAdapter<T>(private val responseType: Type): CallAdapter<T, A
         }
     }
 
+    companion object {
+        const val MAX_ATTEMPTS = 3
+    }
+
+    private sealed class CallResult<out R> {
+        data class Success<out T>(val body: T) : CallResult<T>()
+        data class Failure(val reason: FailureMode): CallResult<Nothing>()
+
+        enum class FailureMode { UNKNOWN, RATE_LIMITED }
+    }
+
     override fun responseType(): Type = responseType
 
     override fun adapt(call: Call<T>): SlackResult<T> {
-        // Get call url for later if there's an error, then perform request
-        val url = call.request().url.toString()
-        // TODO handle IOException
-        val response: Response<T>? = call.execute()
+        for (attempt in 1..MAX_ATTEMPTS) {
+            val newCall = if (attempt == 1) call else call.clone()
+            val response = executeCall(newCall) { Log.warn(it) }
+
+            if (response is CallResult.Success) {
+                return SlackResult(response.body)
+            }
+
+            when ((response as CallResult.Failure).reason) {
+                RATE_LIMITED -> {
+                    if (attempt < MAX_ATTEMPTS) Thread.sleep(200)
+                }
+                UNKNOWN -> throw RuntimeException("Unknown error occurred calling ${call.request().url.encodedPath}")
+            }
+            // TODO only retry on known failures
+            // TODO add in wait logic. Maybe do/while
+        }
+
+        throw RuntimeException("Call to ${call.request().url.encodedPath} failed after $MAX_ATTEMPTS attempts")
+    }
+
+    private fun executeCall(call: Call<T>, logFun: (String) -> Unit): CallResult<T> {
+        val response = call.execute()
+        // TODO handle IO Exception
 
         // Handle status codes
-        if (!response!!.isSuccessful) {
-            Log.error("Request to '$url' was unsuccessful")
-            Log.error("Status code: ${response.code()} (${response.message()})")
+        if (!response.isSuccessful) {
+            val url = call.request().url.toString()
+            val statusCode = response.code()
+
+            logFun.invoke("Request to '$url' was unsuccessful")
+            logFun.invoke("Status code: $statusCode (${response.message()})")
 
             val errBody = response.errorBody()?.string()
             if (!errBody.isNullOrEmpty()) {
-                Log.error("Error response body:\n${errBody}")
+                logFun.invoke("Error response body:\n${errBody}")
             }
 
-            throw RuntimeException("Unsuccessful call to '$url' (code ${response.code()})")
+            return when (statusCode) {
+                429 -> CallResult.Failure(RATE_LIMITED)
+                else -> CallResult.Failure(UNKNOWN)
+            }
         }
 
-        val body = response.body() ?: throw RuntimeException("Returned body from '$url' was null")
-        return SlackResult(body)
+        val body = response.body() ?: return CallResult.Failure(UNKNOWN)
+        return CallResult.Success(body)
     }
 }
