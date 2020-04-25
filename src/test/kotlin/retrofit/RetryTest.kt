@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestInstance.Lifecycle
+import java.time.Duration
 
 @TestInstance(Lifecycle.PER_CLASS)
 class RetryTest {
@@ -71,8 +72,6 @@ class RetryTest {
 
     @Test
     fun retriesExceeded() {
-        println(SlackTier.TIER_4.waitTimeMillis)
-
         val server = MockWebServer()
         server.enqueue(MockResponse().setResponseCode(429))
         server.enqueue(MockResponse().setResponseCode(429))
@@ -84,6 +83,50 @@ class RetryTest {
             assertThatThrownBy { testApi.retryTest() }
                     .isInstanceOf(RuntimeException::class.java)
                     .hasMessageContaining("Call to /retry.test failed after 3 attempts")
+        }
+    }
+
+    @Test
+    fun retryInterval() {
+        val server = MockWebServer()
+        val dispatcher = TimeRecorderDispatcher()
+        dispatcher.addResponse(MockResponse().setResponseCode(429))
+        dispatcher.addResponse(MockResponse().setResponseCode(429))
+        dispatcher.addResponse(MockResponse().setBody("[\"success\"]"))
+        server.dispatcher = dispatcher
+
+        server.runServer {
+            val testApi = getApi(server)
+            val response = testApi.retryTest()
+
+            assertThat(response.result)
+                    .containsExactly("success")
+
+            assertThat(server.requestCount).isEqualTo(3)
+
+            val timeDiffs = List(dispatcher.dispatchTimes.size - 1) {
+                Duration.between(
+                        dispatcher.dispatchTimes[it],
+                        dispatcher.dispatchTimes[it + 1]
+                ).toMillisPart()
+            }
+
+            assertThat(timeDiffs).allSatisfy {
+                assertThat(it).isBetween(50, 60)
+            }
+        }
+    }
+
+    @Test
+    fun requireAnnotationTest() {
+        val server = MockWebServer()
+        server.runServer {
+            val testApi = getApi(server)
+
+            assertThatThrownBy { testApi.annotationTest() }
+                    .isInstanceOf(IllegalArgumentException::class.java)
+                    .hasRootCauseInstanceOf(IllegalStateException::class.java)
+                    .hasRootCauseMessage("Retrofit interfaces returning SlackResult must specify a method tier")
         }
     }
 

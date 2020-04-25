@@ -9,7 +9,10 @@ import utils.Log
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-internal class SlackAdapter<T>(private val responseType: Type) : CallAdapter<T, Any> {
+internal class SlackAdapter<T>(
+        private val responseType: Type,
+        private val retryTier: SlackTier
+) : CallAdapter<T, Any> {
     class Factory : CallAdapter.Factory() {
         /**
          * This method is used by retrofit to handle methods
@@ -21,11 +24,15 @@ internal class SlackAdapter<T>(private val responseType: Type) : CallAdapter<T, 
          */
         override fun get(returnType: Type, annotations: Array<Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
             val type = returnType as ParameterizedType
-            return if (type.rawType != SlackResult::class.java) {
-                null
-            } else {
-                SlackAdapter<Any>(type.actualTypeArguments[0])
+            if (type.rawType != SlackResult::class.java) {
+                return null
             }
+
+            val annotationTier = (annotations.find { it is Tier }
+                    ?: throw IllegalStateException("Retrofit interfaces returning ${SlackResult::class.simpleName} must specify a method tier")
+            ) as Tier
+
+            return SlackAdapter<Any>(type.actualTypeArguments[0], annotationTier.tier)
         }
     }
 
@@ -35,7 +42,7 @@ internal class SlackAdapter<T>(private val responseType: Type) : CallAdapter<T, 
 
     private sealed class CallResult<out R> {
         data class Success<out T>(val body: T) : CallResult<T>()
-        data class Failure(val reason: FailureMode): CallResult<Nothing>()
+        data class Failure(val reason: FailureMode) : CallResult<Nothing>()
 
         enum class FailureMode { UNKNOWN, RATE_LIMITED }
     }
@@ -53,12 +60,10 @@ internal class SlackAdapter<T>(private val responseType: Type) : CallAdapter<T, 
 
             when ((response as CallResult.Failure).reason) {
                 RATE_LIMITED -> {
-                    if (attempt < MAX_ATTEMPTS) Thread.sleep(200)
+                    if (attempt < MAX_ATTEMPTS) Thread.sleep(retryTier.waitTimeMillis)
                 }
                 UNKNOWN -> throw RuntimeException("Unknown error occurred calling ${call.request().url.encodedPath}")
             }
-            // TODO only retry on known failures
-            // TODO add in wait logic. Maybe do/while
         }
 
         throw RuntimeException("Call to ${call.request().url.encodedPath} failed after $MAX_ATTEMPTS attempts")
