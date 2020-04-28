@@ -15,5 +15,5 @@ object RetrofitTestModule {
 
     @Provides
     @Singleton
-    fun provideMoshi() = Moshi.Builder().build()
+    fun provideMoshi(): Moshi = Moshi.Builder().build()
 }

@@ -156,7 +156,7 @@ class WebApi @Inject constructor(
      *
      * @param postRequest Function to be called with response after each individual API request
      */
-    private fun <T : CursorResponse> callCursorApi(
+    private fun <T : CursorResponse<*>> callCursorApi(
             // HTTP data
             url: String,
             adapter: JsonAdapter<T>,

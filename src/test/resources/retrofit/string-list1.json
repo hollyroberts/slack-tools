@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "list": ["one", "three", "two"],
+  "paging": {
+        "count": 3,
+        "total": 5,
+        "page": 1,
+        "pages": 2
+    }
+}

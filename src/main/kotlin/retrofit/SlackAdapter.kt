@@ -32,6 +32,7 @@ internal class SlackAdapter<T>(
                     ?: throw IllegalStateException("Retrofit interfaces returning ${SlackResult::class.simpleName} must specify a method tier")
             ) as Tier
 
+            // TODO process to ensure slack response contains ok
             return SlackAdapter<Any>(type.actualTypeArguments[0], annotationTier.tier)
         }
     }
@@ -71,7 +72,7 @@ internal class SlackAdapter<T>(
 
     private fun executeCall(call: Call<T>, logFun: (String) -> Unit): CallResult<T> {
         val response = call.execute()
-        // TODO handle IO Exception
+        // TODO handle IO Exception?
 
         // Handle status codes
         if (!response.isSuccessful) {

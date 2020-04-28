@@ -1,4 +1,4 @@
-package slackjson
+package utils
 
 interface TestUtils {
     fun readResource(resource: String): String {

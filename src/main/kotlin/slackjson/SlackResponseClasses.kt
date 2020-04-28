@@ -11,7 +11,7 @@ abstract class SlackResponse {
     var error: String? = null
 }
 
-abstract class CursorResponse : SlackResponse() {
+abstract class CursorResponse<T> : SlackResponse() {
     @Suppress("PropertyName")
     lateinit var response_metadata: Cursor
 
@@ -25,9 +25,11 @@ abstract class CursorResponse : SlackResponse() {
      * If moreEntries is true then guaranteed to be non null
      */
     fun nextCursor() = response_metadata.next_cursor
+
+    abstract fun getContents(): List<T>
 }
 
-abstract class PaginatedResponse : SlackResponse() {
+abstract class PaginatedResponse<T> : SlackResponse() {
     lateinit var paging: Page
 
     /**
@@ -35,6 +37,7 @@ abstract class PaginatedResponse : SlackResponse() {
      * @param params Parameters passed to GET method
      * @return False if there are no more results to be retrieved
      */
+    @Deprecated("To be removed soon TM")
     fun updatePageParams(params: MutableMap<String, String>) : Boolean {
         if (paging.page >= paging.pages) {
             return false
@@ -43,6 +46,16 @@ abstract class PaginatedResponse : SlackResponse() {
         params["page"] = (paging.page + 1).toString()
         return true
     }
+
+    fun getNextPage(): Int? {
+        if (paging.page >= paging.pages) {
+            return null
+        }
+
+        return paging.page + 1
+    }
+
+    abstract fun getContents(): List<T>
 }
 
 @JsonClass(generateAdapter = true)

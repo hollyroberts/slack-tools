@@ -15,7 +15,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle
 import java.time.Duration
 
 @TestInstance(Lifecycle.PER_CLASS)
-class RetryTest {
+class RetrofitRetryTest {
     private fun getApi(server: MockWebServer) = DaggerRetrofitTestComponent.builder()
             .url(server.url(""))
             .build()
@@ -42,7 +42,7 @@ class RetryTest {
 
         server.runServer {
             val testApi = getApi(server)
-            val response = testApi.listFiles()
+            val response = testApi.pathTest()
                     .execute()
 
             assertThat(response.isSuccessful).isTrue()
@@ -129,12 +129,4 @@ class RetryTest {
                     .hasRootCauseMessage("Retrofit interfaces returning SlackResult must specify a method tier")
         }
     }
-
-}    private inline fun MockWebServer.runServer(function: () -> Unit) {
-        this.start()
-        try {
-            function.invoke()
-        } finally {
-            this.shutdown()
-        }
-    }
+}

@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import slack.Settings
 import slackjson.DaggerTestComponent
-import slackjson.TestUtils
+import utils.TestUtils
 
 internal class BaseMessageDeserialisationTest : TestUtils {
     private val moshi = DaggerTestComponent.builder()

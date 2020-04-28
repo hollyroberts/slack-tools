@@ -40,7 +40,6 @@ object RetrofitModule {
                     .addConverterFactory(MoshiConverterFactory.create(moshi))
                     .addCallAdapterFactory(SlackAdapter.Factory())
                     .build()
-            // TODO add some interceptors
         }
     }
 }

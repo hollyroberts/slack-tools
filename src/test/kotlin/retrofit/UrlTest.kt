@@ -12,16 +12,16 @@ class UrlTest {
 
     @Test
     fun checkUrlConstruction() {
-        val noParamUrl = testApi.listFiles()
+        val noParamUrl = testApi.pathTest()
                 .request()
                 .url
                 .toString()
-        assertThat(noParamUrl).endsWith("list?count=100")
+        assertThat(noParamUrl).endsWith("test?count=100")
 
-        val paramUrl = testApi.listFiles(user = "A &User")
+        val paramUrl = testApi.pathTest(user = "A &User")
                 .request()
                 .url
                 .toString()
-        assertThat(paramUrl).endsWith("list?count=100&fake_user=A%20%26User")
+        assertThat(paramUrl).endsWith("test?count=100&fake_user=A%20%26User")
     }
 }

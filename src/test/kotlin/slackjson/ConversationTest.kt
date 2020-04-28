@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import slack.Settings
 import slack.SlackData
+import utils.TestUtils
 
 internal class ConversationTest : TestUtils {
     private val settings: Settings = mockk()
