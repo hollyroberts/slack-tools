@@ -9,6 +9,14 @@ abstract class SlackResponse {
     var ok = false
     var warning: String? = null
     var error: String? = null
+
+    fun verify() {
+
+    }
+}
+
+abstract class SlackSimpleResponse<T> : SlackResponse() {
+    abstract fun getContents(): T
 }
 
 abstract class CursorResponse<T> : SlackResponse() {

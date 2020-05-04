@@ -219,6 +219,7 @@ class Http(authToken: String? = null) {
 
         // Parse JSON to moshi representation
         // Body is guaranteed to be non-null if called from execute()
+        // TODO this could be configured somehow
         val json = response.body!!.string()
         Log.debugLow("Parsing JSON")
         val parsedJson = try {

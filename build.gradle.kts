@@ -60,6 +60,7 @@ configure<JavaPluginConvention> {
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "12"
+    kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
 }
 
 tasks.withType<DependencyUpdatesTask> {

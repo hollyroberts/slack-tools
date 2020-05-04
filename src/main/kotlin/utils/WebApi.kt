@@ -3,7 +3,6 @@ package utils
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import slackjson.*
-import slackjson.message.BaseMessage
 import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Named
@@ -140,10 +139,6 @@ class WebApi @Inject constructor(
 
         Log.medium("Finished retrieving user results (${userMap.size} found)")
         return userMap
-    }
-
-    fun getHistory() : List<BaseMessage>? {
-        return null
     }
 
     /**

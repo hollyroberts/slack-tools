@@ -32,13 +32,16 @@ object RetrofitModule {
         @Provides
         @Singleton
         fun provideRetrofitBuilder(
+                @Named("SlackUrl") baseUrl: HttpUrl,
                 moshi: Moshi,
-                @Named("SlackUrl") baseUrl: HttpUrl
+                slackFactory: SlackAdapter.Factory,
+                retryFactory: RetryAdapter.Factory
         ): Retrofit {
             return Retrofit.Builder()
                     .baseUrl(baseUrl)
                     .addConverterFactory(MoshiConverterFactory.create(moshi))
-                    .addCallAdapterFactory(SlackAdapter.Factory())
+                    .addCallAdapterFactory(slackFactory)
+                    .addCallAdapterFactory(retryFactory)
                     .build()
         }
     }

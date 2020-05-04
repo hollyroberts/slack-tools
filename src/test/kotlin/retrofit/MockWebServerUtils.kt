@@ -2,10 +2,20 @@ package retrofit
 
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
+
+inline fun MockWebServer.runServer(function: () -> Unit) {
+    this.start()
+    try {
+        function.invoke()
+    } finally {
+        this.shutdown()
+    }
+}
 
 class TimeRecorderDispatcher : Dispatcher() {
     private val queue: Queue<MockResponse> = ArrayDeque()

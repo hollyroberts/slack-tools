@@ -11,14 +11,14 @@ import utils.Log
 
 interface SlackApi {
     @GET("files.list?count=100")
-    @Tier(TIER_3)
+    @Slack(TIER_3)
     fun listFilesPage(
             @Query("page") page: Int = 1,
             @Query("ts_from") startTime: Long? = null,
             @Query("ts_to") endTime: Long? = null,
             @Query("channel") channel: String? = null,
             @Query("user") user: String? = null
-    ): SlackResult<FileListResponse>
+    ): FileListResponse
 
     @JvmDefault
     fun listFiles(
@@ -33,7 +33,7 @@ interface SlackApi {
                 endTime = endTime,
                 channel = channel,
                 user = user
-        ).result
+        )
     }
 
     companion object {
@@ -49,6 +49,7 @@ interface SlackApi {
                 page = response.getNextPage() ?: break
             } while (true)
 
+            Log.high("Retrieved ${list.size} $name")
             return list.toImmutableList()
         }
 

@@ -63,9 +63,7 @@ class RetrofitRetryTest {
             val testApi = getApi(server)
             val response = testApi.retryTest()
 
-            assertThat(response.result)
-                    .containsExactly("success")
-
+            assertThat(response).containsExactly("success")
             assertThat(server.requestCount).isEqualTo(3)
         }
     }
@@ -99,8 +97,7 @@ class RetrofitRetryTest {
             val testApi = getApi(server)
             val response = testApi.retryTest()
 
-            assertThat(response.result)
-                    .containsExactly("success")
+            assertThat(response).containsExactly("success")
 
             assertThat(server.requestCount).isEqualTo(3)
 
@@ -125,8 +122,8 @@ class RetrofitRetryTest {
 
             assertThatThrownBy { testApi.annotationTest() }
                     .isInstanceOf(IllegalArgumentException::class.java)
-                    .hasRootCauseInstanceOf(IllegalStateException::class.java)
-                    .hasRootCauseMessage("Retrofit interfaces returning SlackResult must specify a method tier")
+                    .hasMessage("Unable to create call adapter for java.util.List<java.lang.String>" +
+                            "\n    for method RetrofitTestApi.annotationTest")
         }
     }
 }

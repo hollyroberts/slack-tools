@@ -10,18 +10,23 @@ interface RetrofitTestApi {
     fun pathTest(@Query("fake_user") user: String? = null): Call<List<String>>
 
     @GET("retry.test")
-    @Tier(TIER_4)
-    fun retryTest(): SlackResult<List<String>>
+    @Slack(TIER_4)
+    fun retryTest(): List<String>
 
     @GET("annotation.test")
-    fun annotationTest(): SlackResult<List<String>>
+    fun annotationTest(): List<String>
 
     @GET("string.list.page")
-    @Tier(TIER_4)
-    fun getPaginatedPage(@Query("page") page: Int): SlackResult<BasicPaginatedResponse>
+    @Slack(TIER_4)
+    fun getPaginatedPage(@Query("page") page: Int): BasicPaginatedResponse
 
     @JvmDefault
     fun getPaginatedStringList() = SlackApi.retrievePaginatedList("strings") {
-        getPaginatedPage(it).result
+        getPaginatedPage(it)
     }
+
+    @GET("slack.response")
+    @Slack(TIER_4)
+    @UseWrapper(StringListResponse::class)
+    fun getSlackResponse(): List<String>
 }
