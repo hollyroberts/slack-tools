@@ -29,4 +29,8 @@ interface RetrofitTestApi {
     @Slack(TIER_4)
     @UseWrapper(StringListResponse::class)
     fun getSlackResponse(): List<String>
+
+    @GET("no.adapter")
+    @Slack(TIER_4)
+    fun noAdapters(): List<String>
 }
