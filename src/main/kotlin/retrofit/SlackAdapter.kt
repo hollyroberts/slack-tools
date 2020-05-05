@@ -1,5 +1,7 @@
 package retrofit
 
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonDataException
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
@@ -23,7 +25,7 @@ class SlackAdapter {
             val retryAdapter = retryFactory.get(type, annotations, retrofit) ?: return null
             return if (wrapper != null) {
                 @Suppress("UNCHECKED_CAST")
-                return UnwrapAdapter(type, retryAdapter as RetryAdapter<SlackSimpleResponse<Any>>)
+                return UnwrapAdapter(type, getRawType(type) as Class<SlackSimpleResponse<Any>>, retryAdapter as RetryAdapter<SlackSimpleResponse<Any>>)
             } else {
                 @Suppress("UNCHECKED_CAST")
                 PlainAdapter(type, retryAdapter as RetryAdapter<SlackResponse>)
@@ -47,6 +49,7 @@ class SlackAdapter {
 
     class UnwrapAdapter<R: SlackSimpleResponse<T>, T>(
             private val responseType: Type,
+            private val rawResponseClass: Class<R>,
             private val retryAdapter: RetryAdapter<R>
     ) : CallAdapter<R, Any> {
         override fun responseType(): Type = responseType
@@ -54,8 +57,11 @@ class SlackAdapter {
         override fun adapt(call: Call<R>): T {
             val response = retryAdapter.adapt(call)
             response.verify()
+            response.contents?.let { return it }
 
-            return response.getContents()
+            val annotation = rawResponseClass.getDeclaredField("contents").getAnnotation(Json::class.java)
+                    ?: throw NullPointerException("Error handling parse error. Response class ${rawResponseClass.simpleName} does not contain JSON annotation")
+            throw JsonDataException("Response from call to '${call.request().url.encodedPath}' did not contain field '${annotation.name}'")
         }
     }
 }

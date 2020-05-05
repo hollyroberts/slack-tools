@@ -1,6 +1,7 @@
 package slackjson
 
 import com.squareup.moshi.JsonClass
+import com.squareup.moshi.JsonDataException
 
 /*
 Top level classes for slack json representations
@@ -11,12 +12,19 @@ abstract class SlackResponse {
     var error: String? = null
 
     fun verify() {
+        if (ok) {
+            return
+        }
 
+        var message = "Response from slack did not indicate success"
+        warning?.let { message += "\n\t\tWarning message: $it" }
+        error?.let { message += "\n\t\tError message: $it" }
+        throw JsonDataException(message)
     }
 }
 
 abstract class SlackSimpleResponse<T> : SlackResponse() {
-    abstract fun getContents(): T
+    abstract val contents: T?
 }
 
 abstract class CursorResponse<T> : SlackResponse() {

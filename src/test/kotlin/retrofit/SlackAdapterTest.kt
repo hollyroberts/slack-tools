@@ -1,5 +1,6 @@
 package retrofit
 
+import com.squareup.moshi.JsonDataException
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
@@ -66,6 +67,34 @@ class SlackAdapterTest : TestUtils {
             val response = testApi.getSlackResponse()
 
             assertThat(response).containsExactly("hello", "world")
+        }
+    }
+
+    @Test
+    fun okFalseWithWarningAndErrors() {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setBody(readResource("slack-response-bad-1.json")))
+
+        server.runServer {
+            val testApi = getApi(server)
+            assertThatThrownBy { testApi.getSlackResponse() }
+                    .isInstanceOf(JsonDataException::class.java)
+                    .hasMessage("Response from slack did not indicate success" +
+                            "\n\t\tWarning message: This is a warning" +
+                            "\n\t\tError message: This is an error")
+        }
+    }
+
+    @Test
+    fun okButNoContents() {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setBody(readResource("slack-response-bad-3.json")))
+
+        server.runServer {
+            val testApi = getApi(server)
+            assertThatThrownBy { testApi.getSlackResponse() }
+                    .isInstanceOf(JsonDataException::class.java)
+                    .hasMessage("Response from call to '/slack.response' did not contain field 'list'")
         }
     }
 
