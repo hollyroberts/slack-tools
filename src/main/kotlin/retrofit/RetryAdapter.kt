@@ -14,18 +14,9 @@ class RetryAdapter<T>(
         private val retryTier: SlackTier
 ) : CallAdapter<T, Any> {
     class Factory @Inject constructor() : CallAdapter.Factory() {
-        /**
-         * This method is used by retrofit to handle methods
-         * Importantly it has to check if the return type is SlackResult&lt;T&gt;
-         * If not then this handler is not suitable
-         * If so then we return the handler to be used by retrofit
-         *
-         * @return new SlackAdapterif the handler can process the type of the request, otherwise null
-         */
         override fun get(returnType: Type, annotations: Array<Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
             val annotationTier = (annotations.find { it is Slack } ?: return null) as Slack
 
-            // TODO process to ensure slack response contains ok
             return RetryAdapter<Any>(returnType, annotationTier.tier)
         }
     }

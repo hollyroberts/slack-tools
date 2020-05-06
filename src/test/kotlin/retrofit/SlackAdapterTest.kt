@@ -26,7 +26,6 @@ class SlackAdapterTest : TestUtils {
             .getTestApi()
     private fun getApi(server: MockWebServer) = getApi(server.url(""))
 
-    // TODO test with mocked retry factory for wrapped/unwrapped
     @Test
     fun returnsNoAdapter() {
         val retryFactory: RetryAdapter.Factory = mockk()
