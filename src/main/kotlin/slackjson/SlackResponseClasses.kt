@@ -19,6 +19,9 @@ abstract class SlackResponse {
         var message = "Response from slack did not indicate success"
         warning?.let { message += "\n\t\tWarning message: $it" }
         error?.let { message += "\n\t\tError message: $it" }
+        if (warning == null && error == null) {
+            message += ". No information about the failure was provided."
+        }
         throw JsonDataException(message)
     }
 }

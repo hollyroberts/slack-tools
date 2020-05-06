@@ -86,6 +86,19 @@ class SlackAdapterTest : TestUtils {
     }
 
     @Test
+    fun okFalseNoData() {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setBody(readResource("slack-response-bad-2.json")))
+
+        server.runServer {
+            val testApi = getApi(server)
+            assertThatThrownBy { testApi.getSlackResponse() }
+                    .isInstanceOf(JsonDataException::class.java)
+                    .hasMessage("Response from slack did not indicate success. No information about the failure was provided.")
+        }
+    }
+
+    @Test
     fun okButNoContents() {
         val server = MockWebServer()
         server.enqueue(MockResponse().setBody(readResource("slack-response-bad-3.json")))
@@ -95,6 +108,19 @@ class SlackAdapterTest : TestUtils {
             assertThatThrownBy { testApi.getSlackResponse() }
                     .isInstanceOf(JsonDataException::class.java)
                     .hasMessage("Response from call to '/slack.response' did not contain field 'list'")
+        }
+    }
+
+    @Test
+    fun goodDataNoOk() {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setBody(readResource("slack-response-bad-4.json")))
+
+        server.runServer {
+            val testApi = getApi(server)
+            assertThatThrownBy { testApi.getSlackResponse() }
+                    .isInstanceOf(JsonDataException::class.java)
+                    .hasMessage("Response from slack did not indicate success. No information about the failure was provided.")
         }
     }
 
