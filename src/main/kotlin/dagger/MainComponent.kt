@@ -25,7 +25,7 @@ interface MainComponent {
         fun settings(settings: Settings): Builder
 
         @BindsInstance
-        fun token(@Named("token") token: String): Builder
+        fun token(@Named("SlackToken") token: String): Builder
 
         fun build(): MainComponent
     }

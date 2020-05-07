@@ -11,7 +11,7 @@ import javax.inject.Singleton
 @Singleton
 class WebApi @Inject constructor(
         private val moshi: Moshi,
-        @Named("token") token: String
+        @Named("SlackToken") token: String
 ) {
     companion object {
         // URLs

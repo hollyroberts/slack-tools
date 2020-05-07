@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.OkHttpClient
 import retrofit.RetrofitModule.Base
 import retrofit.RetrofitModule.Defaults
 import retrofit2.Retrofit
@@ -33,6 +34,7 @@ object RetrofitModule {
         @Singleton
         fun provideRetrofitBuilder(
                 @Named("SlackUrl") baseUrl: HttpUrl,
+                okHttpClient: OkHttpClient,
                 moshi: Moshi,
                 slackFactory: SlackAdapter.Factory,
                 retryFactory: RetryAdapter.Factory
@@ -42,6 +44,15 @@ object RetrofitModule {
                     .addConverterFactory(MoshiConverterFactory.create(moshi))
                     .addCallAdapterFactory(slackFactory)
                     .addCallAdapterFactory(retryFactory)
+                    .client(okHttpClient)
+                    .build()
+        }
+
+        @Provides
+        @Singleton
+        fun provideClient(tokenInterceptor: TokenInterceptor): OkHttpClient {
+            return OkHttpClient.Builder()
+                    .addInterceptor(tokenInterceptor)
                     .build()
         }
     }
