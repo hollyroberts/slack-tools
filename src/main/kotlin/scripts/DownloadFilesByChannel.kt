@@ -76,7 +76,7 @@ class ScriptDownloadByChannel: CliktCommand(
                 user = userID,
                 channel = convoID
         )
-        var completeFiles = parsedFiles.toCompleteFiles(slack).filesByConvo()
+        var completeFiles = parsedFiles.toCompleteFiles().filesByConvo()
         if (convoTypes != null) {
             completeFiles = completeFiles.filterKeys { convoTypes!!.contains(slack.conversationType(it)) }
         }

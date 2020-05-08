@@ -1,5 +1,6 @@
 package slackjson
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /** conversations.list **/
@@ -12,9 +13,16 @@ data class ConversationListResponse(
 
 /** files.info **/
 @JsonClass(generateAdapter = true)
-data class FileResponse (
+data class OldFileResponse (
         val file: ParsedFile
 ) : SlackResponse()
+
+/** files.info **/
+@JsonClass(generateAdapter = true)
+data class FileResponse (
+        @Json(name = "file")
+        override val contents: ParsedFile?
+) : SlackSimpleResponse<ParsedFile>()
 
 /** files.list **/
 @JsonClass(generateAdapter = true)

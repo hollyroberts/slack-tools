@@ -2,14 +2,18 @@ package retrofit
 
 import okhttp3.internal.toImmutableList
 import retrofit.SlackTier.TIER_3
+import retrofit.SlackTier.TIER_4
 import retrofit2.http.GET
 import retrofit2.http.Query
-import slackjson.CursorResponse
-import slackjson.FileListResponse
-import slackjson.PaginatedResponse
+import slackjson.*
 import utils.Log
 
 interface SlackApi {
+    @GET("files.info")
+    @Slack(TIER_4)
+    @UseWrapper(FileResponse::class)
+    fun listFileInfo(@Query("file") fileId: String): ParsedFile
+
     @GET("files.list?count=100")
     @Slack(TIER_3)
     fun listFilesPage(

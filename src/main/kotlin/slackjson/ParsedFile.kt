@@ -2,10 +2,10 @@ package slackjson
 
 import com.squareup.moshi.*
 import dagger.Lazy
+import retrofit.SlackApi
 import slack.Settings
 import slack.SlackData
 import utils.Log
-import utils.WebApi
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -46,6 +46,10 @@ open class ParsedFile (
     @Inject
     override lateinit var slackData: Lazy<SlackData>
 
+    @Transient
+    @Inject
+    lateinit var api: SlackApi
+
 
     @Transient
     private val custTimestamps = mutableMapOf<String, Double>()
@@ -79,7 +83,7 @@ open class ParsedFile (
     /**
      * Gets the exact upload location by querying a single file
      */
-    private fun getLocationFromApi(webApi: WebApi) = webApi.getFile(this.id).inferLocFromShares()
+    private fun getLocationFromApi() = api.listFileInfo(this.id).inferLocFromShares()
 
     /**
      * Returns a new complete file instance
@@ -92,7 +96,7 @@ open class ParsedFile (
      * Infers location based on share locations. This could be inaccurate if the message was deleted but not the file and then shared elsewhere
      * However in most cases we wouldn't be able to figure out it's location anyway
      */
-    fun toCompleteFileByInference(webApi: WebApi) : CompleteFile {
+    fun toCompleteFileByInference() : CompleteFile {
         val location = inferLocFromShares() ?: when {
             channelsUploadedIn() == 1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
             channelsUploadedIn() == 0 -> {
@@ -100,7 +104,7 @@ open class ParsedFile (
                 null
             } else -> {
                 Log.debugHigh("File $id belongs to more than one channel, requires API call to resolve")
-                getLocationFromApi(webApi)
+                getLocationFromApi()
             }
         }
 
@@ -110,8 +114,8 @@ open class ParsedFile (
     /**
      * Returns a new complete file instance with the most accurate location possible
      */
-    fun toCompleteFileFromApi(webApi: WebApi) : CompleteFile {
-        val location = webApi.getFile(this.id).inferLocFromShares()
+    fun toCompleteFileFromApi() : CompleteFile {
+        val location = api.listFileInfo(this.id).inferLocFromShares()
         return CompleteFile(this, location)
     }
 }

@@ -108,7 +108,7 @@ class WebApi @Inject constructor(
     fun getFile(fileId: String) : ParsedFile {
         val params = mapOf(
                 "file" to fileId)
-        val adapter = moshi.adapter(FileResponse::class.java)
+        val adapter = moshi.adapter(OldFileResponse::class.java)
         val response = (http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
 
         return response.file
