@@ -50,7 +50,7 @@ class ScriptDownloadByUser : CliktCommand(
                 .settings(settings)
                 .token(token)
                 .build()
-        val slack = daggerComponent.getSlackWebApi()
+        val slack = daggerComponent.getUserAndConvoMap()
 
         // Resolve user/conversation ID
         val convoID = convo.let { slack.inferChannelID(it) } ?: run {
@@ -58,7 +58,7 @@ class ScriptDownloadByUser : CliktCommand(
             return
         }
 
-        val parsedFiles = slack.api.getFiles(
+        val parsedFiles = daggerComponent.getSlackApi().listFiles(
                 startTime = timeOptions.startTime?.toEpochSecond(),
                 endTime = timeOptions.endTime?.toEpochSecond(),
                 channel = convoID

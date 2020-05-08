@@ -43,9 +43,9 @@ interface SlackApi {
 
             do {
                 val response = pageRetrievalFun.invoke(page)
+                list.addAll(response.getContents())
 
                 Log.medium("Retrieved ${list.size}/${response.paging.total} $name (page ${response.paging.page}/${response.paging.pages})")
-                list.addAll(response.getContents())
                 page = response.getNextPage() ?: break
             } while (true)
 

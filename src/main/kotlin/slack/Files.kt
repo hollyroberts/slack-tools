@@ -14,7 +14,7 @@ private object Files {
     const val LOCATION_INTERVAL = 3000
 }
 
-fun List<ParsedFile>.toCompleteFiles(slackWebApi: SlackWebApi) : Map<String, CompleteFile> {
+fun List<ParsedFile>.toCompleteFiles(userAndConvoMap: UserAndConvoMap) : Map<String, CompleteFile> {
     // Start timer
     Log.high("Locating upload location of files (this may take a while, especially if inference is disabled)")
     val startTime = System.currentTimeMillis()
@@ -24,7 +24,7 @@ fun List<ParsedFile>.toCompleteFiles(slackWebApi: SlackWebApi) : Map<String, Com
     val files = mutableMapOf<String, CompleteFile>()
     for ((index: Int, pf: ParsedFile) in this.withIndex()) {
         // Convert file to complete file
-        files[pf.id] = pf.toCompleteFileByInference(slackWebApi.api)
+        files[pf.id] = pf.toCompleteFileByInference(userAndConvoMap.api)
 
         // Print out how many objects have been processed
         if (System.currentTimeMillis() > nextOutputTime) {

@@ -1,9 +1,10 @@
 package dagger
 
 import retrofit.RetrofitModule
+import retrofit.SlackApi
 import slack.Settings
 import slack.SlackData
-import slack.SlackWebApi
+import slack.UserAndConvoMap
 import slackjson.MoshiModule
 import utils.WebApi
 import javax.inject.Named
@@ -30,15 +31,19 @@ interface MainComponent {
         fun build(): MainComponent
     }
 
-    fun getSlackWebApi(): SlackWebApi
-    fun getWebApi(): WebApi
+    fun getSlackApi(): SlackApi
+
+    @Deprecated(message = "To be replaced with something better I hope")
+    fun getUserAndConvoMap(): UserAndConvoMap
+    @Deprecated(message = "To be replaced with something better I hope")
+    fun getOldWebApi(): WebApi
 }
 
 @Module
 object MainModule {
     @Singleton
     @Provides
-    fun provideSlackData(slackWebApi: SlackWebApi): SlackData {
-        return slackWebApi
+    fun provideSlackData(userAndConvoMap: UserAndConvoMap): SlackData {
+        return userAndConvoMap
     }
 }

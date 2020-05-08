@@ -58,7 +58,7 @@ class ScriptDownloadAvatars : CliktCommand(
                 .settings(Settings())
                 .token(token)
                 .build()
-        val webApi = daggerComponent.getWebApi()
+        val webApi = daggerComponent.getOldWebApi()
 
         // Get users
         val users = webApi.getUsers().entries.filter { mapEntry ->
