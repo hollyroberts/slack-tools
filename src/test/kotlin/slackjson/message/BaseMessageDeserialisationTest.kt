@@ -13,6 +13,7 @@ internal class BaseMessageDeserialisationTest : TestUtils {
     private val moshi = DaggerTestComponent.builder()
             .settings(Settings())
             .slackData(mockk())
+            .api(mockk())
             .build()
             .getMoshi()
     private val adapter = moshi.adapter(BaseMessage::class.java)

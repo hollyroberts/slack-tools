@@ -17,6 +17,7 @@ internal class ConversationTest : TestUtils {
     private val moshi = DaggerTestComponent.builder()
             .settings(settings)
             .slackData(slackData)
+            .api(mockk())
             .build()
             .getMoshi()
     private val adapter = moshi.adapter(Conversation::class.java)

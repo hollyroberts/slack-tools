@@ -6,8 +6,8 @@ import retrofit.SlackApi
 import slack.Settings
 import slack.SlackData
 import utils.Log
+import java.math.BigDecimal
 import javax.inject.Inject
-import kotlin.math.min
 
 @MoshiInject
 @JsonClass(generateAdapter = true)
@@ -52,13 +52,13 @@ open class ParsedFile (
 
 
     @Transient
-    private val custTimestamps = mutableMapOf<String, Double>()
+    private val custTimestamps = mutableMapOf<String, BigDecimal>()
 
     /**
      * Manually add a timestamp record of when a file was first seen in a channel
      * Will not update if this is later than the earliest file
      */
-    fun addLocationTimestamp(location: String, timestamp: Double) {
+    fun addLocationTimestamp(location: String, timestamp: BigDecimal) {
         if (custTimestamps.containsKey(location)) {
             if (custTimestamps.getValue(location) > timestamp) {
                 custTimestamps[location] = timestamp
@@ -97,9 +97,9 @@ open class ParsedFile (
      * However in most cases we wouldn't be able to figure out it's location anyway
      */
     fun toCompleteFileByInference() : CompleteFile {
-        val location = inferLocFromShares() ?: when {
-            channelsUploadedIn() == 1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
-            channelsUploadedIn() == 0 -> {
+        val location = inferLocFromShares() ?: when (channelsUploadedIn()) {
+            1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
+            0 -> {
                 Log.warn("File $id belongs to no channels")
                 null
             } else -> {
@@ -110,20 +110,12 @@ open class ParsedFile (
 
         return CompleteFile(this, location)
     }
-
-    /**
-     * Returns a new complete file instance with the most accurate location possible
-     */
-    fun toCompleteFileFromApi() : CompleteFile {
-        val location = api.listFileInfo(this.id).inferLocFromShares()
-        return CompleteFile(this, location)
-    }
 }
 
 object ShareJsonAdapter {
     @FromJson
     fun extractShareInfo(reader: JsonReader) : FileShare {
-        val map = mutableMapOf<String, Double>()
+        val map = mutableMapOf<String, BigDecimal>()
 
         reader.beginObject()
         // Iterate over public/private
@@ -153,9 +145,9 @@ object ShareJsonAdapter {
         throw UnsupportedOperationException("Serialisation of FileShare is not supported")
     }
 
-    private fun processChannel(reader: JsonReader) : Pair<String, Double> {
+    private fun processChannel(reader: JsonReader) : Pair<String, BigDecimal> {
         val id = reader.nextName()
-        var lowestTs = Double.MAX_VALUE
+        var lowestTs: BigDecimal? = null
         reader.beginArray()
 
         // Iterate over array
@@ -166,17 +158,18 @@ object ShareJsonAdapter {
                 if (reader.nextName() != "ts") {
                     reader.skipValue()
                 } else {
-                    lowestTs = min(lowestTs, reader.nextDouble())
+                    val ts = BigDecimal(reader.nextString())
+                    lowestTs = lowestTs?.min(ts) ?: ts
                 }
             }
             reader.endObject()
         }
         reader.endArray()
 
-        return Pair(id, lowestTs)
+        return Pair(id, lowestTs!!)
     }
 }
 
 data class FileShare(
-        val firstSeen: Map<String, Double>
+        val firstSeen: Map<String, BigDecimal>
 )

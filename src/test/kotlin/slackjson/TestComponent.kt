@@ -3,6 +3,7 @@ package slackjson
 import com.squareup.moshi.Moshi
 import dagger.BindsInstance
 import dagger.Component
+import retrofit.SlackApi
 import slack.Settings
 import slack.SlackData
 import javax.inject.Singleton
@@ -17,6 +18,9 @@ interface TestComponent {
 
         @BindsInstance
         fun settings(settings: Settings): Builder
+
+        @BindsInstance
+        fun api(slackApi: SlackApi): Builder
 
         fun build(): TestComponent
     }
