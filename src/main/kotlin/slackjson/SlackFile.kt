@@ -51,15 +51,16 @@ abstract class SlackFile : BaseFile() {
         }
 
         // Download
-        urlPrivateDownload?.let {
-            return webApi?.downloadFile(it, folder.resolve(formattedName), size, settings.fileConflictStrategy)
-                    ?: run {
-                        Http().downloadFile(it, folder.resolve(formattedName), size, settings.fileConflictStrategy)
-                    }
-        } ?: urlPrivate.let {
+        return if (urlPrivateDownload != null) {
+            if (webApi != null) {
+                webApi.downloadFile(urlPrivateDownload!!, folder.resolve(formattedName), size, settings.fileConflictStrategy)
+            } else {
+                Http().downloadFile(urlPrivateDownload!!, folder.resolve(formattedName), size, settings.fileConflictStrategy)
+            }
+        } else {
             Log.low("File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'")
-            folder.resolve("$formattedName.txt").toFile().writeText("Link: $it")
-            return DownloadStatus.LINK
+            folder.resolve("$formattedName.txt").toFile().writeText("Link: $urlPrivate")
+            DownloadStatus.LINK
         }
     }
 

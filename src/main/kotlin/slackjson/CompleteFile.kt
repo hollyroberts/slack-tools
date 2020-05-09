@@ -1,9 +1,5 @@
 package slackjson
 
-import dagger.Lazy
-import slack.Settings
-import slack.SlackData
-
 class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile() {
     override val id = sf.id
     override val user = sf.user
@@ -21,6 +17,6 @@ class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile() {
     override val groups = sf.groups
     override val ims = sf.ims
 
-    override var settings: Settings = sf.settings
-    override var slackData: Lazy<SlackData> = sf.slackData
+    override var settings = sf.settings
+    override var slackData = sf.slackData
 }
