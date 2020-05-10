@@ -65,6 +65,7 @@ class RetryAdapter<T>(
             val url = call.request().url.toString()
             val statusCode = response.code()
 
+            // TODO handle this better
             logFun.invoke("Request to '$url' was unsuccessful")
             logFun.invoke("Status code: $statusCode (${response.message()})")
 

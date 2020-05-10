@@ -28,7 +28,7 @@ class ScriptDownloadAvatars : CliktCommand(
 
     // Top level options
     private val topLevelOptions by TopLevelOptions()
-    private val timeOptionsParser by TimeOptions()
+    private val timeOptions by TimeOptions()
 
     // Auth
     private val token by option("--token", "-t",
@@ -53,9 +53,6 @@ class ScriptDownloadAvatars : CliktCommand(
             help = "Download avatars for deactivated accounts").flag()
 
     override fun run() {
-        // Fetch additional options
-        val timeOptions = timeOptionsParser.options()
-
         val daggerComponent = DaggerMainComponent.builder()
                 .settings(Settings())
                 .token(token)
@@ -71,7 +68,7 @@ class ScriptDownloadAvatars : CliktCommand(
 
         // Setup folder
         val outDir = if (includeDate) {
-            val timeNow = Instant.now().atZone(timeOptions.outTz)
+            val timeNow = Instant.now().atZone(timeOptions.outputTz)
             val folderTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
             val extraStr = " - " + folderTimeFormatter.format(timeNow)
             output.toPath().resolveSibling(output.name + extraStr)

@@ -1,8 +1,11 @@
 package scripts
 
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
+import com.github.ajalt.clikt.parameters.options.Option
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parsers.OptionParser
 import org.apache.logging.log4j.kotlin.Logging
 import utils.Log
 import java.time.LocalDateTime
@@ -31,34 +34,31 @@ class TimeOptions : OptionGroup(
                 .toFormatter()!!
     }
 
-    data class Options(
-            val startTime: ZonedDateTime?,
-            val endTime: ZonedDateTime?,
-            val outTz: ZoneId
-    )
-
     // Date input options
     private val printTzs by option("--timezone-list", "-tzl",
             help = "Prints out the available timezones and the current timezone").flag()
-    private val inputTz by option("--timezone-input", "-tzi",
+    private val inputTzOption by option("--timezone-input", "-tzi",
             help = "The timezone for the datetimes given via arguments")
-    private val outputTz by option("--timezone-output", "-tzo",
+    private val outTzOption by option("--timezone-output", "-tzo",
             help = "The timezone for any information output (eg. message/file times)")
 
     // Start/end time
-    private val startTimeStr by option("--start-time", "-ts",
+    private val startTimeOption by option("--start-time", "-ts",
             help = "Include anything after this time (inclusive)",
             metavar = "DATETIME")
-    private val endTimeStr by option("--end-time", "-te",
+    private val endTimeOptions by option("--end-time", "-te",
             help = "Exclude anything after this time (exclusive)",
             metavar = "DATETIME")
 
-    /**
-     * Return the data class of parsed options
-     */
-    // TODO replace this with lateinit var and finalize?
-    // We could keep the options class, but have it be a lookup
-    fun options(): Options {
+    // Parsed and transformed variables
+    var startTime: ZonedDateTime? = null
+    var endTime: ZonedDateTime? = null
+    lateinit var inputTz: ZoneId
+    lateinit var outputTz: ZoneId
+
+    override fun finalize(context: Context, invocationsByOption: Map<Option, List<OptionParser.Invocation>>) {
+        super.finalize(context, invocationsByOption)
+
         // Zone information
         if (printTzs) {
             logger.log(Log.HIGH) { "Available timezones: " }
@@ -67,27 +67,25 @@ class TimeOptions : OptionGroup(
         }
 
         // Input/output zone
-        val timeZone = if (inputTz != null) {
-            ZoneId.of(inputTz)
+        inputTz = if (inputTzOption != null) {
+            ZoneId.of(inputTzOption)
         } else {
             ZoneId.systemDefault()
         }
-        val outputTimeZone = if (outputTz != null) {
-            ZoneId.of(outputTz)
+        outputTz = if (outTzOption != null) {
+            ZoneId.of(outTzOption)
         } else {
             ZoneId.systemDefault()
         }
 
         // Parse datetime
-        val startTime = startTimeStr?.let {
+        startTime = startTimeOption?.let {
             val startTimeLocal = LocalDateTime.parse(it, dtf)
-            ZonedDateTime.of(startTimeLocal, timeZone)
+            ZonedDateTime.of(startTimeLocal, inputTz)
         }
-        val endTime = endTimeStr?.let {
+        endTime = endTimeOptions?.let {
             val endTimeLocal = LocalDateTime.parse(it, dtf)
-            ZonedDateTime.of(endTimeLocal, timeZone)
+            ZonedDateTime.of(endTimeLocal, outputTz)
         }
-
-        return Options(startTime, endTime, outputTimeZone)
     }
 }

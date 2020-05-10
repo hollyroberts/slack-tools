@@ -75,8 +75,8 @@ data class Settings(
 
         var outTz: ZoneId = ZoneId.systemDefault()
 ) {
-    fun applyTimeOptions(timeOptions: TimeOptions.Options) : Settings  {
-        outTz = timeOptions.outTz
+    fun applyTimeOptions(timeOptions: TimeOptions) : Settings  {
+        outTz = timeOptions.outputTz
         return this
     }
 }

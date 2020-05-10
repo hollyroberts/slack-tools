@@ -9,11 +9,11 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerMainComponent
 import slack.Settings
-import slack.downloadByChannel
 import slack.filesByConvo
 import slack.toCompleteFiles
 import slackjson.ConversationTypes
 import utils.Http
+import utils.formatSize
 import java.io.File
 
 fun main(args: Array<String>) = ScriptDownloadByChannel().main(args)
@@ -23,7 +23,7 @@ class ScriptDownloadByChannel: CliktCommand(
 ) {
     // Top level options
     private val topLevelOptions by TopLevelOptions()
-    private val timeOptionsParser by TimeOptions()
+    private val timeOptions by TimeOptions()
 
     // Auth
     private val token by option("--token", "-t",
@@ -54,9 +54,6 @@ class ScriptDownloadByChannel: CliktCommand(
             .default(File("files"))
 
     override fun run() {
-        // Fetch additional options
-        val timeOptions = timeOptionsParser.options()
-
         // Setup
         val settings = Settings(fileConflictStrategy = Http.ConflictStrategy.HASH).applyTimeOptions(timeOptions)
         val daggerComponent = DaggerMainComponent.builder()

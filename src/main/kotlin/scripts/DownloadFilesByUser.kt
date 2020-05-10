@@ -24,7 +24,7 @@ class ScriptDownloadByUser : CliktCommand(
 
     // Top level options
     private val topLevelOptions by TopLevelOptions()
-    private val timeOptionsParser by TimeOptions()
+    private val timeOptions by TimeOptions()
 
     // Auth
     private val token: String by option("--token", "-t",
@@ -42,9 +42,6 @@ class ScriptDownloadByUser : CliktCommand(
             .default(File("files"))
 
     override fun run() {
-        // Fetch additional options
-        val timeOptions = timeOptionsParser.options()
-
         // Setup
         val settings = Settings(fileConflictStrategy = Http.ConflictStrategy.HASH).applyTimeOptions(timeOptions)
         val daggerComponent = DaggerMainComponent.builder()
