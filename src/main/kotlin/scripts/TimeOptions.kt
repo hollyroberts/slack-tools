@@ -56,6 +56,8 @@ class TimeOptions : OptionGroup(
     /**
      * Return the data class of parsed options
      */
+    // TODO replace this with lateinit var and finalize?
+    // We could keep the options class, but have it be a lookup
     fun options(): Options {
         // Zone information
         if (printTzs) {
