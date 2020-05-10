@@ -55,7 +55,6 @@ class ScriptDownloadByChannel: CliktCommand(
 
     override fun run() {
         // Fetch additional options
-        topLevelOptions.run()
         val timeOptions = timeOptionsParser.options()
 
         // Setup

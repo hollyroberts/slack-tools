@@ -54,7 +54,6 @@ class ScriptDownloadAvatars : CliktCommand(
 
     override fun run() {
         // Fetch additional options
-        topLevelOptions.run()
         val timeOptions = timeOptionsParser.options()
 
         val daggerComponent = DaggerMainComponent.builder()
