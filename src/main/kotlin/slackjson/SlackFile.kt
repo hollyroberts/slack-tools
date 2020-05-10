@@ -1,6 +1,7 @@
 package slackjson
 
 import dagger.Lazy
+import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slack.SlackData
 import slackjson.SlackFile.FormattingType.Companion.defaultType
@@ -37,6 +38,10 @@ abstract class SlackFile : BaseFile() {
     abstract var slackData: Lazy<SlackData>
     abstract var settings: Settings
 
+    companion object : Logging {
+        val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH;mm")!!
+    }
+
     fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
 
     fun download(folder: Path, webApi: WebApi?, formatting: FormattingType? = null) : DownloadStatus {
@@ -58,7 +63,7 @@ abstract class SlackFile : BaseFile() {
                 Http().downloadFile(urlPrivateDownload!!, folder.resolve(formattedName), size, settings.fileConflictStrategy)
             }
         } else {
-            Log.low("File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'")
+            logger.log(Log.LOW) { "File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'" }
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $urlPrivate")
             DownloadStatus.LINK
         }
@@ -86,9 +91,5 @@ abstract class SlackFile : BaseFile() {
         companion object {
             fun defaultType() = STANDARD
         }
-    }
-
-    companion object {
-        val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH;mm")!!
     }
 }

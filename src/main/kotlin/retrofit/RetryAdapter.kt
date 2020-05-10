@@ -1,11 +1,11 @@
 package retrofit
 
+import org.apache.logging.log4j.kotlin.Logging
 import retrofit.RetryAdapter.CallResult.FailureMode.RATE_LIMITED
 import retrofit.RetryAdapter.CallResult.FailureMode.UNKNOWN
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
-import utils.Log
 import java.lang.reflect.Type
 import javax.inject.Inject
 
@@ -21,7 +21,7 @@ class RetryAdapter<T>(
         }
     }
 
-    companion object {
+    companion object : Logging {
         const val MAX_ATTEMPTS = 3
     }
 
@@ -37,7 +37,7 @@ class RetryAdapter<T>(
     override fun adapt(call: Call<T>): T {
         for (attempt in 1..MAX_ATTEMPTS) {
             val newCall = if (attempt == 1) call else call.clone()
-            val response = executeCall(newCall) { Log.warn(it) }
+            val response = executeCall(newCall) { logger.warn { it } }
 
             if (response is CallResult.Success) {
                 // TODO check this first
@@ -46,7 +46,7 @@ class RetryAdapter<T>(
 
             when ((response as CallResult.Failure).reason) {
                 RATE_LIMITED -> {
-                    Log.warn("Rate limited, waiting " + "%,d".format(retryTier.waitTimeMillis) + "ms")
+                    logger.warn { "Rate limited, waiting " + "%,d".format(retryTier.waitTimeMillis) + "ms" }
                     if (attempt < MAX_ATTEMPTS) Thread.sleep(retryTier.waitTimeMillis)
                 }
                 UNKNOWN -> throw RuntimeException("Unknown error occurred calling ${call.request().url.encodedPath}")

@@ -8,6 +8,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerMainComponent
+import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slackjson.User
 import utils.Http
@@ -23,6 +24,8 @@ fun main(args: Array<String>) = ScriptDownloadAvatars().main(args)
 class ScriptDownloadAvatars : CliktCommand(
         name = "download-files-by-user"
 ) {
+    companion object : Logging
+
     // Top level options
     private val topLevelOptions by TopLevelOptions()
     private val timeOptionsParser by TimeOptions()
@@ -78,7 +81,7 @@ class ScriptDownloadAvatars : CliktCommand(
         }
         ensureFolderExists(outDir)
 
-        Log.high("Downloading avatars")
+        logger.log(Log.HIGH) { "Downloading avatars" }
         val http = Http()
         users.forEach { mapEntry ->
             val url = mapEntry.value.profile.getLargestImage()
@@ -87,7 +90,7 @@ class ScriptDownloadAvatars : CliktCommand(
 
             http.downloadFile(url, saveLoc)
         }
-        Log.high("Avatars downloaded")
+        logger.log(Log.HIGH) { "Avatars downloaded" }
     }
 
     private fun getName(useDisplayname: Boolean, user: User) = if (useDisplayname) {

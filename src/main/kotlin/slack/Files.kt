@@ -1,5 +1,7 @@
 package slack
 
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.kotlin.logger
 import slackjson.CompleteFile
 import slackjson.ParsedFile
 import slackjson.SlackFile
@@ -10,15 +12,14 @@ import utils.WebApi
 import utils.ensureFolderExists
 import java.nio.file.Path
 
-private object Files {
-    const val LOCATION_INTERVAL = 3000
-}
+private const val LOCATION_INTERVAL = 3000
+private val logger = logger("SlackFileExtensions")
 
 fun List<ParsedFile>.toCompleteFiles() : Map<String, CompleteFile> {
     // Start timer
-    Log.high("Locating upload location of files (this may take a while, especially if inference is disabled)")
+    logger.log(Log.HIGH) { "Locating upload location of files (this may take a while, especially if inference is disabled)" }
     val startTime = System.currentTimeMillis()
-    var nextOutputTime = startTime + Files.LOCATION_INTERVAL
+    var nextOutputTime = startTime + LOCATION_INTERVAL
 
     // Iterate over objects, create map of file id to file objects
     val files = mutableMapOf<String, CompleteFile>()
@@ -28,17 +29,17 @@ fun List<ParsedFile>.toCompleteFiles() : Map<String, CompleteFile> {
 
         // Print out how many objects have been processed
         if (System.currentTimeMillis() > nextOutputTime) {
-            Log.medium("Processed ${index + 1}/${files.size} files")
-            nextOutputTime = System.currentTimeMillis() + Files.LOCATION_INTERVAL
+            logger.info { "Processed ${index + 1}/${files.size} files" }
+            nextOutputTime = System.currentTimeMillis() + LOCATION_INTERVAL
         }
     }
 
     // Output timed messages if took more than LOCATION_INTERVAL
     val timeTaken = System.currentTimeMillis() - startTime
-    if (timeTaken > Files.LOCATION_INTERVAL) {
-        Log.high(String.format("Located the upload location of all files in %,.1f seconds", timeTaken.toFloat() / 1000))
+    if (timeTaken > LOCATION_INTERVAL) {
+        logger.log(Log.HIGH) { String.format("Located the upload location of all files in %,.1f seconds", timeTaken.toFloat() / 1000) }
     } else {
-        Log.medium("Files located")
+        logger.info { "Files located" }
     }
 
     return files.toMap()
@@ -91,7 +92,7 @@ fun Map<String?, List<CompleteFile>>.downloadByChannel(slack: SlackData, outDir:
 fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(outDir: Path, webApi: WebApi?,
                                                            formatting: FormattingType? = null) {
     // Process conversations alphabetically
-    Log.high("Downloading files to '$outDir'")
+    logger.log(Log.HIGH) { "Downloading files to '$outDir'" }
     var downloadStats = DownloadStats()
 
     this.keys.sorted().forEach { key ->
@@ -101,14 +102,14 @@ fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(outDir: Path, webApi:
 
         // Download files
         val channelStats = DownloadStats()
-        Log.medium("Downloading ${filesInConvo.size} files from $key")
+        logger.info { "Downloading ${filesInConvo.size} files from $key" }
         filesInConvo.sortedBy { it.timestamp }.forEach { file ->
             channelStats.update(file.download(folder, webApi, formatting = formatting))
         }
 
-        channelStats.log(key, Log.Modes.MEDIUM)
+        channelStats.log(key, Level.INFO)
         downloadStats += channelStats
     }
 
-    downloadStats.log("slack", Log.Modes.HIGH)
+    downloadStats.log("slack", Log.HIGH)
 }

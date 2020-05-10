@@ -6,6 +6,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.apache.logging.log4j.kotlin.Logging
 import slackjson.SlackResponse
 import java.io.IOException
 import java.nio.file.Files
@@ -14,7 +15,7 @@ import java.security.MessageDigest
 import kotlin.system.exitProcess
 
 class Http(authToken: String? = null) {
-    companion object {
+    companion object : Logging {
         private const val RETRY_ATTEMPTS = 3
     }
 
@@ -59,15 +60,15 @@ class Http(authToken: String? = null) {
         val sizeStr = if (size != null) "(${formatSize(size)})" else "(unknown size)"
 
         if (!fileExists) {
-            Log.medium("Downloading: '$url' as '${saveLoc.fileName}' $sizeStr")
+            logger.info { "Downloading: '$url' as '${saveLoc.fileName}' $sizeStr" }
         } else {
             when (strategy) {
                 ConflictStrategy.IGNORE -> {
-                    Log.low("File exists already: '${saveLoc.fileName}'")
+                    logger.log(Log.LOW) { "File exists already: '${saveLoc.fileName}'" }
                     return DownloadStatus.ALREADY_EXISTED
                 }
-                ConflictStrategy.OVERWRITE -> Log.medium("Downloading and overwriting $url as '${saveLoc.fileName}' $sizeStr")
-                ConflictStrategy.HASH -> Log.medium("Downloading: '$url' $sizeStr and then handling conflict with '${saveLoc.fileName}'")
+                ConflictStrategy.OVERWRITE -> logger.info { "Downloading and overwriting $url as '${saveLoc.fileName}' $sizeStr" }
+                ConflictStrategy.HASH -> logger.info { "Downloading: '$url' $sizeStr and then handling conflict with '${saveLoc.fileName}'" }
             }
         }
 
@@ -77,19 +78,19 @@ class Http(authToken: String? = null) {
             if (authToken != null) requestBuilder.addHeader("Authorization", "Bearer $authToken")
             val request = requestBuilder.build()
 
-            Log.debugHigh("Retrieving file from URL: '$url'")
+            logger.debug { "Retrieving file from URL: '$url'" }
             val response = client.newCall(request).execute()
             val code = response.code
 
-            Log.debugLow("Response code: $code")
+            logger.trace { "Response code: $code" }
             if (code != 200) {
-                Log.error("Code was not 200 when downloading file (given $code)")
+                logger.error { "Code was not 200 when downloading file (given $code)" }
                 return DownloadStatus.FAILURE
             }
 
             response
         } catch (e: IOException) {
-            Log.error("Error downloading file. ${e.javaClass.canonicalName}: ${e.message}")
+            logger.error { "Error downloading file. ${e.javaClass.canonicalName}: ${e.message}" }
             return DownloadStatus.FAILURE
         }
 
@@ -108,16 +109,16 @@ class Http(authToken: String? = null) {
             do {
                 extraFileCount++
                 if (!actualSaveLoc.toFile().exists()) {
-                    Log.debugLow("'$actualSaveLoc' doesn't exist")
+                    logger.trace { "'$actualSaveLoc' doesn't exist" }
                     break
                 }
 
-                Log.debugLow("Downloaded hash: " + bytesToHex(downloadedHash))
+                logger.trace { "Downloaded hash: " + bytesToHex(downloadedHash) }
                 val fileHash = hashAlgorithm.digest(Files.readAllBytes(actualSaveLoc))
-                Log.debugLow("File hash of '$actualSaveLoc': " + bytesToHex(fileHash))
+                logger.trace { "File hash of '$actualSaveLoc': " + bytesToHex(fileHash) }
 
                 if (fileHash contentEquals downloadedHash) {
-                    Log.debugLow("Hashes are the same, ignoring")
+                    logger.trace { "Hashes are the same, ignoring" }
                     return DownloadStatus.ALREADY_EXISTED
                 }
 
@@ -126,12 +127,12 @@ class Http(authToken: String? = null) {
             } while(true)
 
             if (saveLoc != actualSaveLoc) {
-                Log.medium("New save location: '$actualSaveLoc'")
+                logger.info { "New save location: '$actualSaveLoc'" }
             }
         }
 
         // Just save
-        Log.debugLow("Writing to $actualSaveLoc")
+        logger.trace { "Writing to $actualSaveLoc" }
         actualSaveLoc.parent?.toFile()?.mkdirs()
         Files.write(actualSaveLoc, downloadedBytes)
 
@@ -154,19 +155,19 @@ class Http(authToken: String? = null) {
             when (status) {
                 GETStatus.SUCCESS -> return Result.Success(json!!)
                 GETStatus.FAILURE -> {
-                    Log.error("Exiting due to response failure")
+                    logger.error { "Exiting due to response failure" }
                     exitProcess(-1)
                 }
-                GETStatus.RATE_LIMITED -> Log.warn("Rate limited, waiting " + "%,d".format(waitTime) + "s")
+                GETStatus.RATE_LIMITED -> logger.warn { "Rate limited, waiting " + "%,d".format(waitTime) + "s" }
             }
 
             if (i < RETRY_ATTEMPTS) {
                 Thread.sleep(waitTime.toLong() * 1000)
-                Log.medium("Retrying (" + ordinal(i + 1) + " attempt)")
+                logger.info { "Retrying (" + ordinal(i + 1) + " attempt)" }
             }
         }
 
-        Log.error("Number of retry attempts exceeded")
+        logger.error { "Number of retry attempts exceeded" }
         exitProcess(-1)
         // return utils.Result.Failure
     }
@@ -191,12 +192,12 @@ class Http(authToken: String? = null) {
 
         // Send request
         try {
-            Log.debugHigh("GET '$httpUrl'")
+            logger.debug { "GET '$httpUrl'" }
             client.newCall(request).execute().use {
                 return processResponse(it, adapter, url)
             }
         } catch (e: IOException) {
-            Log.error(e.toString())
+            logger.error { e.toString() }
             return Pair(GETStatus.FAILURE, null)
         }
     }
@@ -209,11 +210,11 @@ class Http(authToken: String? = null) {
 
         // HTTP status codes
         if (response.code == 429) {
-            Log.warn("$errBaseMsg Rate limited.")
+            logger.warn { "$errBaseMsg Rate limited." }
             return Pair(GETStatus.RATE_LIMITED, null)
         }
         if (response.code != 200) {
-            Log.error("Request for '$url' failed. Status code: " + response.code.toString() + " (" + response.message + ")")
+            logger.error { "Request for '$url' failed. Status code: " + response.code.toString() + " (" + response.message + ")" }
             return Pair(GETStatus.FAILURE, null)
         }
 
@@ -221,15 +222,15 @@ class Http(authToken: String? = null) {
         // Body is guaranteed to be non-null if called from execute()
         // TODO this could be configured somehow
         val json = response.body!!.string()
-        Log.debugLow("Parsing JSON")
+        logger.trace { "Parsing JSON" }
         val parsedJson = try {
             adapter.fromJson(json)!!
         } catch (e: JsonDataException) {
-            Log.error(e.localizedMessage)
-            Log.high("Json received: \n" + prettyFormat(json))
+            logger.error { e.localizedMessage }
+            logger.log(Log.HIGH) { "Json received: \n" + prettyFormat(json) }
             throw e
         }
-        Log.debugLow("JSON parsed")
+        logger.trace { "JSON parsed" }
 
         if (!parsedJson.ok) {
             var msg = "$errBaseMsg OK field was false or missing"
@@ -237,13 +238,13 @@ class Http(authToken: String? = null) {
                 msg += ". Failure message given: " + parsedJson.error
             }
 
-            Log.error(msg)
+            logger.error { msg }
             return Pair(GETStatus.FAILURE, null)
         }
 
         // Check for warnings, but do not fail on them
         if (parsedJson.warning != null) {
-            Log.warn("Slack response contained warning for request '$url'. Message: " + parsedJson.warning)
+            logger.warn { "Slack response contained warning for request '$url'. Message: " + parsedJson.warning }
         }
 
         return Pair(GETStatus.SUCCESS, parsedJson)

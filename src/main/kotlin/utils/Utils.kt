@@ -3,6 +3,7 @@ package utils
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
 import okio.Buffer
+import org.apache.logging.log4j.kotlin.logger
 import java.net.URLConnection
 import java.nio.file.Path
 import java.text.DecimalFormat
@@ -10,6 +11,7 @@ import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.pow
 
+private val logger = logger("Utils")
 
 /**
  * Generic results class to reduce use of Pair
@@ -59,7 +61,7 @@ fun formatSize(size: Long, precision: Int = 2): String {
  */
 fun ensureFolderExists(location: Path) {
     if (!location.toFile().exists()) {
-        Log.debugHigh("Creating directory ' ${location.fileName}'")
+        logger.debug { "Creating directory ' ${location.fileName}'" }
         location.toFile().mkdirs()
     }
 }

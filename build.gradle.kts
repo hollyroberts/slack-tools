@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     // Common versions
+    val log4j2Version = "2.13.2"
     val daggerVersion = "2.27"
     val moshiVersion = "1.9.2"
     val okhttpVersion = "4.6.0"
@@ -25,6 +26,10 @@ dependencies {
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
+
+    implementation("org.apache.logging.log4j:log4j-api-kotlin:1.0.0")
+    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
 
     api("com.google.dagger:dagger:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")

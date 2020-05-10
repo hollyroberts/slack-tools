@@ -3,6 +3,7 @@ package scripts
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
+import org.apache.logging.log4j.kotlin.Logging
 import utils.Log
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -19,20 +20,22 @@ class TimeOptions : OptionGroup(
         help = "Options for controlling how time is used. " +
                 "DATETIME is the format used (eg. dd/MM/yy)"
 ) {
+    companion object : Logging {
+        private val dtf = DateTimeFormatterBuilder()
+                .appendPattern("dd/MM/[yyyy][yy]")
+                .optionalStart()
+                .appendPattern(" HH:mm")
+                .optionalEnd()
+                .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                .toFormatter()!!
+    }
+
     data class Options(
             val startTime: ZonedDateTime?,
             val endTime: ZonedDateTime?,
             val outTz: ZoneId
     )
-
-    private val dtf = DateTimeFormatterBuilder()
-            .appendPattern("dd/MM/[yyyy][yy]")
-            .optionalStart()
-            .appendPattern(" HH:mm")
-            .optionalEnd()
-            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-            .toFormatter()
 
     // Date input options
     private val printTzs by option("--timezone-list", "-tzl",
@@ -56,9 +59,9 @@ class TimeOptions : OptionGroup(
     fun options(): Options {
         // Zone information
         if (printTzs) {
-            Log.high("Available timezones: ")
-            Log.high(ZoneId.getAvailableZoneIds().sorted().joinToString("\n       "))
-            Log.high("Current timezone: " + ZoneId.systemDefault())
+            logger.log(Log.HIGH) { "Available timezones: " }
+            logger.log(Log.HIGH) { ZoneId.getAvailableZoneIds().sorted().joinToString("\n       ") }
+            logger.log(Log.HIGH) { "Current timezone: " + ZoneId.systemDefault() }
         }
 
         // Input/output zone

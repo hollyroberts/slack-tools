@@ -2,10 +2,10 @@ package slackjson
 
 import com.squareup.moshi.*
 import dagger.Lazy
+import org.apache.logging.log4j.kotlin.Logging
 import retrofit.SlackApi
 import slack.Settings
 import slack.SlackData
-import utils.Log
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -50,9 +50,10 @@ open class ParsedFile (
     @Inject
     lateinit var api: SlackApi
 
-
     @Transient
     private val custTimestamps = mutableMapOf<String, BigDecimal>()
+
+    companion object : Logging
 
     /**
      * Manually add a timestamp record of when a file was first seen in a channel
@@ -100,10 +101,10 @@ open class ParsedFile (
         val location = inferLocFromShares() ?: when (channelsUploadedIn()) {
             1 -> channels?.firstOrNull() ?: groups?.firstOrNull() ?: ims!![0]
             0 -> {
-                Log.warn("File $id belongs to no channels")
+                logger.warn { "File $id belongs to no channels" }
                 null
             } else -> {
-                Log.debugHigh("File $id belongs to more than one channel, requires API call to resolve")
+                logger.debug { "File $id belongs to more than one channel, requires API call to resolve" }
                 getLocationFromApi()
             }
         }

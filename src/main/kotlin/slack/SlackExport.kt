@@ -4,13 +4,13 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Types
 import okio.buffer
 import okio.source
+import org.apache.logging.log4j.kotlin.Logging
 import slackjson.User
-import utils.Log
 import java.nio.file.Path
 
 class SlackExport private constructor() {
     // Factory method
-    companion object {
+    companion object : Logging {
         fun loadFromFolder(folder: Path): SlackExport {
             val dataType = Types.newParameterizedType(List::class.java, User::class.java)
 //            val adapter: JsonAdapter<List<User>> = MoshiAdapter.adapter.adapter(dataType)
@@ -25,7 +25,7 @@ class SlackExport private constructor() {
         }
 
         private fun <T> loadJson(location: Path, adapter: JsonAdapter<T>): T {
-            Log.debugLow("Loading $location")
+            logger.trace { "Loading $location" }
             val file = location.toFile()
             val bufferedSource = file.source().buffer()
             return adapter.fromJson(bufferedSource)!!

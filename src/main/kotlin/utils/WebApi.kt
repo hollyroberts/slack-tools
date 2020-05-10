@@ -2,6 +2,7 @@ package utils
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import org.apache.logging.log4j.kotlin.Logging
 import slackjson.*
 import java.nio.file.Path
 import javax.inject.Inject
@@ -13,7 +14,7 @@ class WebApi @Inject constructor(
         private val moshi: Moshi,
         @Named("SlackToken") token: String
 ) {
-    companion object {
+    companion object : Logging {
         // URLs
         private const val URL_CONVO_LIST = "https://slack.com/api/conversations.list"
         private const val URL_FILES_INFO = "https://slack.com/api/files.info"
@@ -53,7 +54,7 @@ class WebApi @Inject constructor(
 
         val adapter = moshi.adapter(ConversationListResponse::class.java)
 
-        Log.medium("Retrieving conversations (channels)")
+        logger.info { "Retrieving conversations (channels)" }
         callCursorApi(
                 URL_CONVO_LIST, adapter, params, RETRY_TIER_2
         ) { response ->
@@ -61,10 +62,10 @@ class WebApi @Inject constructor(
             response.channels.forEach {
                 convos[it.id] = it
             }
-            Log.debugHigh("Retrieved ${convos.size} conversations")
+            logger.debug { "Retrieved ${convos.size} conversations" }
         }
 
-        Log.medium("Finished retrieving conversations (${convos.size} found)")
+        logger.info { "Finished retrieving conversations (${convos.size} found)" }
         return convos.toMap()
     }
 
@@ -88,16 +89,16 @@ class WebApi @Inject constructor(
         val adapter = moshi.adapter(FileListResponse::class.java)
 
         // Get results
-        Log.high("Retrieving list of files")
+        logger.log(Log.HIGH) { "Retrieving list of files" }
         val files = mutableListOf<ParsedFile>()
         do {
             val response = (http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
             files.addAll(response.files)
 
-            Log.medium("Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})")
+            logger.info { "Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})" }
         } while (response.updatePageParams(params))
 
-        Log.high("Retrieved ${files.size} files")
+        logger.log(Log.HIGH) { "Retrieved ${files.size} files" }
         return files
     }
 
@@ -126,7 +127,7 @@ class WebApi @Inject constructor(
 
         val adapter = moshi.adapter(UserListResponse::class.java)
 
-        Log.medium("Retrieving user results")
+        logger.info { "Retrieving user results" }
         callCursorApi(
                 URL_USERS_LIST, adapter, params, RETRY_TIER_2
         ) { response ->
@@ -134,10 +135,10 @@ class WebApi @Inject constructor(
             response.members.forEach {
                 userMap[it.id] = it
             }
-            Log.debugHigh("Retrieved ${userMap.size} user results")
+            logger.debug { "Retrieved ${userMap.size} user results" }
         }
 
-        Log.medium("Finished retrieving user results (${userMap.size} found)")
+        logger.info { "Finished retrieving user results (${userMap.size} found)" }
         return userMap
     }
 

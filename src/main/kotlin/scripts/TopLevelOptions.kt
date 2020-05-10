@@ -28,6 +28,6 @@ class TopLevelOptions : OptionGroup(
      * Not automatically run by moshi so has to be called manually
      */
     fun run() {
-        logMode?.let { Log.mode = it }
+        logMode?.let { Log.setLevel(it) }
     }
 }

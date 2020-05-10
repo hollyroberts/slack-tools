@@ -8,11 +8,11 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerMainComponent
+import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slack.downloadByUser
 import slack.filesByUser
 import utils.Http
-import utils.Log
 import java.io.File
 
 fun main(args: Array<String>) = ScriptDownloadByUser().main(args)
@@ -20,6 +20,8 @@ fun main(args: Array<String>) = ScriptDownloadByUser().main(args)
 class ScriptDownloadByUser : CliktCommand(
         name = "download-files-by-user"
 ) {
+    companion object : Logging
+
     // Top level options
     private val topLevelOptions by TopLevelOptions()
     private val timeOptionsParser by TimeOptions()
@@ -54,7 +56,7 @@ class ScriptDownloadByUser : CliktCommand(
 
         // Resolve user/conversation ID
         val convoID = convo.let { slack.inferChannelID(it) } ?: run {
-            Log.error("Could not infer channel from '$convo'")
+            logger.error { "Could not infer channel from '$convo'" }
             return
         }
 

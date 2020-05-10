@@ -1,6 +1,7 @@
 package retrofit
 
 import okhttp3.internal.toImmutableList
+import org.apache.logging.log4j.kotlin.Logging
 import retrofit.SlackTier.TIER_3
 import retrofit.SlackTier.TIER_4
 import retrofit2.http.GET
@@ -40,7 +41,7 @@ interface SlackApi {
         )
     }
 
-    companion object {
+    companion object : Logging {
         internal fun <T> retrievePaginatedList(name: String, pageRetrievalFun: (Int) -> PaginatedResponse<T>): List<T> {
             val list = mutableListOf<T>()
             var page = 1
@@ -49,11 +50,11 @@ interface SlackApi {
                 val response = pageRetrievalFun.invoke(page)
                 list.addAll(response.getContents())
 
-                Log.medium("Retrieved ${list.size}/${response.paging.total} $name (page ${response.paging.page}/${response.paging.pages})")
+                logger.log(Log.LOW) { "Retrieved ${list.size}/${response.paging.total} $name (page ${response.paging.page}/${response.paging.pages})" }
                 page = response.getNextPage() ?: break
             } while (true)
 
-            Log.high("Retrieved ${list.size} $name")
+            logger.log(Log.HIGH) { "Retrieved ${list.size} $name" }
             return list.toImmutableList()
         }
 
@@ -72,7 +73,7 @@ interface SlackApi {
                 val response = retrievalFun.invoke(cursor)
                 val contents = response.getContents()
                 mappingFun.invoke(map, contents)
-                Log.debugHigh("Retrieved ${contents.size} $name")
+                logger.debug { "Retrieved ${contents.size} $name" }
 
                 if (!response.moreEntries()) {
                     break

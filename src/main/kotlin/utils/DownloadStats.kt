@@ -1,5 +1,8 @@
 package utils
 
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.kotlin.Logging
+
 enum class DownloadStatus { SUCCESS, SUCCESS_OVERWRITE, ALREADY_EXISTED, LINK, FAILURE }
 
 /**
@@ -7,6 +10,8 @@ enum class DownloadStatus { SUCCESS, SUCCESS_OVERWRITE, ALREADY_EXISTED, LINK, F
  */
 @Suppress("MemberVisibilityCanBePrivate")
 class DownloadStats {
+    companion object : Logging
+
     private val map = mutableMapOf<DownloadStatus, Int>()
 
     init {
@@ -52,12 +57,12 @@ class DownloadStats {
         return msg
     }
 
-    fun log(location: String, logLevel: Log.Modes) {
+    fun log(location: String, logLevel: Level) {
         // Output information
         if (failures() == 0) {
-            Log.log(logLevel, getMessage(location))
+            logger.log(logLevel) { getMessage(location) }
         } else {
-            Log.warn(getMessage(location))
+            logger.warn { getMessage(location) }
         }
     }
 }
