@@ -8,6 +8,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import slackjson.*
 import utils.Log
+import utils.formatSize
 
 interface SlackApi {
     @GET("files.info")
@@ -31,19 +32,31 @@ interface SlackApi {
             endTime: Long? = null,
             channel: String? = null,
             user: String? = null
-    ) = retrievePaginatedList("files") {
-        listFilesPage(
-                page = it,
-                startTime = startTime,
-                endTime = endTime,
-                channel = channel,
-                user = user
-        )
-        // TODO list file size
-    }
+    ) = retrievePaginatedList(
+            "files",
+            pageRetrievalFun = {
+                listFilesPage(
+                        page = it,
+                        startTime = startTime,
+                        endTime = endTime,
+                        channel = channel,
+                        user = user
+                )
+            },
+            postRetrievalFun = { list ->
+                val fileSize = list.map { it.size }.sum()
+                logger.info { "Retrieved %,d files (%s)".format(list.size, formatSize(fileSize)) }
+            }
+    )
 
     companion object : Logging {
-        internal fun <T> retrievePaginatedList(name: String, pageRetrievalFun: (Int) -> PaginatedResponse<T>): List<T> {
+        internal fun <T> retrievePaginatedList(
+                name: String,
+                pageRetrievalFun: (Int) -> PaginatedResponse<T>,
+                postRetrievalFun: (List<T>) -> Unit = {
+                    logger.log(Log.HIGH) { "Retrieved %,d %s".format(it.size, name) }
+                }
+        ): List<T> {
             val list = mutableListOf<T>()
             var page = 1
 
@@ -55,8 +68,10 @@ interface SlackApi {
                 page = response.getNextPage() ?: break
             } while (true)
 
-            logger.log(Log.HIGH) { "Retrieved ${list.size} $name" }
-            return list.toImmutableList()
+
+            val immutableList = list.toImmutableList()
+            postRetrievalFun.invoke(immutableList)
+            return immutableList
         }
 
         // Handle cursor responses that return maps

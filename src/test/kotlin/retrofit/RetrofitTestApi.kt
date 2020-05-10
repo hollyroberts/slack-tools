@@ -21,9 +21,12 @@ interface RetrofitTestApi {
     fun getPaginatedPage(@Query("page") page: Int): BasicPaginatedResponse
 
     @JvmDefault
-    fun getPaginatedStringList() = SlackApi.retrievePaginatedList("strings") {
-        getPaginatedPage(it)
-    }
+    fun getPaginatedStringList() = SlackApi.retrievePaginatedList(
+            "strings",
+            pageRetrievalFun = {
+                getPaginatedPage(it)
+            }
+    )
 
     @GET("slack.response")
     @Slack(TIER_4)
