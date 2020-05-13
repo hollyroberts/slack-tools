@@ -1,5 +1,6 @@
 package retrofit
 
+import org.apache.logging.log4j.kotlin.Logging
 import retrofit.SlackTier.TIER_4
 import retrofit2.Call
 import retrofit2.http.GET
@@ -25,6 +26,9 @@ interface RetrofitTestApi {
             "strings",
             pageRetrievalFun = {
                 getPaginatedPage(it)
+            },
+            postRetrievalFun = {
+                logger.info { "Hello world! Size: ${it.size}" }
             }
     )
 
@@ -36,4 +40,6 @@ interface RetrofitTestApi {
     @GET("no.adapter")
     @Slack(TIER_4)
     fun noAdapters(): List<String>
+
+    companion object : Logging
 }
