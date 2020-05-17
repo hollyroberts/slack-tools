@@ -5,6 +5,7 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import io.github.classgraph.ClassGraph
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -15,6 +16,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
+import slackjson.SlackSimpleResponse
 import utils.TestUtils
 import javax.inject.Named
 import javax.inject.Singleton
@@ -121,6 +123,28 @@ class SlackAdapterTest : TestUtils {
                     .isInstanceOf(JsonDataException::class.java)
                     .hasMessage("Response from slack did not indicate success. No information about the failure was provided.")
         }
+    }
+
+    /**
+     * Kotlin needs a field specifier for constructor parameters for us to see the annotation (as it doesn't know if it's a field/getter/setter)
+     * So this test ensures that we add the annotation on all instances of SlackSimpleResponse
+     */
+    @Test
+    fun slackSimpleResponseAnnotations() {
+        val scanResult = ClassGraph().enableAllInfo().scan()
+        val subclasses = scanResult.getSubclasses(SlackSimpleResponse::class.java.canonicalName)
+
+        subclasses.forEach { subclass ->
+            val contentsAnnotation = subclass.getFieldInfo("contents")!!.annotationInfo
+
+            assertThat(contentsAnnotation).anySatisfy { annotation ->
+                assertThat(annotation.name).isEqualTo("com.squareup.moshi.Json")
+                assertThat(annotation.parameterValues).anySatisfy {
+                    assertThat(it.name).isEqualTo("name")
+                }
+            }
+        }
+
     }
 
     private fun getTestApiWithMockedFactory(retryFactory: RetryAdapter.Factory): RetrofitTestApi {

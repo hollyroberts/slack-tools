@@ -54,6 +54,7 @@ dependencies {
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
+    testImplementation("io.github.classgraph:classgraph:4.8.78")
 }
 
 tasks.test {
