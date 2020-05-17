@@ -8,7 +8,7 @@ import utils.Log
 import utils.TestLogHelper
 import utils.TestUtils
 
-class PaginationTest : TestUtils {
+class PaginationClassicTest : TestUtils {
     private fun getApi(server: MockWebServer) = DaggerRetrofitTestComponent.builder()
             .url(server.url(""))
             .build()
@@ -30,7 +30,7 @@ class PaginationTest : TestUtils {
 
     @Test
     fun testLogging() {
-        val logHelper = TestLogHelper.forClass(SlackApi::class.java)
+        val logHelper = TestLogHelper.forClass(Pagination::class.java)
         val logHelperTest = TestLogHelper.forClass(RetrofitTestApi::class.java)
         logHelper.setLevel(Log.LOW)
         logHelperTest.setLevel(Log.LOW)
