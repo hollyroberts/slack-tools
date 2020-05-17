@@ -2,6 +2,7 @@ package retrofit
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import retrofit.BasicCursorResponse.CursorResponseContents
 import slackjson.CursorResponse
 import slackjson.PaginatedResponse
 import slackjson.SlackSimpleResponse
@@ -21,5 +22,11 @@ class BasicPaginatedResponse(
 @JsonClass(generateAdapter = true)
 class BasicCursorResponse(
         @Json(name = "test")
-        override val contents: List<String>
-) : CursorResponse<String>()
+        override val contents: List<CursorResponseContents>
+) : CursorResponse<CursorResponseContents>() {
+        @JsonClass(generateAdapter = true)
+        data class CursorResponseContents(
+                val a: String,
+                val b: String
+        )
+}

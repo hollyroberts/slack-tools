@@ -36,16 +36,23 @@ object Pagination : Logging {
         // TODO implement this for a function and test it
         internal fun <T, R> retrieveCursorResponseAsMap(
                 name: String,
-                retrievalFun: (String?) -> CursorResponse<R>,
-                mappingFun: (Map<T, R>, List<R>) -> Unit
+                pageRetrievalFun: (String?) -> CursorResponse<R>,
+                mappingFun: (R) -> T
         ): Map<T, R> {
             val map = mutableMapOf<T, R>()
             var cursor: String? = null
 
             do {
-                val response = retrievalFun.invoke(cursor)
+                val response = pageRetrievalFun.invoke(cursor)
                 val contents = response.contents
-                mappingFun.invoke(map, contents)
+
+                contents.forEach {
+                    val key = mappingFun.invoke(it)
+                    if (map.contains(key)) {
+                        throw IllegalStateException("Map for cursor response already contains value $key")
+                    }
+                    map[key] = it
+                }
                 logger.debug { "Retrieved ${contents.size} $name" }
 
                 if (!response.moreEntries()) {

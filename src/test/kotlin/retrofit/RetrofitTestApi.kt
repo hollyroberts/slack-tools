@@ -32,6 +32,17 @@ interface RetrofitTestApi {
             }
     )
 
+    @GET("string.cursor")
+    @Slack(TIER_4)
+    fun getCursorPage(@Query("cursor") cursor: String?): BasicCursorResponse
+
+    @JvmDefault
+    fun getCursorStringMap() = Pagination.retrieveCursorResponseAsMap(
+            "cursorStrings",
+            pageRetrievalFun = { getCursorPage(it) },
+            mappingFun = { it.a }
+    )
+
     @GET("slack.response")
     @Slack(TIER_4)
     @UseWrapper(StringListResponse::class)

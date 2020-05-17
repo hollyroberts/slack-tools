@@ -34,7 +34,7 @@ abstract class SlackSimpleResponse<T> : SlackResponse() {
 abstract class CursorResponse<T> : SlackResponse() {
     abstract val contents: List<T>
 
-    @Json(name = "response_metadata")
+    @field:Json(name = "response_metadata")
     var metadata: Cursor? = null
 
     @JsonClass(generateAdapter = true)
