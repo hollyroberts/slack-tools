@@ -4,10 +4,13 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
 import okio.Buffer
 import org.apache.logging.log4j.kotlin.logger
+import java.lang.Long.numberOfLeadingZeros
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 import java.net.URLConnection
 import java.nio.file.Path
 import java.text.DecimalFormat
-import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.pow
 
@@ -43,17 +46,36 @@ fun prettyFormat(json: String): String {
 }
 
 /**
- * Formats the size of the file into a human readable version
- * @param precision Number of decimal places to return (there will be at least 1)
+ * Formats the long value into a human readable version
+ * @param sigFigures Significant figures to show (integer + decimal component).
+ * The integer component will not lose precision if it contains more significant figures
  */
-fun formatSize(size: Long, precision: Int = 2): String {
-    if (size < 1024) return "$size B"
-    val exp = log(size.toDouble(), 1024.0).toInt()
-    val prefix = "KMGTPE"[exp - 1]
+fun formatSize(size: Long, sigFigures: Int = 3): String {
+    require(sigFigures >= 0) { "Precision must be greater than or equal to zero. Was: $sigFigures" }
+    require(size >= 0) { "Size to format must be greater than or equal to zero. Was: $size" }
 
-    val df = DecimalFormat("#.0" + "#".repeat(max(0, precision - 1)))
-    val formattedSize = df.format(size / (1024.0).pow(exp))
-    return "$formattedSize ${prefix}iB"
+    if (size < 1024) {
+        return "$size B"
+    }
+
+    // A modified strategy based off the idea of counting leading zeros from: https://stackoverflow.com/a/24805871
+    val magnitude = (63 - numberOfLeadingZeros(size)) / 10
+    val unitPrefix = "KMGTPE"[magnitude - 1]
+
+    // Instead of directly converting to double, truncate to an intermediate so we're working with values < 1024^2
+    val truncatedSize = size / (1L shl ((magnitude - 1) * 10))
+    val finalDouble = truncatedSize.toDouble() / 1024
+
+    // If it's above our precision value then don't display any decimal places
+    if (finalDouble >= 10.0.pow(sigFigures - 1)) {
+        return "${finalDouble.toInt()} ${unitPrefix}iB"
+    }
+
+    // Otherwise display at least 1
+    val mathContext = MathContext(sigFigures, RoundingMode.DOWN)
+    val bigDecimal = BigDecimal(finalDouble, mathContext)
+    val formatter = DecimalFormat("#.0" + "#".repeat(max(0, sigFigures - 2)))
+    return "${formatter.format(bigDecimal)} ${unitPrefix}iB"
 }
 
 /**
