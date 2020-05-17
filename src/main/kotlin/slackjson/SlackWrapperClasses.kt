@@ -6,10 +6,9 @@ import com.squareup.moshi.JsonClass
 /** conversations.list **/
 @JsonClass(generateAdapter = true)
 data class ConversationListResponse(
-        val channels: List<Conversation>
-) : CursorResponse<Conversation>() {
-    override fun getContents() = channels
-}
+        @field:Json(name = "channels")
+        override val contents: List<Conversation>
+) : CursorResponse<Conversation>()
 
 /** files.info **/
 @JsonClass(generateAdapter = true)
@@ -20,22 +19,20 @@ data class OldFileResponse (
 /** files.info **/
 @JsonClass(generateAdapter = true)
 data class FileResponse (
-        @Json(name = "file")
+        @field:Json(name = "file")
         override val contents: ParsedFile?
 ) : SlackSimpleResponse<ParsedFile>()
 
 /** files.list **/
 @JsonClass(generateAdapter = true)
 data class FileListResponse(
-        val files: List<ParsedFile>
-) : PaginatedResponse<ParsedFile>() {
-    override fun getContents(): List<ParsedFile> = files
-}
+        @Json(name = "files")
+        override val contents: List<ParsedFile>
+) : PaginatedResponse<ParsedFile>()
 
 /** users.list **/
 @JsonClass(generateAdapter = true)
 data class UserListResponse(
-        val members: List<User>
-) : CursorResponse<User>() {
-    override fun getContents() = members
-}
+        @Json(name = "members")
+        override val contents: List<User>
+) : CursorResponse<User>()

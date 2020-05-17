@@ -19,7 +19,7 @@ object Pagination : Logging {
 
             do {
                 val response = pageRetrievalFun.invoke(page)
-                list.addAll(response.getContents())
+                list.addAll(response.contents)
 
                 logger.log(Log.LOW) { "Retrieved ${list.size}/${response.paging.total} $name (page ${response.paging.page}/${response.paging.pages})" }
                 page = response.getNextPage() ?: break
@@ -44,7 +44,7 @@ object Pagination : Logging {
 
             do {
                 val response = retrievalFun.invoke(cursor)
-                val contents = response.getContents()
+                val contents = response.contents
                 mappingFun.invoke(map, contents)
                 logger.debug { "Retrieved ${contents.size} $name" }
 

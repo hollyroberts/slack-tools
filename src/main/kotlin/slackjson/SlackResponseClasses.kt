@@ -1,5 +1,6 @@
 package slackjson
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.JsonDataException
 
@@ -31,11 +32,16 @@ abstract class SlackSimpleResponse<T> : SlackResponse() {
 }
 
 abstract class CursorResponse<T> : SlackResponse() {
-    @Suppress("PropertyName")
-    lateinit var response_metadata: Cursor
+    abstract val contents: List<T>
+
+    @Json(name = "response_metadata")
+    var metadata: Cursor? = null
 
     @JsonClass(generateAdapter = true)
-    data class Cursor(val next_cursor: String?)
+    data class Cursor(
+            @Json(name = "next_cursor")
+            val nextCursor: String?
+    )
 
     fun moreEntries() = !nextCursor().isNullOrEmpty()
 
@@ -43,12 +49,11 @@ abstract class CursorResponse<T> : SlackResponse() {
      * Returns the next cursor if it exists
      * If moreEntries is true then guaranteed to be non null
      */
-    fun nextCursor() = response_metadata.next_cursor
-
-    abstract fun getContents(): List<T>
+    fun nextCursor() = metadata?.nextCursor
 }
 
 abstract class PaginatedResponse<T> : SlackResponse() {
+    abstract val contents: List<T>
     lateinit var paging: Page
 
     /**
@@ -73,8 +78,6 @@ abstract class PaginatedResponse<T> : SlackResponse() {
 
         return paging.page + 1
     }
-
-    abstract fun getContents(): List<T>
 }
 
 @JsonClass(generateAdapter = true)

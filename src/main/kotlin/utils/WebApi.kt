@@ -59,7 +59,7 @@ class WebApi @Inject constructor(
                 URL_CONVO_LIST, adapter, params, RETRY_TIER_2
         ) { response ->
             // Add entries to map and output message
-            response.channels.forEach {
+            response.contents.forEach {
                 convos[it.id] = it
             }
             logger.debug { "Retrieved ${convos.size} conversations" }
@@ -86,7 +86,7 @@ class WebApi @Inject constructor(
                 URL_USERS_LIST, adapter, params, RETRY_TIER_2
         ) { response ->
             // Add entries to map and output message
-            response.members.forEach {
+            response.contents.forEach {
                 userMap[it.id] = it
             }
             logger.debug { "Retrieved ${userMap.size} user results" }
