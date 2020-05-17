@@ -70,52 +70,6 @@ class WebApi @Inject constructor(
     }
 
     /**
-     * Returns a list of parsed files (which may be incomplete) in a time range
-     */
-    fun getFiles(startTime: Long? = null, endTime: Long? = null,
-                 channel: String? = null, user: String? = null)
-            : List<ParsedFile> {
-
-        // Params setup
-        val params = mutableMapOf(
-                "page" to "1",
-                "count" to FILE_LIST_LIMIT.toString()
-        )
-        startTime?.let { params["ts_from"] = it.toString() }
-        endTime?.let { params["ts_to"] = it.toString() }
-        channel?.let { params["channel"] = it }
-        user?.let { params["user"] = it }
-
-        val adapter = moshi.adapter(FileListResponse::class.java)
-
-        // Get results
-        logger.log(Log.HIGH) { "Retrieving list of files" }
-        val files = mutableListOf<ParsedFile>()
-        do {
-            val response = (http.get(URL_FILES_LIST, adapter, params, RETRY_TIER_3) as Result.Success).value!!
-            files.addAll(response.files)
-
-            logger.info { "Retrieved ${files.size}/${response.paging.total} files (page ${response.paging.page}/${response.paging.pages})" }
-        } while (response.updatePageParams(params))
-
-        logger.log(Log.HIGH) { "Retrieved ${files.size} files" }
-        return files
-    }
-
-    /**
-     * Returns a file from id (files.info)
-     * TODO make it a complete file
-     */
-    fun getFile(fileId: String) : ParsedFile {
-        val params = mapOf(
-                "file" to fileId)
-        val adapter = moshi.adapter(OldFileResponse::class.java)
-        val response = (http.get(URL_FILES_INFO, adapter, params, RETRY_TIER_4) as Result.Success).value!!
-
-        return response.file
-    }
-
-    /**
      * Retrieves full list of users using Slack API
      * @return map of userid to user object
      */
