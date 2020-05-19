@@ -22,15 +22,17 @@ interface RetrofitTestApi {
     fun getPaginatedPage(@Query("page") page: Int): BasicPaginatedResponse
 
     @JvmDefault
-    fun getPaginatedStringList() = Pagination.retrievePaginatedList(
-            "strings",
-            pageRetrievalFun = {
-                getPaginatedPage(it)
-            },
-            postRetrievalFun = {
-                logger.info { "Hello world! Size: ${it.size}" }
-            }
-    )
+    fun getPaginatedStringList(): List<String> {
+        val results = Pagination.retrievePaginatedList(
+                "strings",
+                pageRetrievalFun = {
+                    getPaginatedPage(it)
+                }
+        )
+        logger.info { "Hello world! Size: ${results.size}" }
+        return results
+    }
+
 
     @GET("string.cursor")
     @Slack(TIER_4)

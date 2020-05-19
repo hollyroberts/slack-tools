@@ -1,13 +1,10 @@
 package retrofit
 
 import org.apache.logging.log4j.kotlin.Logging
-import retrofit.SlackTier.TIER_3
-import retrofit.SlackTier.TIER_4
+import retrofit.SlackTier.*
 import retrofit2.http.GET
 import retrofit2.http.Query
-import slackjson.FileListResponse
-import slackjson.FileResponse
-import slackjson.ParsedFile
+import slackjson.*
 import utils.formatSize
 
 interface SlackApi {
@@ -32,21 +29,33 @@ interface SlackApi {
             endTime: Long? = null,
             channel: String? = null,
             user: String? = null
-    ) = Pagination.retrievePaginatedList(
-            "files",
-            pageRetrievalFun = {
-                listFilesPage(
-                        page = it,
-                        startTime = startTime,
-                        endTime = endTime,
-                        channel = channel,
-                        user = user
-                )
-            },
-            postRetrievalFun = { list ->
-                val fileSize = list.map { it.size }.sum()
-                logger.info { "Retrieved %,d files (%s)".format(list.size, formatSize(fileSize)) }
-            }
+    ): List<ParsedFile> {
+        val list = Pagination.retrievePaginatedList(
+                "files",
+                pageRetrievalFun = {
+                    listFilesPage(
+                            page = it,
+                            startTime = startTime,
+                            endTime = endTime,
+                            channel = channel,
+                            user = user
+                    )
+                }
+        )
+        val fileSize = list.map { it.size }.sum()
+        logger.info { "Retrieved %,d files (%s)".format(list.size, formatSize(fileSize)) }
+        return list
+    }
+
+    @GET("users.list")
+    @Slack(TIER_2)
+    fun listUsersPage(@Query("cursor") cursor: String?): UserListResponse
+
+    @JvmDefault
+    fun listUsers(): Map<String, User> = Pagination.retrieveCursorResponseAsMap(
+            name = "users",
+            pageRetrievalFun = { listUsersPage(it) },
+            mappingFun = { it.id }
     )
 
     companion object : Logging
