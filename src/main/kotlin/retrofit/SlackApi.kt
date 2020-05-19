@@ -30,6 +30,7 @@ interface SlackApi {
             channel: String? = null,
             user: String? = null
     ): List<ParsedFile> {
+        logger.info { "Retrieving files" }
         val list = Pagination.retrievePaginatedList(
                 "files",
                 pageRetrievalFun = {
@@ -52,11 +53,16 @@ interface SlackApi {
     fun listUsersPage(@Query("cursor") cursor: String?): UserListResponse
 
     @JvmDefault
-    fun listUsers(): Map<String, User> = Pagination.retrieveCursorResponseAsMap(
-            name = "users",
-            pageRetrievalFun = { listUsersPage(it) },
-            mappingFun = { it.id }
-    )
+    fun listUsers(): Map<String, User> {
+        logger.info { "Retrieving user results" }
+        val results = Pagination.retrieveCursorResponseAsMap(
+                name = "users",
+                pageRetrievalFun = { listUsersPage(it) },
+                mappingFun = { it.id }
+        )
+        logger.info { "Finished retrieving user results (${results.size} found)" }
+        return results
+    }
 
     companion object : Logging
 }

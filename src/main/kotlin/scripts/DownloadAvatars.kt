@@ -57,10 +57,10 @@ class ScriptDownloadAvatars : CliktCommand(
                 .settings(Settings())
                 .token(token)
                 .build()
-        val webApi = daggerComponent.getOldWebApi()
+        val api = daggerComponent.getSlackApi()
 
         // Get users
-        val users = webApi.getUsers().entries.filter { mapEntry ->
+        val users = api.listUsers().entries.filter { mapEntry ->
             if (!includeDeleted && mapEntry.value.deleted) {
                 false
             } else !(!includeBots && mapEntry.value.isBot())

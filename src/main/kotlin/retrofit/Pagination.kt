@@ -54,7 +54,6 @@ object Pagination : Logging {
             cursor = response.nextCursor()
         } while (true)
 
-        logger.log(Log.HIGH) { "Retrieved %,d %s".format(map.size, name) }
         return map
     }
 }

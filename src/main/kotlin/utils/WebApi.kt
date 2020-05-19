@@ -3,7 +3,9 @@ package utils
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import org.apache.logging.log4j.kotlin.Logging
-import slackjson.*
+import slackjson.Conversation
+import slackjson.ConversationListResponse
+import slackjson.CursorResponse
 import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Named
@@ -67,33 +69,6 @@ class WebApi @Inject constructor(
 
         logger.info { "Finished retrieving conversations (${convos.size} found)" }
         return convos.toMap()
-    }
-
-    /**
-     * Retrieves full list of users using Slack API
-     * @return map of userid to user object
-     */
-    fun getUsers() : Map<String, User> {
-        val userMap = mutableMapOf<String, User>()
-        val params = mutableMapOf(
-                "limit" to USERS_LIST_LIMIT.toString(),
-                "cursor" to "")
-
-        val adapter = moshi.adapter(UserListResponse::class.java)
-
-        logger.info { "Retrieving user results" }
-        callCursorApi(
-                URL_USERS_LIST, adapter, params, RETRY_TIER_2
-        ) { response ->
-            // Add entries to map and output message
-            response.contents.forEach {
-                userMap[it.id] = it
-            }
-            logger.debug { "Retrieved ${userMap.size} user results" }
-        }
-
-        logger.info { "Finished retrieving user results (${userMap.size} found)" }
-        return userMap
     }
 
     /**
