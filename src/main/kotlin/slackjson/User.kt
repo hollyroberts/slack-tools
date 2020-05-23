@@ -1,13 +1,13 @@
 package slackjson
 
 import com.squareup.moshi.*
-import com.squareup.moshi.JsonReader
 
 @JsonClass(generateAdapter = true)
 data class User(
         // Strings and profile
         val id: String,
-        val team_id: String,
+        @Json(name = "team_id")
+        val teamId: String,
 
         @Deprecated(message = "Use username() instead")
         val name: String,
@@ -92,10 +92,8 @@ data class Profile(
 
         // get the largest number
         return images
-                .filterKeys { when(it.toIntOrNull()){
-                    null -> false
-                    else -> true
-                }}
-                .maxBy { it.key.toInt() }!!.value
+                .mapKeys { it.key.toIntOrNull() }
+                .filter { it.key == null }
+                .maxBy { it.key!!.toInt() }!!.value
     }
 }

@@ -19,7 +19,7 @@ internal class BaseMessageDeserialisationTest : TestUtils {
     private val adapter = moshi.adapter(BaseMessage::class.java)
 
     @Test
-    fun textMessageSerialisation() {
+    fun textMessageDeserialisation() {
         val input = readResource("basic-message.json")
         val parsed = adapter.fromJson(input)!! as TextMessage
 
