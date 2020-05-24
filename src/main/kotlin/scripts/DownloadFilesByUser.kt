@@ -63,6 +63,6 @@ class ScriptDownloadByUser : CliktCommand(
         )
 
         val filesByUser = parsedFiles.filesByUser()
-        filesByUser.downloadByUser(slack, output.toPath(), slack.oldApi)
+        filesByUser.downloadByUser(slack, output.toPath(), daggerComponent.getOldWebApi())
     }
 }

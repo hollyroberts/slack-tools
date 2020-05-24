@@ -9,11 +9,11 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerMainComponent
 import slack.Settings
+import slack.downloadByChannel
 import slack.filesByConvo
 import slack.toCompleteFiles
 import slackjson.ConversationTypes
 import utils.Http
-import utils.formatSize
 import java.io.File
 
 fun main(args: Array<String>) = ScriptDownloadByChannel().main(args)
@@ -76,6 +76,6 @@ class ScriptDownloadByChannel: CliktCommand(
         if (convoTypes != null) {
             completeFiles = completeFiles.filterKeys { convoTypes!!.contains(slack.conversationType(it)) }
         }
-        completeFiles.downloadByChannel(slack, output.toPath(), slack.api)
+        completeFiles.downloadByChannel(slack, output.toPath(), daggerComponent.getOldWebApi())
     }
 }
