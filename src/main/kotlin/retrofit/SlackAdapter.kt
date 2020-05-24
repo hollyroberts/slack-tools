@@ -59,7 +59,6 @@ class SlackAdapter {
             response.verify()
             response.contents?.let { return it }
 
-            // TODO add a test to this
             val annotation = rawResponseClass.getDeclaredField("contents").getAnnotation(Json::class.java)
                     ?: throw NullPointerException("Error handling parse error. Response class ${rawResponseClass.simpleName} does not contain JSON annotation")
             throw JsonDataException("Response from call to '${call.request().url.encodedPath}' did not contain field '${annotation.name}'")

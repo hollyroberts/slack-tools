@@ -8,6 +8,31 @@ import slackjson.*
 import utils.formatSize
 
 interface SlackApi {
+    companion object : Logging {
+        private val ALL_CONVERSATION_TYPES  = listOf("public_channel", "private_channel", "im").joinToString()
+    }
+
+    @GET("conversations.list?limit=100")
+    @Slack(TIER_2)
+    fun listConversationsPage(
+            @Query("cursor") cursor: String?,
+            @Query("types") types: String
+    ): ConversationListResponse
+
+    @JvmDefault
+    fun listConversations(): Map<String, Conversation> {
+        logger.info { "Retrieving conversations (channels)" }
+        val convoMap = Pagination.retrieveCursorResponseAsMap(
+                "conversations",
+                pageRetrievalFun = {
+                    listConversationsPage(cursor = it, types = ALL_CONVERSATION_TYPES)
+                },
+                mappingFun = { it.id }
+        )
+        logger.info { "Finished retrieving conversations (${convoMap.size} found)" }
+        return convoMap
+    }
+
     @GET("files.info")
     @Slack(TIER_4)
     @UseWrapper(FileResponse::class)
@@ -44,7 +69,7 @@ interface SlackApi {
                 }
         )
         val fileSize = list.map { it.size }.sum()
-        logger.info { "Retrieved %,d files (%s)".format(list.size, formatSize(fileSize)) }
+        logger.info { "Retrieved info for %,d files (%s)".format(list.size, formatSize(fileSize)) }
         return list
     }
 
@@ -63,6 +88,4 @@ interface SlackApi {
         logger.info { "Finished retrieving user results (${results.size} found)" }
         return results
     }
-
-    companion object : Logging
 }
