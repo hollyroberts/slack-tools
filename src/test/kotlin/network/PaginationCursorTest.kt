@@ -1,10 +1,10 @@
-package retrofit
+package network
 
+import network.BasicCursorResponse.CursorResponseContents
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import retrofit.BasicCursorResponse.CursorResponseContents
 import utils.TestUtils
 import java.util.concurrent.TimeUnit
 

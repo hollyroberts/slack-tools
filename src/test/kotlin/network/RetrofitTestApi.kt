@@ -1,7 +1,7 @@
-package retrofit
+package network
 
+import network.SlackTier.TIER_4
 import org.apache.logging.log4j.kotlin.Logging
-import retrofit.SlackTier.TIER_4
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

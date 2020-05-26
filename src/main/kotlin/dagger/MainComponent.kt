@@ -1,7 +1,7 @@
 package dagger
 
-import retrofit.RetrofitModule
-import retrofit.SlackApi
+import network.RetrofitModule
+import network.SlackApi
 import slack.Settings
 import slack.SlackData
 import slack.UserAndConvoMap

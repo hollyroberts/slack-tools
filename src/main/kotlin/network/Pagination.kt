@@ -1,4 +1,4 @@
-package retrofit
+package network
 
 import okhttp3.internal.toImmutableList
 import org.apache.logging.log4j.kotlin.Logging

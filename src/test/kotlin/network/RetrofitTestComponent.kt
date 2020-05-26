@@ -1,4 +1,4 @@
-package retrofit
+package network
 
 import dagger.BindsInstance
 import dagger.Component

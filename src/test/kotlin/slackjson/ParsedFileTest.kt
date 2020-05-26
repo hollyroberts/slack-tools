@@ -4,10 +4,10 @@ import com.squareup.moshi.JsonAdapter
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import network.SlackApi
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.entry
 import org.junit.jupiter.api.Test
-import retrofit.SlackApi
 import slack.Settings
 import slack.SlackData
 import utils.TestUtils

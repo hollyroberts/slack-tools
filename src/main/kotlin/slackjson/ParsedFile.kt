@@ -2,8 +2,8 @@ package slackjson
 
 import com.squareup.moshi.*
 import dagger.Lazy
+import network.SlackApi
 import org.apache.logging.log4j.kotlin.Logging
-import retrofit.SlackApi
 import slack.Settings
 import slack.SlackData
 import java.math.BigDecimal

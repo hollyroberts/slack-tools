@@ -3,7 +3,7 @@ package slackjson
 import com.squareup.moshi.Moshi
 import dagger.BindsInstance
 import dagger.Component
-import retrofit.SlackApi
+import network.SlackApi
 import slack.Settings
 import slack.SlackData
 import javax.inject.Singleton

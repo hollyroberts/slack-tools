@@ -1,8 +1,8 @@
-package retrofit
+package network
 
+import network.RetryAdapter.CallResult.FailureMode.RATE_LIMITED
+import network.RetryAdapter.CallResult.FailureMode.UNKNOWN
 import org.apache.logging.log4j.kotlin.Logging
-import retrofit.RetryAdapter.CallResult.FailureMode.RATE_LIMITED
-import retrofit.RetryAdapter.CallResult.FailureMode.UNKNOWN
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit

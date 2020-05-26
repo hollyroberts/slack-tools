@@ -1,4 +1,4 @@
-package retrofit
+package network
 
 import com.squareup.moshi.Moshi
 import dagger.Module

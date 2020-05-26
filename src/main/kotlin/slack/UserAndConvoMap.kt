@@ -1,6 +1,6 @@
 package slack
 
-import retrofit.SlackApi
+import network.SlackApi
 import javax.inject.Inject
 import javax.inject.Singleton
 

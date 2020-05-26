@@ -1,4 +1,4 @@
-package retrofit
+package network
 
 import okhttp3.Interceptor
 import okhttp3.Response

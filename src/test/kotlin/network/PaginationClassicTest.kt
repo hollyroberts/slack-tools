@@ -1,4 +1,4 @@
-package retrofit
+package network
 
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

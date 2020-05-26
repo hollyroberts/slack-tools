@@ -1,13 +1,13 @@
-package retrofit
+package network
 
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
+import network.RetrofitModule.Base
+import network.RetrofitModule.Defaults
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
-import retrofit.RetrofitModule.Base
-import retrofit.RetrofitModule.Defaults
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create

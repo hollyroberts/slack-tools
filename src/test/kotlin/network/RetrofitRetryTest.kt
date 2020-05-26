@@ -1,4 +1,4 @@
-package retrofit
+package network
 
 import io.mockk.clearMocks
 import io.mockk.every

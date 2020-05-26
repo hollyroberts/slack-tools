@@ -1,4 +1,4 @@
-package retrofit
+package network
 
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.assertj.core.api.Assertions.assertThat

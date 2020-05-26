@@ -12,12 +12,6 @@ data class ConversationListResponse(
 
 /** files.info **/
 @JsonClass(generateAdapter = true)
-data class OldFileResponse (
-        val file: ParsedFile
-) : SlackResponse()
-
-/** files.info **/
-@JsonClass(generateAdapter = true)
 data class FileResponse (
         @field:Json(name = "file")
         override val contents: ParsedFile?

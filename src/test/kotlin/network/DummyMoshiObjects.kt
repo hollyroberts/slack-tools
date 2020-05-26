@@ -1,8 +1,8 @@
-package retrofit
+package network
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import retrofit.BasicCursorResponse.CursorResponseContents
+import network.BasicCursorResponse.CursorResponseContents
 import slackjson.CursorResponse
 import slackjson.PaginatedResponse
 import slackjson.SlackSimpleResponse
