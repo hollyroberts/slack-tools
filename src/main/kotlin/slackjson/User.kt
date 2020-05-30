@@ -93,7 +93,7 @@ data class Profile(
         // get the largest number
         return images
                 .mapKeys { it.key.toIntOrNull() }
-                .filter { it.key == null }
+                .filterNot { it.key == null }
                 .maxBy { it.key!!.toInt() }!!.value
     }
 }

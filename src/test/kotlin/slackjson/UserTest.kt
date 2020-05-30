@@ -40,10 +40,26 @@ internal class UserTest : TestUtils {
     }
 
     @Test
-    fun getLargestImage() {
+    fun getLargestImageFullSet() {
         val input = readResource("user-good.json")
         val parsed = adapter.fromJson(input)!!
 
         assertThat(parsed.profile.getLargestImage()).isEqualTo("https://.../avatar/e3b51ca72dee4ef87916ae2b9240df50-large.jpg")
+    }
+
+    @Test
+    fun getLargestImageSomeInvalidImages() {
+        val input = readResource("user-invalid-images.json")
+        val parsed = adapter.fromJson(input)!!
+
+        assertThat(parsed.profile.getLargestImage()).isEqualTo("https://.../avatar/e3b51ca72dee4ef87916ae2b9240df51.jpg")
+    }
+
+    @Test
+    fun getLargestImageOnlyIntegers() {
+        val input = readResource("user-only-int-images.json")
+        val parsed = adapter.fromJson(input)!!
+
+        assertThat(parsed.profile.getLargestImage()).isEqualTo("https://.../avatar/e3b51ca72dee4ef87916ae2b9240df51.jpg")
     }
 }
