@@ -2,11 +2,11 @@ package dagger
 
 import network.RetrofitModule
 import network.SlackApi
+import network.http.HttpUtilsModule
 import slack.Settings
 import slack.SlackData
 import slack.UserAndConvoMap
 import slackjson.MoshiModule
-import utils.WebApi
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -16,7 +16,8 @@ import javax.inject.Singleton
             MainModule::class,
             MoshiModule::class,
             RetrofitModule::class,
-            RetrofitModule.Defaults::class
+            RetrofitModule.Defaults::class,
+            HttpUtilsModule.Token::class
         ]
 )
 interface MainComponent {
@@ -35,8 +36,6 @@ interface MainComponent {
 
     @Deprecated(message = "To be replaced with something better I hope")
     fun getUserAndConvoMap(): UserAndConvoMap
-    @Deprecated(message = "To be replaced with something better I hope")
-    fun getOldWebApi(): WebApi
 }
 
 @Module

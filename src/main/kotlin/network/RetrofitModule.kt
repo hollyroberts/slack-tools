@@ -14,7 +14,10 @@ import retrofit2.create
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Module(includes = [Base::class, Defaults::class])
+@Module(includes = [
+    Base::class,
+    Defaults::class]
+)
 object RetrofitModule {
     @Module
     object Defaults {
@@ -50,9 +53,13 @@ object RetrofitModule {
 
         @Provides
         @Singleton
-        fun provideClient(tokenInterceptor: TokenInterceptor): OkHttpClient {
+        fun provideClient(
+                tokenInterceptor: TokenInterceptor,
+                restInterceptor: RestRequestInterceptor
+        ): OkHttpClient {
             return OkHttpClient.Builder()
                     .addInterceptor(tokenInterceptor)
+                    .addInterceptor(restInterceptor)
                     .build()
         }
     }

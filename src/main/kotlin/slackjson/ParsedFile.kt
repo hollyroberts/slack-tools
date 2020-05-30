@@ -3,6 +3,7 @@ package slackjson
 import com.squareup.moshi.*
 import dagger.Lazy
 import network.SlackApi
+import network.http.HttpUtils
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slack.SlackData
@@ -49,6 +50,10 @@ open class ParsedFile (
     @Transient
     @Inject
     lateinit var api: SlackApi
+
+    @Transient
+    @Inject
+    override lateinit var httpUtils: HttpUtils
 
     @Transient
     private val custTimestamps = mutableMapOf<String, BigDecimal>()

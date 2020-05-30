@@ -1,14 +1,13 @@
 package slackjson
 
 import dagger.Lazy
+import network.http.HttpUtils
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slack.SlackData
 import slackjson.SlackFile.FormattingType.Companion.defaultType
 import utils.DownloadStatus
-import utils.Http
 import utils.Log
-import utils.WebApi
 import java.io.File
 import java.nio.file.Path
 import java.time.Instant
@@ -37,6 +36,7 @@ abstract class SlackFile : BaseFile() {
     // To be injected at some point
     abstract var slackData: Lazy<SlackData>
     abstract var settings: Settings
+    abstract var httpUtils: HttpUtils
 
     companion object : Logging {
         val dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd - HH;mm")!!
@@ -44,7 +44,7 @@ abstract class SlackFile : BaseFile() {
 
     fun channelsUploadedIn() = (channels?.size ?: 0) + (ims?.size ?: 0) + (groups?.size ?: 0)
 
-    fun download(folder: Path, webApi: WebApi?, formatting: FormattingType? = null) : DownloadStatus {
+    fun download(folder: Path, formatting: FormattingType? = null) : DownloadStatus {
         // Strip out/replace illegal chars
         var formattedName = formattedDownloadName(formatting)
         formattedName = Regex("""[/*?"<>|]""").replace(formattedName, "")
@@ -57,11 +57,7 @@ abstract class SlackFile : BaseFile() {
 
         // Download
         return if (urlPrivateDownload != null) {
-            if (webApi != null) {
-                webApi.downloadFile(urlPrivateDownload!!, folder.resolve(formattedName), size, settings.fileConflictStrategy)
-            } else {
-                Http().downloadFile(urlPrivateDownload!!, folder.resolve(formattedName), size, settings.fileConflictStrategy)
-            }
+            httpUtils.downloadFile(urlPrivateDownload!!, folder.resolve(formattedName), size, settings.fileConflictStrategy)
         } else {
             logger.log(Log.LOW) { "File $id does not have the property 'url_private_download'. Saving external link to '$formattedName'" }
             folder.resolve("$formattedName.txt").toFile().writeText("Link: $urlPrivate")

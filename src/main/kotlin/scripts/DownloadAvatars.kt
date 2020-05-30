@@ -8,10 +8,10 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerMainComponent
+import network.http.HttpUtilsBasic
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slackjson.User
-import utils.Http
 import utils.Log
 import utils.ensureFolderExists
 import utils.guessImageExtFromURL
@@ -78,7 +78,7 @@ class ScriptDownloadAvatars : CliktCommand(
         ensureFolderExists(outDir)
 
         logger.log(Log.HIGH) { "Downloading avatars" }
-        val http = Http()
+        val http = HttpUtilsBasic()
         users.forEach { mapEntry ->
             val url = mapEntry.value.profile.getLargestImage()
             val name = getName(useDisplayname, mapEntry.value)

@@ -19,4 +19,5 @@ class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile() {
 
     override var settings = sf.settings
     override var slackData = sf.slackData
+    override var httpUtils = sf.httpUtils
 }

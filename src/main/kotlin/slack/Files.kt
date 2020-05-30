@@ -8,7 +8,6 @@ import slackjson.SlackFile
 import slackjson.SlackFile.FormattingType
 import utils.DownloadStats
 import utils.Log
-import utils.WebApi
 import utils.ensureFolderExists
 import java.nio.file.Path
 
@@ -76,20 +75,20 @@ fun List<SlackFile>.filesByUser() : Map<String?, List<SlackFile>> {
 /**
  * Takes a map of UserID --> List of files and downloads them into folders by displayname
  */
-fun <F : SlackFile> Map<String?, List<F>>.downloadByUser(slack: SlackData, outDir: Path, webApi: WebApi?) {
+fun <F : SlackFile> Map<String?, List<F>>.downloadByUser(slack: SlackData, outDir: Path) {
     val mappedKeys = this.mapKeys { slack.userDisplayname(it.key) }
-    mappedKeys.downloadToFolders(outDir, webApi, formatting = FormattingType.WITHOUT_NAME)
+    mappedKeys.downloadToFolders(outDir, formatting = FormattingType.WITHOUT_NAME)
 }
 
 /**
  * Takes a map of ConvoID --> List of files and downloads them into folders by channel name
  */
-fun Map<String?, List<CompleteFile>>.downloadByChannel(slack: SlackData, outDir: Path, webApi: WebApi?) {
+fun Map<String?, List<CompleteFile>>.downloadByChannel(slack: SlackData, outDir: Path) {
     val mappedKeys = this.mapKeys { slack.conversationName(it.key) }
-    mappedKeys.downloadToFolders(outDir, webApi)
+    mappedKeys.downloadToFolders(outDir)
 }
 
-fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(outDir: Path, webApi: WebApi?,
+fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(outDir: Path,
                                                            formatting: FormattingType? = null) {
     // Process conversations alphabetically
     logger.log(Log.HIGH) { "Downloading files to '$outDir'" }
@@ -104,7 +103,7 @@ fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(outDir: Path, webApi:
         val channelStats = DownloadStats()
         logger.info { "Downloading ${filesInConvo.size} files from $key" }
         filesInConvo.sortedBy { it.timestamp }.forEach { file ->
-            channelStats.update(file.download(folder, webApi, formatting = formatting))
+            channelStats.update(file.download(folder, formatting = formatting))
         }
 
         channelStats.log(key, Level.INFO)

@@ -1,27 +1,16 @@
-package utils
+package network.http
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.apache.logging.log4j.kotlin.Logging
+import utils.*
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
 
-class Http(authToken: String? = null) {
+abstract class HttpUtils(private val client: OkHttpClient) {
     companion object : Logging
-
-    private val client = if (authToken == null) {
-        OkHttpClient()
-    } else {
-        OkHttpClient.Builder()
-                .addNetworkInterceptor { chain ->
-                    chain.proceed(chain.request()
-                            .newBuilder()
-                            .header("Authorization", "Bearer $authToken")
-                            .build())
-                }.build()
-    }
 
     /**
      * Controls how conflicts with existing files are handled when files are downloaded

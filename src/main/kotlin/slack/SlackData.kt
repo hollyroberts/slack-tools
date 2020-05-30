@@ -1,11 +1,11 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
 package slack
+import network.http.HttpUtils.ConflictStrategy
 import scripts.TimeOptions
 import slackjson.Conversation
 import slackjson.ConversationTypes
 import slackjson.User
-import utils.Http
 import java.time.ZoneId
 
 abstract class SlackData {
@@ -70,7 +70,7 @@ data class Settings(
         var useDisplayNamesForConversationNames: Boolean = true,
         var useDisplayNamesForFiles: Boolean = false,
 
-        var fileConflictStrategy: Http.ConflictStrategy = Http.ConflictStrategy.default(),
+        var fileConflictStrategy: ConflictStrategy = ConflictStrategy.default(),
         var ignoreDownloadedFiles: Boolean = true,
 
         var outTz: ZoneId = ZoneId.systemDefault()

@@ -8,11 +8,10 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerMainComponent
+import network.http.HttpUtils.ConflictStrategy
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
-import slack.downloadByUser
 import slack.filesByUser
-import utils.Http
 import java.io.File
 
 fun main(args: Array<String>) = ScriptDownloadByUser().main(args)
@@ -43,7 +42,7 @@ class ScriptDownloadByUser : CliktCommand(
 
     override fun run() {
         // Setup
-        val settings = Settings(fileConflictStrategy = Http.ConflictStrategy.HASH).applyTimeOptions(timeOptions)
+        val settings = Settings(fileConflictStrategy = ConflictStrategy.HASH).applyTimeOptions(timeOptions)
         val daggerComponent = DaggerMainComponent.builder()
                 .settings(settings)
                 .token(token)
