@@ -1,6 +1,7 @@
 package slackjson
 
 import com.squareup.moshi.*
+import utils.iterateObject
 
 @JsonClass(generateAdapter = true)
 data class User(
@@ -29,20 +30,19 @@ data class User(
     fun isBot() = is_bot || id == "USLACKBOT"
 }
 
-@Suppress("unused")
 object ProfileJsonAdapter {
     /**
      * Takes a JsonReader representing a profile
      * @return a profile with display_name and map of images
      */
-    @FromJson fun jsonToProfile(reader: JsonReader) : Profile {
+    @FromJson
+    fun jsonToProfile(reader: JsonReader) : Profile {
         var displayName: String? = null
         var realName: String? = null
         val images = mutableMapOf<String, String>()
 
         // Loop to iterate over and consume object
-        reader.beginObject()
-        while(reader.peek() != JsonReader.Token.END_OBJECT) {
+        reader.iterateObject {
             val name = reader.nextName()
 
             when {
@@ -52,7 +52,6 @@ object ProfileJsonAdapter {
                 else -> reader.skipValue()
             }
         }
-        reader.endObject()
 
         // Check that we've got what we want
         if (displayName == null) {
@@ -65,13 +64,13 @@ object ProfileJsonAdapter {
             throw JsonDataException("No images found for profile")
         }
 
-        return Profile(displayName, realName, images)
+        return Profile(displayName!!, realName!!, images)
     }
 
     @Suppress("UNUSED_PARAMETER")
     @ToJson
     fun profileToJson(profile: Profile) : String {
-        throw UnsupportedOperationException("Serialisation of profiles not supported")
+        throw UnsupportedOperationException("Serialisation of Profile is not supported")
     }
 }
 

@@ -21,6 +21,7 @@ object BaseMessageCustomAdapter {
         var type: String? = null
         var subtype: String? = null
 
+        // TODO Use extension functions to consume object when kotlin supports non-local breaks
         peekedReader.beginObject()
         while (peekedReader.hasNext()) {
             when (peekedReader.selectName(keys)) {
@@ -53,6 +54,6 @@ object BaseMessageCustomAdapter {
 
     @ToJson
     fun toJson(baseMessage: BaseMessage) : String {
-        throw JsonEncodingException("Encoding to Json not supported")
+        throw UnsupportedOperationException("Serialisation of BaseMessage is not supported")
     }
 }

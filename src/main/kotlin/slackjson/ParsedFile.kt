@@ -7,6 +7,8 @@ import network.http.HttpUtils
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slack.SlackData
+import utils.iterateArray
+import utils.iterateObject
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -118,14 +120,17 @@ open class ParsedFile (
     }
 }
 
+data class FileShare(
+        val firstSeen: Map<String, BigDecimal>
+)
+
 object ShareJsonAdapter {
     @FromJson
     fun extractShareInfo(reader: JsonReader) : FileShare {
         val map = mutableMapOf<String, BigDecimal>()
 
-        reader.beginObject()
-        // Iterate over public/private
-        while (reader.peek() != JsonReader.Token.END_OBJECT) {
+        reader.iterateObject {
+            // Iterate over public/private
             val channelType = reader.nextName()
 
             if (channelType != "public" && channelType != "private") {
@@ -133,14 +138,11 @@ object ShareJsonAdapter {
             }
 
             // Iterate over channel IDs
-            reader.beginObject()
-            while (reader.peek() != JsonReader.Token.END_OBJECT) {
+            reader.iterateObject {
                 val (id, timestamp) = processChannel(reader)
                 map[id] = timestamp
             }
-            reader.endObject()
         }
-        reader.endObject()
 
         return FileShare(map)
     }
@@ -154,13 +156,9 @@ object ShareJsonAdapter {
     private fun processChannel(reader: JsonReader) : Pair<String, BigDecimal> {
         val id = reader.nextName()
         var lowestTs: BigDecimal? = null
-        reader.beginArray()
 
-        // Iterate over array
-        while (reader.peek() != JsonReader.Token.END_ARRAY) {
-            // Iterate over keys
-            reader.beginObject()
-            while (reader.peek() != JsonReader.Token.END_OBJECT) {
+        reader.iterateArray {
+            reader.iterateObject {
                 if (reader.nextName() != "ts") {
                     reader.skipValue()
                 } else {
@@ -168,14 +166,8 @@ object ShareJsonAdapter {
                     lowestTs = lowestTs?.min(ts) ?: ts
                 }
             }
-            reader.endObject()
         }
-        reader.endArray()
 
         return Pair(id, lowestTs!!)
     }
 }
-
-data class FileShare(
-        val firstSeen: Map<String, BigDecimal>
-)
