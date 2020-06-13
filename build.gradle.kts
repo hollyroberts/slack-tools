@@ -19,8 +19,8 @@ repositories {
 dependencies {
     // Common versions
     val log4j2Version = "2.13.3"
-    val daggerVersion = "2.27"
-    val moshiVersion = "1.9.2"
+    val daggerVersion = "2.28"
+    val moshiVersion = "1.9.3"
     val okhttpVersion = "4.7.2"
     val retrofitVersion = "2.9.0"
 
@@ -54,7 +54,7 @@ dependencies {
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.78")
+    testImplementation("io.github.classgraph:classgraph:4.8.86")
 }
 
 tasks.test {
