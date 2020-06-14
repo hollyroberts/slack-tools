@@ -1,12 +1,12 @@
 package slackjson
 
 import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonDataException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import network.SlackApi
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.entry
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test
 import slack.Settings
 import slack.SlackData
@@ -53,6 +53,14 @@ internal class ParsedFileTest : TestUtils {
                 .satisfies {
                     assertThat(it!!.firstSeen).contains(entry("C0T8SE4AU", BigDecimal("1531763348.000001")))
                 }
+    }
+
+    @Test
+    fun mustBePrivateOrPublic() {
+        val input = readResource("parsedfile-incorrect-channel-type.json")
+        assertThatThrownBy { getAdapter().fromJson(input) }
+                .hasRootCauseInstanceOf(JsonDataException::class.java)
+                .hasMessage("File share data was not public or private (was privatte)")
     }
 
     @Test
