@@ -19,9 +19,9 @@ repositories {
 dependencies {
     // Common versions
     val log4j2Version = "2.13.3"
-    val daggerVersion = "2.28"
+    val daggerVersion = "2.28.1"
     val moshiVersion = "1.9.3"
-    val okhttpVersion = "4.7.2"
+    val okhttpVersion = "4.8.0"
     val retrofitVersion = "2.9.0"
 
     // Dependencies
@@ -44,7 +44,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-    implementation("com.github.ajalt:clikt:2.7.1")
+    implementation("com.github.ajalt:clikt:2.8.0")
 
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
@@ -54,7 +54,7 @@ dependencies {
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.86")
+    testImplementation("io.github.classgraph:classgraph:4.8.87")
 }
 
 tasks.test {

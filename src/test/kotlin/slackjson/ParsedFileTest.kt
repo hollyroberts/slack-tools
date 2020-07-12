@@ -60,7 +60,7 @@ internal class ParsedFileTest : TestUtils {
         val input = readResource("parsedfile-incorrect-channel-type.json")
         assertThatThrownBy { getAdapter().fromJson(input) }
                 .hasRootCauseInstanceOf(JsonDataException::class.java)
-                .hasMessage("File share data was not public or private (was privatte)")
+                .hasRootCauseMessage("File share data was not public or private (was privatte)")
     }
 
     @Test
