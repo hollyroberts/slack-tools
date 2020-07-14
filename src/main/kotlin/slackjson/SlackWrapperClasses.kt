@@ -2,6 +2,7 @@ package slackjson
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import slackjson.message.BaseMessage
 
 /** conversations.list **/
 @JsonClass(generateAdapter = true)
@@ -9,6 +10,13 @@ data class ConversationListResponse(
         @field:Json(name = "channels")
         override val contents: List<Conversation>
 ) : CursorResponse<Conversation>()
+
+/** conversations.history **/
+@JsonClass(generateAdapter = true)
+data class ConversationHistoryResponse(
+        @Json(name = "messages")
+        override val contents: List<BaseMessage?>
+) : CursorResponse<BaseMessage?>()
 
 /** files.info **/
 @JsonClass(generateAdapter = true)

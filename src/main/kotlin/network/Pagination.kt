@@ -25,8 +25,32 @@ object Pagination : Logging {
         return list.toImmutableList()
     }
 
+    internal fun <T, R> retrieveCursorResponseAsList(
+            name: String,
+            pageRetrievalFun: (String?) -> CursorResponse<R>,
+            appenderFun: (List<R>) -> Sequence<T>
+    ): List<T> {
+        val list = mutableListOf<T>()
+        var cursor: String? = null
+
+        do {
+            val response = pageRetrievalFun.invoke(cursor)
+            val contents = response.contents
+            list.addAll(appenderFun.invoke(contents))
+            logger.debug("Retrieved ${list.size} $name")
+
+            // TODO Change this to just response.nextCursor?
+            if (!response.moreEntries()) {
+                break
+            }
+            cursor = response.nextCursor()
+        } while (true)
+
+        return list
+    }
+
     // Handle cursor responses that return maps
-    // In the future we'll need to handle responses that return lists
+    // TODO In the future we'll need to handle responses that return lists
     internal fun <T, R> retrieveCursorResponseAsMap(
             name: String,
             pageRetrievalFun: (String?) -> CursorResponse<R>,
@@ -46,7 +70,7 @@ object Pagination : Logging {
                 }
                 map[key] = it
             }
-            logger.debug { "Retrieved ${contents.size} $name" }
+            logger.debug { "Retrieved ${map.size} $name" }
 
             if (!response.moreEntries()) {
                 break

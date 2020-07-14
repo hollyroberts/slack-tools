@@ -33,15 +33,25 @@ interface RetrofitTestApi {
         return results
     }
 
-
-    @GET("string.cursor")
+    @GET("cursor.list")
     @Slack(TIER_4)
-    fun getCursorPage(@Query("cursor") cursor: String?): BasicCursorResponse
+    fun getCursorListPage(@Query("cursor") cursor: String?) : TestCursorListResponse
 
     @JvmDefault
-    fun getCursorStringMap() = Pagination.retrieveCursorResponseAsMap(
+    fun getCursorList() = Pagination.retrieveCursorResponseAsList(
+            name = "cursorStringsList",
+            pageRetrievalFun = { getCursorListPage(it) },
+            appenderFun = { it.asSequence().filterNotNull() }
+    )
+
+    @GET("cursor.map")
+    @Slack(TIER_4)
+    fun getCursorMapPage(@Query("cursor") cursor: String?): TestCursorMapResponse
+
+    @JvmDefault
+    fun getCursorMap() = Pagination.retrieveCursorResponseAsMap(
             "cursorStrings",
-            pageRetrievalFun = { getCursorPage(it) },
+            pageRetrievalFun = { getCursorMapPage(it) },
             mappingFun = { it.a }
     )
 

@@ -1,6 +1,6 @@
 package network
 
-import network.BasicCursorResponse.CursorResponseContents
+import network.TestCursorMapResponse.CursorResponseContents
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -15,14 +15,32 @@ class PaginationCursorTest : TestUtils {
             .getTestApi()
 
     @Test
-    fun successfulMultiCall() {
+    fun cursorMapSingleCall() {
         val server = MockWebServer()
-        server.enqueue(MockResponse().setBody(readResource("cursor-response1.json")))
-        server.enqueue(MockResponse().setBody(readResource("cursor-response2.json")))
+        server.enqueue(MockResponse().setBody(readResource("cursor-map-response-single.json")))
 
         server.runServer {
             val testApi = getApi(server)
-            val response = testApi.getCursorStringMap()
+            val response = testApi.getCursorMap()
+
+            assertThat(response).containsExactlyInAnyOrderEntriesOf(mapOf(
+                    "hello" to CursorResponseContents("hello", "world"),
+                    "alpha" to CursorResponseContents("alpha", "bravo")
+            ))
+        }
+
+        assertThat(server.requestCount).isEqualTo(1)
+    }
+
+    @Test
+    fun cursorMapMultiCall() {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setBody(readResource("cursor-map-response1.json")))
+        server.enqueue(MockResponse().setBody(readResource("cursor-map-response2.json")))
+
+        server.runServer {
+            val testApi = getApi(server)
+            val response = testApi.getCursorMap()
 
             assertThat(response).containsExactlyInAnyOrderEntriesOf(mapOf(
                     "one" to CursorResponseContents("one", "two"),
@@ -41,21 +59,56 @@ class PaginationCursorTest : TestUtils {
     }
 
     @Test
-    fun singleCallNoCursorInMetadata() {
+    fun cursorListSingleCall() {
         val server = MockWebServer()
-        server.enqueue(MockResponse().setBody(readResource("cursor-response-single.json")))
+        server.enqueue(MockResponse().setBody(readResource("cursor-list-response-single.json")))
 
         server.runServer {
             val testApi = getApi(server)
-            val response = testApi.getCursorStringMap()
+            val response = testApi.getCursorList()
 
-            assertThat(response).containsExactlyInAnyOrderEntriesOf(mapOf(
-                    "hello" to CursorResponseContents("hello", "world"),
-                    "alpha" to CursorResponseContents("alpha", "bravo")
-            ))
+            assertThat(response).containsExactly(
+                    "one",
+                    "three",
+                    "two"
+            )
         }
 
         assertThat(server.requestCount).isEqualTo(1)
+    }
+
+    @Test
+    fun cursorListMultiCallWithFilter() {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setBody(readResource("cursor-list-response1.json")))
+        server.enqueue(MockResponse().setBody(readResource("cursor-list-response1.json")))
+        server.enqueue(MockResponse().setBody(readResource("cursor-list-response2.json")))
+
+        server.runServer {
+            val testApi = getApi(server)
+
+            // Check that single response has nulls
+            val firstPageContents = testApi.getCursorListPage(null).contents
+            assertThat(firstPageContents)
+                    .containsExactly("one", "three", null, "two")
+
+            // Then assert that paginated cursor list is correct without nulls
+            val response = testApi.getCursorList()
+            assertThat(response).containsExactly(
+                    "one", "three", "two",
+                    "two", "five", "four"
+            )
+        }
+
+        // TODO make this into an extension function
+        server.takeRequest(0L, TimeUnit.MILLISECONDS)
+        server.takeRequest(0L, TimeUnit.MILLISECONDS)
+        val lastRequest = server.takeRequest(0L, TimeUnit.MILLISECONDS)!!
+        val url = lastRequest.requestUrl!!
+        assertThat(url.queryParameter("cursor"))
+                .isNotNull()
+                .isEqualTo("ASkjdhASDKLjho=")
+        assertThat(server.requestCount).isEqualTo(3)
     }
 
 }

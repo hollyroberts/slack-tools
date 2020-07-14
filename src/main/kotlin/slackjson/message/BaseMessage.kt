@@ -25,7 +25,12 @@ object BaseMessageCustomAdapter {
         peekedReader.beginObject()
         while (peekedReader.hasNext()) {
             when (peekedReader.selectName(keys)) {
-                0 -> type = peekedReader.nextString()
+                // It might be worth figuring out if we can make this use Options to improve performance?
+                // The issue is mapping the various types/subtypes to numbers and retaining the switch lookup performance
+                // For the type we could check if it's 1/0
+                // For the subtype we'd have to figure out the available subtypes defined, and then use that for our map
+
+                0 -> type = peekedReader.nextString();
                 1 -> subtype = peekedReader.nextString()
                 -1 -> peekedReader.skipValue()
             }
@@ -46,6 +51,7 @@ object BaseMessageCustomAdapter {
             Other.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
             is ChannelType -> channelMessageAdapter.fromJson(reader)
             else -> {
+                // Since our list of subtypes is currently non-exhaustive then skip processing the message
                 reader.skipValue()
                 null
             }

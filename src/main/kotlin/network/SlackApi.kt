@@ -5,11 +5,49 @@ import org.apache.logging.log4j.kotlin.Logging
 import retrofit2.http.GET
 import retrofit2.http.Query
 import slackjson.*
+import slackjson.message.BaseMessage
+import utils.Log
 import utils.formatSize
+import java.time.Instant
+import java.time.ZonedDateTime
 
 interface SlackApi {
     companion object : Logging {
         private val ALL_CONVERSATION_TYPES  = listOf("public_channel", "private_channel", "im").joinToString()
+    }
+
+    @GET("conversations.history?limit=100&inclusive=true")
+    @Slack(TIER_3)
+    fun getConversationHistoryPage(
+            @Query("cursor") cursor: String?,
+            @Query("channel") conversation: String,
+            @Query("oldest") start: Long,
+            @Query("latest") end: Long
+    ) : ConversationHistoryResponse
+
+    @JvmDefault
+    fun getConversationHistory(
+            conversation: String,
+            start: Instant,
+            end: Instant
+    ) {
+        logger.log(Log.LOW) { "Retrieving conversation history for $conversation" }
+        ZonedDateTime.now().toEpochSecond()
+        val messages: List<BaseMessage> = Pagination.retrieveCursorResponseAsList(
+                "messages for $conversation",
+                pageRetrievalFun = { cursor ->
+                    getConversationHistoryPage(
+                            cursor = cursor,
+                            conversation = conversation,
+                            start = start.epochSecond,
+                            end = end.epochSecond
+                    )
+                },
+                appenderFun = {
+                    it.asSequence().filterNotNull()
+                }
+        )
+        logger.log(Log.LOW) { "Retrieved ${messages.size} messages for $conversation"}
     }
 
     @GET("conversations.list?limit=100")

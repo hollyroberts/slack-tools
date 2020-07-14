@@ -2,7 +2,7 @@ package network
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import network.BasicCursorResponse.CursorResponseContents
+import network.TestCursorMapResponse.CursorResponseContents
 import slackjson.CursorResponse
 import slackjson.PaginatedResponse
 import slackjson.SlackSimpleResponse
@@ -20,7 +20,13 @@ class BasicPaginatedResponse(
 ) : PaginatedResponse<String>()
 
 @JsonClass(generateAdapter = true)
-class BasicCursorResponse(
+class TestCursorListResponse(
+        @Json(name = "test")
+        override val contents: List<String?>
+) : CursorResponse<String?>()
+
+@JsonClass(generateAdapter = true)
+class TestCursorMapResponse(
         @Json(name = "test")
         override val contents: List<CursorResponseContents>
 ) : CursorResponse<CursorResponseContents>() {
