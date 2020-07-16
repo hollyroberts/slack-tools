@@ -25,11 +25,12 @@ object Pagination : Logging {
         return list.toImmutableList()
     }
 
+    // If we need to support sequence filtering + addAll then split this into base generic function and 2 separate impls for it
     internal fun <T, R> retrieveCursorResponseAsList(
             name: String,
             pageRetrievalFun: (String?) -> CursorResponse<R>,
             appenderFun: (List<R>) -> Sequence<T>
-    ): List<T> {
+    ): MutableList<T> {
         val list = mutableListOf<T>()
         var cursor: String? = null
 
@@ -39,7 +40,6 @@ object Pagination : Logging {
             list.addAll(appenderFun.invoke(contents))
             logger.debug("Retrieved ${list.size} $name")
 
-            // TODO Change this to just response.nextCursor?
             if (!response.moreEntries()) {
                 break
             }
@@ -50,12 +50,11 @@ object Pagination : Logging {
     }
 
     // Handle cursor responses that return maps
-    // TODO In the future we'll need to handle responses that return lists
     internal fun <T, R> retrieveCursorResponseAsMap(
             name: String,
             pageRetrievalFun: (String?) -> CursorResponse<R>,
             mappingFun: (R) -> T
-    ): Map<T, R> {
+    ): MutableMap<T, R> {
         val map = mutableMapOf<T, R>()
         var cursor: String? = null
 

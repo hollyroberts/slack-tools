@@ -43,7 +43,7 @@ abstract class CursorResponse<T> : SlackResponse() {
             val nextCursor: String?
     )
 
-    fun moreEntries() = !nextCursor().isNullOrEmpty()
+    fun moreEntries() = !nextCursor().isNullOrBlank()
 
     /**
      * Returns the next cursor if it exists

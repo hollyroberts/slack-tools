@@ -9,7 +9,6 @@ import slackjson.message.BaseMessage
 import utils.Log
 import utils.formatSize
 import java.time.Instant
-import java.time.ZonedDateTime
 
 interface SlackApi {
     companion object : Logging {
@@ -21,33 +20,48 @@ interface SlackApi {
     fun getConversationHistoryPage(
             @Query("cursor") cursor: String?,
             @Query("channel") conversation: String,
-            @Query("oldest") start: Long,
-            @Query("latest") end: Long
+            @Query("oldest") start: Long?,
+            @Query("latest") end: Long?
     ) : ConversationHistoryResponse
 
     @JvmDefault
     fun getConversationHistory(
-            conversation: String,
-            start: Instant,
-            end: Instant
-    ) {
-        logger.log(Log.LOW) { "Retrieving conversation history for $conversation" }
-        ZonedDateTime.now().toEpochSecond()
-        val messages: List<BaseMessage> = Pagination.retrieveCursorResponseAsList(
+            conversation: Conversation,
+            start: Instant? = null,
+            end: Instant? = null
+    ): List<BaseMessage> {
+        if (start != null && end != null) {
+            require(start.isBefore(end)) { "Start must be before end" }
+        }
+
+        logger.log(Log.LOW) { "Retrieving conversation history for ${conversation.fullName()}" }
+
+        var totalMessagesSeen = 0
+        val messages: MutableList<BaseMessage> = Pagination.retrieveCursorResponseAsList(
                 "messages for $conversation",
                 pageRetrievalFun = { cursor ->
                     getConversationHistoryPage(
                             cursor = cursor,
-                            conversation = conversation,
-                            start = start.epochSecond,
-                            end = end.epochSecond
+                            conversation = conversation.id,
+                            start = start?.epochSecond,
+                            end = end?.epochSecond
                     )
                 },
                 appenderFun = {
+                    totalMessagesSeen += it.size
                     it.asSequence().filterNotNull()
                 }
         )
-        logger.log(Log.LOW) { "Retrieved ${messages.size} messages for $conversation"}
+
+        logger.log(Log.LOW) { "Retrieved ${messages.size} messages for ${conversation.fullName()}"}
+
+        val skippedMessages = totalMessagesSeen - messages.size
+        if (skippedMessages > 0) {
+            logger.warn { "Skipped $skippedMessages/$totalMessagesSeen messages for ${conversation.fullName()}" }
+        }
+
+        messages.reverse()
+        return messages
     }
 
     @GET("conversations.list?limit=100")
