@@ -6,7 +6,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import utils.TestUtils
-import java.util.concurrent.TimeUnit
 
 class PaginationCursorTest : TestUtils {
     private fun getApi(server: MockWebServer) = DaggerRetrofitTestComponent.builder()
@@ -49,8 +48,8 @@ class PaginationCursorTest : TestUtils {
             ))
         }
 
-        server.takeRequest(0L, TimeUnit.MILLISECONDS)
-        val lastRequest = server.takeRequest(0L, TimeUnit.MILLISECONDS)!!
+        server.skipRequests(1)
+        val lastRequest = server.takeRequestImmediately()
         val url = lastRequest.requestUrl!!
         assertThat(url.queryParameter("cursor"))
                 .isNotNull()
@@ -100,10 +99,8 @@ class PaginationCursorTest : TestUtils {
             )
         }
 
-        // TODO make this into an extension function
-        server.takeRequest(0L, TimeUnit.MILLISECONDS)
-        server.takeRequest(0L, TimeUnit.MILLISECONDS)
-        val lastRequest = server.takeRequest(0L, TimeUnit.MILLISECONDS)!!
+        server.skipRequests(2)
+        val lastRequest = server.takeRequestImmediately()
         val url = lastRequest.requestUrl!!
         assertThat(url.queryParameter("cursor"))
                 .isNotNull()

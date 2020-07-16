@@ -6,6 +6,7 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import java.time.Instant
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 inline fun MockWebServer.runServer(function: () -> Unit) {
@@ -15,6 +16,16 @@ inline fun MockWebServer.runServer(function: () -> Unit) {
     } finally {
         this.shutdown()
     }
+}
+
+fun MockWebServer.skipRequests(count: Int) {
+    repeat(count) {
+        this.takeRequestImmediately()
+    }
+}
+
+fun MockWebServer.takeRequestImmediately(): RecordedRequest {
+    return this.takeRequest(0L, TimeUnit.MILLISECONDS) ?: error("No more requests immediately available")
 }
 
 class TimeRecorderDispatcher : Dispatcher() {
