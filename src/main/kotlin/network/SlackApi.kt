@@ -38,7 +38,7 @@ interface SlackApi {
 
         var totalMessagesSeen = 0
         val messages: MutableList<BaseMessage> = Pagination.retrieveCursorResponseAsList(
-                "messages for $conversation",
+                "messages for ${conversation.fullName()}",
                 pageRetrievalFun = { cursor ->
                     getConversationHistoryPage(
                             cursor = cursor,

@@ -1,6 +1,7 @@
 package slackjson.message
 
 import com.squareup.moshi.*
+import org.apache.logging.log4j.kotlin.Logging
 
 interface BaseMessage {
     val ts: String
@@ -10,7 +11,7 @@ interface BaseUserMessage : BaseMessage {
     val user: String
 }
 
-object BaseMessageCustomAdapter {
+object BaseMessageCustomAdapter : Logging {
     private val keys = JsonReader.Options.of("type", "subtype")
 
     @FromJson
@@ -52,6 +53,7 @@ object BaseMessageCustomAdapter {
             is ChannelType -> channelMessageAdapter.fromJson(reader)
             else -> {
                 // Since our list of subtypes is currently non-exhaustive then skip processing the message
+                logger.trace { "Cannot process message subtype '${subtype}'" }
                 reader.skipValue()
                 null
             }
