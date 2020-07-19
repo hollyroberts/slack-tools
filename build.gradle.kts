@@ -19,7 +19,7 @@ repositories {
 dependencies {
     // Common versions
     val log4j2Version = "2.13.3"
-    val daggerVersion = "2.28.2"
+    val daggerVersion = "2.28.3"
     val moshiVersion = "1.9.3"
     val okhttpVersion = "4.8.0"
     val retrofitVersion = "2.9.0"
