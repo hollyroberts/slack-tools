@@ -7,7 +7,7 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
-import dagger.DaggerMainComponent
+import dagger.DaggerWebMainComponent
 import network.http.HttpUtils.ConflictStrategy
 import slack.Settings
 import slack.filesByConvo
@@ -55,7 +55,7 @@ class ScriptDownloadByChannel: CliktCommand(
     override fun run() {
         // Setup
         val settings = Settings(fileConflictStrategy = ConflictStrategy.HASH).applyTimeOptions(timeOptions)
-        val daggerComponent = DaggerMainComponent.builder()
+        val daggerComponent = DaggerWebMainComponent.builder()
                 .settings(settings)
                 .token(token)
                 .build()

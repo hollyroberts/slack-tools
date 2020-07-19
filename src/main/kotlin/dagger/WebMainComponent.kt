@@ -13,14 +13,14 @@ import javax.inject.Singleton
 @Singleton
 @Component(
         modules = [
-            MainModule::class,
+            WebMainComponent.Declarations::class,
             MoshiModule::class,
             RetrofitModule::class,
             RetrofitModule.Defaults::class,
             HttpUtilsModule.Token::class
         ]
 )
-interface MainComponent {
+interface WebMainComponent {
     @Component.Builder
     interface Builder {
         @BindsInstance
@@ -29,20 +29,17 @@ interface MainComponent {
         @BindsInstance
         fun token(@Named("SlackToken") token: String): Builder
 
-        fun build(): MainComponent
+        fun build(): WebMainComponent
     }
 
     fun getSlackApi(): SlackApi
 
     @Deprecated(message = "To be replaced with something better I hope")
     fun getUserAndConvoMap(): UserAndConvoMap
-}
 
-@Module
-object MainModule {
-    @Singleton
-    @Provides
-    fun provideSlackData(userAndConvoMap: UserAndConvoMap): SlackData {
-        return userAndConvoMap
+    @Module
+    interface Declarations {
+        @Binds
+        fun provideSlackData(userAndConvoMap: UserAndConvoMap): SlackData
     }
 }

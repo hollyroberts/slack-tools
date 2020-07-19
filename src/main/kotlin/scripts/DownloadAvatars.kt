@@ -7,7 +7,7 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
-import dagger.DaggerMainComponent
+import dagger.DaggerWebMainComponent
 import network.http.HttpUtilsBasic
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
@@ -53,7 +53,7 @@ class ScriptDownloadAvatars : CliktCommand(
             help = "Download avatars for deactivated accounts").flag()
 
     override fun run() {
-        val daggerComponent = DaggerMainComponent.builder()
+        val daggerComponent = DaggerWebMainComponent.builder()
                 .settings(Settings())
                 .token(token)
                 .build()

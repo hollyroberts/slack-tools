@@ -5,29 +5,27 @@ import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
-import dagger.DaggerWebMainComponent
+import dagger.DaggerExportMainComponent
 import network.http.HttpUtils.ConflictStrategy
 import slack.Settings
 import slackjson.ConversationTypes
-import slackjson.message.TextMessage
 import java.io.File
+import java.nio.file.Paths
 
-fun main(args: Array<String>) = ScriptDownloadConversationHistory().main(args)
+fun main(args: Array<String>) = ScriptProcessConversationHistory().main(args)
 
-class ScriptDownloadConversationHistory: CliktCommand(
+class ScriptProcessConversationHistory : CliktCommand(
         name = "download-files-by-channel"
 ) {
     // Top level options
     private val topLevelOptions by TopLevelOptions()
     private val timeOptions by TimeOptions()
 
-    // Auth
-    private val token by option("--token", "-t",
-            envvar = "SlackToken",
-            help = "Authorisation token for slacks web api"
-    ).required()
+    private val input by option("--input", "-i",
+            help = "Location of slack export")
+            .file(canBeFile = false, mustExist = true, mustBeReadable = true)
+            .default(Paths.get("").toFile())
 
     private val convo by option("--channel", "-c",
             help = "Download a specific conversations history. Can be public/private channel or DM. " +
@@ -51,24 +49,14 @@ class ScriptDownloadConversationHistory: CliktCommand(
     override fun run() {
         // Setup
         val settings = Settings(fileConflictStrategy = ConflictStrategy.HASH).applyTimeOptions(timeOptions)
-        val daggerComponent = DaggerWebMainComponent.builder()
+
+        val export = DaggerExportMainComponent.builder()
                 .settings(settings)
-                .token(token)
+                .folderLocation(input.toPath())
                 .build()
-        val userAndConvoMap = daggerComponent.getUserAndConvoMap()
-        val slack = daggerComponent.getSlackApi()
-
-        val convoId = userAndConvoMap.inferChannelID(convo!!)
-        val convoHistory = slack.getConversationHistory(
-                userAndConvoMap.conversations[convoId]!!,
-                timeOptions.startTime?.toInstant(),
-                timeOptions.endTime?.toInstant()
-        )
-
-        convoHistory.forEach {
-            val msg = it as TextMessage
-            println(msg.text)
+        val userAndConvoMap = export.getUserAndConvoMap()
+        userAndConvoMap.conversations.values.forEach {
+            println(it.name)
         }
-        return
     }
 }

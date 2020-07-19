@@ -13,9 +13,9 @@ class TopLevelOptions : OptionGroup(
         name = "Top level options",
         help = "Options that are common across all scripts") {
 
-    private val logMode by option("--log-mode", "-lm",
+    private val logMode by option("--log", "-l",
             metavar = SupportedLevel.values().userOptions(),
-            help = "The logging mode to be used"
+            help = "The logging level to be used"
     ).enum<SupportedLevel>()
 
     override fun finalize(context: Context, invocationsByOption: Map<Option, List<OptionParser.Invocation>>) {
