@@ -1,18 +1,16 @@
 package slackjson
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import com.squareup.moshi.JsonDataException
+import com.squareup.moshi.*
 import dagger.Lazy
 import slack.Settings
 import slack.SlackData
+import slackjson.ConversationType.*
 import javax.inject.Inject
 
-enum class ConversationTypes(val shortName: String) {
+enum class ConversationType(val shortName: String) {
     PUBLIC_CHANNEL("public"),
     PRIVATE_CHANNEL("private"),
-    DIRECT_MESSAGE("dm"),
-    UNKNOWN("unknown");
+    DIRECT_MESSAGE("dm");
 
     companion object {
         fun optionStr() = values().joinToString(", ", transform = { it.shortName.toUpperCase() })
@@ -20,9 +18,73 @@ enum class ConversationTypes(val shortName: String) {
 }
 
 @MoshiInject
+abstract class Conversation {
+    abstract val id: String
+    abstract val type: ConversationType
+
+    abstract fun name(): String
+}
+
+class ConversationDm(
+        override val id: String,
+        private val userId: String
+): Conversation() {
+    override val type: ConversationType = DIRECT_MESSAGE
+
+    // TODO can we break this dependency cycle and not need lazy?
+    @Transient
+    @Inject
+    lateinit var slackData: Lazy<SlackData>
+
+    @Transient
+    @Inject
+    lateinit var settings: Settings
+
+    override fun name(): String {
+        val suffix = if(settings.useDisplayNamesForConversationNames) {
+            slackData.get().userDisplayname(userId)
+        } else {
+            slackData.get().userUsername(userId)
+        }
+        
+        return "@$suffix"
+    }
+}
+
+class ConversationChannel(
+        override val id: String,
+        override val type: ConversationType,
+        private val name: String
+) : Conversation() {
+    init {
+        if (type != PUBLIC_CHANNEL && type != PRIVATE_CHANNEL) {
+            throw JsonDataException("Channels must have conversation type public or private")
+        }
+    }
+
+    override fun name() = "#$name"
+}
+
+
 @JsonClass(generateAdapter = true)
-class Conversation(
-        // Main data we're interested in
+class ParsedConversationExport(
+        val id: String,
+        val name: String?,
+
+        // User field if dm
+        @Json(name = "user")
+        val userId: String?
+) {
+    fun toConversation(type: ConversationType): Conversation {
+        return when (type) {
+            PUBLIC_CHANNEL, PRIVATE_CHANNEL -> ConversationChannel(id, type, name!!)
+            DIRECT_MESSAGE -> ConversationDm(id, userId!!)
+        }
+    }
+}
+
+@JsonClass(generateAdapter = true)
+class ParsedConversationWeb(
         val id: String,
         val name: String?,
 
@@ -35,17 +97,9 @@ class Conversation(
         val isIm: Boolean = false,
 
         // User field if dm
-        val user: String?
+        @Json(name = "user")
+        val userId: String?
 ) {
-    // TODO can we break this dependency cycle and not need lazy?
-    @Transient
-    @Inject
-    lateinit var slackData: Lazy<SlackData>
-
-    @Transient
-    @Inject
-    lateinit var settings: Settings
-
     init {
         val numTrues = booleanArrayOf(isChannel, isGroup, isIm).sumBy { if (it) 1 else 0 }
         val conversationStr = "Conversation $id" + if (name != null) " ($name)" else ""
@@ -58,38 +112,33 @@ class Conversation(
         }
 
         // If it's a dm, then we must know the user
-        if (isIm && user == null) {
+        if (isIm && userId == null) {
             throw JsonDataException("$conversationStr is a dm, but does not contain a user field")
         }
     }
 
-    /**
-     * Returns enum indicating channel type
-     */
-    fun conversationType() = when {
-        isChannel -> ConversationTypes.PUBLIC_CHANNEL
-        isGroup -> ConversationTypes.PRIVATE_CHANNEL
-        else -> ConversationTypes.DIRECT_MESSAGE
-    }
-
-    /**
-     * Returns name depending on settings given
-     */
-    private fun name() = if (settings.useDisplayNamesForConversationNames) {
-        slackData.get().userDisplayname(user)
-    } else {
-        slackData.get().userUsername(user)
-    }
-
-    /**
-     * Returns conversation name prefixed with # or @ depending on whether it's a channel or dm
-     */
-    fun fullName() : String {
-        return if (isChannel || isGroup) {
-            "#$name"
-        } else {
-            "@${name()}"
-
+    fun toConversation(): Conversation {
+        return when (val type = conversationType()) {
+            PUBLIC_CHANNEL, PRIVATE_CHANNEL -> ConversationChannel(id, type, name!!)
+            DIRECT_MESSAGE -> ConversationDm(id, userId!!)
         }
+    }
+
+    private fun conversationType() = when {
+        isChannel -> PUBLIC_CHANNEL
+        isGroup -> PRIVATE_CHANNEL
+        else -> DIRECT_MESSAGE
+    }
+}
+
+object ConversationContextfulAdapter {
+    @FromJson
+    fun fromJson(conversationParsed: ParsedConversationWeb): Conversation {
+        return conversationParsed.toConversation()
+    }
+
+    @ToJson
+    fun toJson(conversation: Conversation): String {
+        throw UnsupportedOperationException()
     }
 }

@@ -10,7 +10,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerWebMainComponent
 import network.http.HttpUtils.ConflictStrategy
 import slack.Settings
-import slackjson.ConversationTypes
+import slackjson.ConversationType
 import slackjson.message.TextMessage
 import java.io.File
 
@@ -36,11 +36,11 @@ class ScriptDownloadConversationHistory: CliktCommand(
     // TODO support
     private val convoTypes by option("--channel-type", "-ct",
             help = "The types of channels to include. Use ',' to separate types. By default all types are included",
-            metavar = ConversationTypes.optionStr())
+            metavar = ConversationType.optionStr())
             .convert { inputStr ->
                 inputStr.split(",").map { arg ->
-                    ConversationTypes.values().find { arg.toLowerCase() == it.shortName }
-                            ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationTypes.optionStr())
+                    ConversationType.values().find { arg.toLowerCase() == it.shortName }
+                            ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationType.optionStr())
                 }.toSet()
             }
     private val output by option("--output", "-o",

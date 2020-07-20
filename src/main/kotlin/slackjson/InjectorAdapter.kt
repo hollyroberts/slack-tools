@@ -6,20 +6,22 @@ import java.lang.reflect.Type
 import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
+import kotlin.reflect.KClass
 
 /**
  * The parameterized type here actually doesn't do anything, as it gets erased at runtime
  * Also the factory method just creates instances that are 'Any' rather than 'T'
  * But it's nice to have, and the factory method ensures the adapter is only used for the correct types
  */
-class InjectorAdapter<T>(
-        private val injector: MembersInjector<T>,
+class InjectorAdapter<T : Any>(
+        private val injectionMap: Map<KClass<T>, MembersInjector<T>>,
         private val delegate: JsonAdapter<T>
 ) : JsonAdapter<T>() {
 
     override fun fromJson(reader: JsonReader): T? {
         val obj: T = delegate.fromJson(reader)!!
-        injector.injectMembers(obj)
+        injectionMap[obj::class]?.injectMembers(obj)
+        println("${obj::class.simpleName} - ${injectionMap.containsKey(obj::class)}")
         return obj
     }
 
@@ -31,7 +33,7 @@ class InjectorAdapter<T>(
     @Suppress("RemoveRedundantQualifierName")
     @Singleton
     class JsonFactory @Inject constructor(
-            private val injectorMap: Map<Class<*>, @JvmSuppressWildcards Provider<MembersInjector<out Any>>>
+            private val injectorMap: Map<Class<*>, @JvmSuppressWildcards Provider<InjectionMap>>
     ) : JsonAdapter.Factory {
 
         override fun create(type: Type, annotations: MutableSet<out Annotation>, moshi: Moshi): JsonAdapter<*>? {
@@ -43,7 +45,7 @@ class InjectorAdapter<T>(
             val injector = injectorMap[javaType]?.get() ?: error("No injection provider defined in map multibinder for $javaType")
 
             @Suppress("UNCHECKED_CAST")
-            return InjectorAdapter(injector as MembersInjector<Any>, adapter)
+            return InjectorAdapter(injector as Map<KClass<Any>, MembersInjector<Any>>, adapter)
         }
     }
 }

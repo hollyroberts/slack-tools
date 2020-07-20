@@ -4,7 +4,7 @@ package slack
 import network.http.HttpUtils.ConflictStrategy
 import scripts.TimeOptions
 import slackjson.Conversation
-import slackjson.ConversationTypes
+import slackjson.ConversationType
 import slackjson.User
 import java.time.ZoneId
 
@@ -14,14 +14,14 @@ abstract class SlackData {
     abstract val users: Map<String, User>
 
     // Basic data retrieval methods
-    fun conversationName(convoId: String?) = conversations[convoId]?.fullName() ?: "Unknown conversation"
-    fun conversationType(convoId: String?) : ConversationTypes {
+    fun conversationName(convoId: String?) = conversations[convoId]?.name() ?: "Unknown conversation"
+    fun conversationType(convoId: String?) : ConversationType? {
         if (convoId == null) {
-            return ConversationTypes.UNKNOWN
+            return null
         }
 
         val convo = conversations[convoId] ?: error("Unknown conversation ID '$convoId'")
-        return convo.conversationType()
+        return convo.type
     }
 
     fun userUsername(userId: String?) = users[userId]?.username() ?: "Unknown user"
@@ -57,7 +57,7 @@ abstract class SlackData {
         }
 
         conversations.forEach {
-            if (it.value.fullName() == channelString) {
+            if (it.value.name() == channelString) {
                 return it.key
             }
         }

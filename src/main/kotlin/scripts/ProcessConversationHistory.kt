@@ -9,7 +9,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerExportMainComponent
 import network.http.HttpUtils.ConflictStrategy
 import slack.Settings
-import slackjson.ConversationTypes
+import slackjson.ConversationType
 import java.io.File
 import java.nio.file.Paths
 
@@ -34,11 +34,11 @@ class ScriptProcessConversationHistory : CliktCommand(
     // TODO support
     private val convoTypes by option("--channel-type", "-ct",
             help = "The types of channels to include. Use ',' to separate types. By default all types are included",
-            metavar = ConversationTypes.optionStr())
+            metavar = ConversationType.optionStr())
             .convert { inputStr ->
                 inputStr.split(",").map { arg ->
-                    ConversationTypes.values().find { arg.toLowerCase() == it.shortName }
-                            ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationTypes.optionStr())
+                    ConversationType.values().find { arg.toLowerCase() == it.shortName }
+                            ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationType.optionStr())
                 }.toSet()
             }
     private val output by option("--output", "-o",
@@ -55,8 +55,10 @@ class ScriptProcessConversationHistory : CliktCommand(
                 .folderLocation(input.toPath())
                 .build()
         val userAndConvoMap = export.getUserAndConvoMap()
-        userAndConvoMap.conversations.values.forEach {
-            println(it.name)
-        }
+        userAndConvoMap.conversations.values
+                .sortedBy { it.name() }
+                .forEach {
+                    println(it.name())
+                }
     }
 }

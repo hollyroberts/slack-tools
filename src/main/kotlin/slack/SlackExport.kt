@@ -7,6 +7,8 @@ import okio.buffer
 import okio.source
 import org.apache.logging.log4j.kotlin.Logging
 import slackjson.Conversation
+import slackjson.ConversationType.PUBLIC_CHANNEL
+import slackjson.ParsedConversationExport
 import slackjson.User
 import java.nio.file.Path
 
@@ -22,8 +24,9 @@ class SlackExport private constructor(
                     .associateBy { it.id }
 
             println(userMap.size)
-            val convoAdapter: JsonAdapter<List<Conversation>> = moshi.adapter(Types.newParameterizedType(List::class.java, Conversation::class.java))
+            val convoAdapter: JsonAdapter<List<ParsedConversationExport>> = moshi.adapter(Types.newParameterizedType(List::class.java, ParsedConversationExport::class.java))
             val convoMap = loadJson(folder.resolve("channels.json"), convoAdapter)
+                    .map { it.toConversation(PUBLIC_CHANNEL) }
                     .associateBy { it.id }
             println(convoMap.size)
 
