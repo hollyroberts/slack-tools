@@ -9,9 +9,11 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerWebMainComponent
 import network.http.HttpUtils.ConflictStrategy
+import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slackjson.ConversationType
 import slackjson.message.TextMessage
+import utils.Log
 import java.io.File
 
 fun main(args: Array<String>) = ScriptDownloadConversationHistory().main(args)
@@ -19,6 +21,8 @@ fun main(args: Array<String>) = ScriptDownloadConversationHistory().main(args)
 class ScriptDownloadConversationHistory: CliktCommand(
         name = "download-files-by-channel"
 ) {
+    companion object : Logging
+
     // Top level options
     private val topLevelOptions by TopLevelOptions()
     private val timeOptions by TimeOptions()
@@ -66,8 +70,7 @@ class ScriptDownloadConversationHistory: CliktCommand(
         )
 
         convoHistory.forEach {
-            val msg = it as TextMessage
-            println(msg.text)
+            logger.log(Log.LOW) { (it as TextMessage).text }
         }
         return
     }

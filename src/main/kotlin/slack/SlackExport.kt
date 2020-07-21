@@ -18,17 +18,20 @@ class SlackExport private constructor(
 ) : SlackData() {
     // Factory method
     companion object : Logging {
+        private const val USERS_FILE = "users.json"
+        private const val CHANNELS_FILE = "channels.json"
+
         fun loadFromFolder(folder: Path, moshi: Moshi): SlackExport {
             val userAdapter: JsonAdapter<List<User>> = moshi.adapter(Types.newParameterizedType(List::class.java, User::class.java))
-            val userMap = loadJson(folder.resolve("users.json"), userAdapter)
+            val userMap = loadJson(folder.resolve(USERS_FILE), userAdapter)
                     .associateBy { it.id }
+            logger.info { "Loaded data about ${userMap.size} users from $USERS_FILE" }
 
-            println(userMap.size)
             val convoAdapter: JsonAdapter<List<ParsedConversationExport>> = moshi.adapter(Types.newParameterizedType(List::class.java, ParsedConversationExport::class.java))
             val convoMap = loadJson(folder.resolve("channels.json"), convoAdapter)
                     .map { it.toConversation(PUBLIC_CHANNEL) }
                     .associateBy { it.id }
-            println(convoMap.size)
+            logger.info { "Loaded data about ${convoMap.size} users from $CHANNELS_FILE" }
 
             return SlackExport(userMap, convoMap)
         }
