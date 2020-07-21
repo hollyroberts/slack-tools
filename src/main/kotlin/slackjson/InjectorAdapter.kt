@@ -21,7 +21,6 @@ class InjectorAdapter<T : Any>(
     override fun fromJson(reader: JsonReader): T? {
         val obj: T = delegate.fromJson(reader)!!
         injectionMap[obj::class]?.injectMembers(obj)
-        println("${obj::class.simpleName} - ${injectionMap.containsKey(obj::class)}")
         return obj
     }
 

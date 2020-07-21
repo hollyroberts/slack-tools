@@ -10,6 +10,7 @@ import slack.SlackData
 import utils.iterateArray
 import utils.iterateObject
 import java.math.BigDecimal
+import java.util.*
 import javax.inject.Inject
 
 @MoshiInject
@@ -51,7 +52,7 @@ open class ParsedFile (
 
     @Transient
     @Inject
-    lateinit var api: SlackApi
+    lateinit var api: Optional<SlackApi>
 
     @Transient
     @Inject
@@ -91,7 +92,9 @@ open class ParsedFile (
     /**
      * Gets the exact upload location by querying a single file
      */
-    private fun getLocationFromApi() = api.listFileInfo(this.id).inferLocFromShares()
+    private fun getLocationFromApi() = api.get()
+            .listFileInfo(this.id)
+            .inferLocFromShares()
 
     /**
      * Returns a new complete file instance

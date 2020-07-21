@@ -1,19 +1,28 @@
 package slackjson
 
 import com.squareup.moshi.Moshi
+import dagger.BindsOptionalOf
 import dagger.MembersInjector
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
+import network.SlackApi
 import slackjson.message.BaseMessageCustomAdapter
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 
 typealias InjectionMap = Map<KClass<out Any>, MembersInjector<out Any>>
 
-@Module
+@Module(includes = [MoshiModule.OptionalBindings::class])
 object MoshiModule {
+    // TODO I hope I can fix this
+    @Module
+    interface OptionalBindings {
+        @BindsOptionalOf
+        fun optionalSlackApi(): SlackApi
+    }
+
     @Provides
     @Singleton
     fun provideMoshi(injectorFactory: InjectorAdapter.JsonFactory): Moshi =

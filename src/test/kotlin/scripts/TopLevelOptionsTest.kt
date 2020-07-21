@@ -17,7 +17,7 @@ internal class TopLevelOptionsTest {
         mockkStatic(Configurator::class)
 
         val wrapper = Wrapper()
-        wrapper.parse(listOf("--log-mode", "lOw"))
+        wrapper.parse(listOf("--log", "lOw"))
         verify { Configurator.setRootLevel(Log.LOW) }
 
         unmockkStatic(Configurator::class)
@@ -27,9 +27,9 @@ internal class TopLevelOptionsTest {
     @Test
     fun loggingBadArgs() {
         val wrapper = Wrapper()
-        assertThatThrownBy { wrapper.parse(listOf("--log-mode", "something")) }
+        assertThatThrownBy { wrapper.parse(listOf("--log", "something")) }
                 .isInstanceOf(BadParameterValue::class.java)
-                .hasMessage("Invalid value for \"--log-mode\": invalid choice: something. (choose from TRACE, DEBUG, LOW, MEDIUM, HIGH, WARN, ERROR)")
+                .hasMessage("Invalid value for \"--log\": invalid choice: something. (choose from TRACE, DEBUG, LOW, MEDIUM, HIGH, WARN, ERROR)")
     }
 
     private class Wrapper : CliktCommand() {

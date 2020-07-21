@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import slack.Settings
 import slack.SlackData
+import slackjson.ConversationType.PUBLIC_CHANNEL
 import utils.TestUtils
 
 internal class ConversationTest : TestUtils {
@@ -28,11 +29,8 @@ internal class ConversationTest : TestUtils {
         val parsed = adapter.fromJson(input)!!
 
         assertThat(parsed.id).isEqualTo("C012AB3CD")
-        assertThat(parsed.isChannel).isEqualTo(true)
-        assertThat(parsed.isGroup).isEqualTo(false)
-        assertThat(parsed.isIm).isEqualTo(false)
-        assertThat(parsed.name).isEqualTo("general")
-        assertThat(parsed.user).isNull()
+        assertThat(parsed.type).isEqualTo(PUBLIC_CHANNEL)
+        assertThat(parsed.name()).isEqualTo("#general")
     }
 
     @Test
@@ -41,14 +39,6 @@ internal class ConversationTest : TestUtils {
         assertThatThrownBy { adapter.fromJson(input) }
                 .hasRootCauseInstanceOf(JsonDataException::class.java)
                 .hasRootCauseMessage("Conversation C012AB3CD (general) has more than 1 channel type")
-    }
-
-    @Test
-    fun correctInstantMessage() {
-        val input = readResource("conversation-im.json")
-        val parsed = adapter.fromJson(input)!!
-
-        assertThat(parsed.user).isEqualTo("U0BS9U4SV")
     }
 
     @Test
@@ -68,10 +58,10 @@ internal class ConversationTest : TestUtils {
 
         every { settings.useDisplayNamesForConversationNames } returns false
         every { slackData.userUsername("U0BS9U4SV") } returns "testuser"
-        assertThat(parsed.fullName()).isEqualTo("@testuser")
+        assertThat(parsed.name()).isEqualTo("@testuser")
 
         every { settings.useDisplayNamesForConversationNames } returns true
         every { slackData.userDisplayname("U0BS9U4SV") } returns "Test User"
-        assertThat(parsed.fullName()).isEqualTo("@Test User")
+        assertThat(parsed.name()).isEqualTo("@Test User")
     }
 }
