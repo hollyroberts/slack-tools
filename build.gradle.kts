@@ -6,7 +6,7 @@ plugins {
     java
     kotlin("jvm") version "1.3.72"
     kotlin("kapt") version "1.3.72"
-    id("com.github.ben-manes.versions") version "0.28.0"
+    id("com.github.ben-manes.versions") version "0.29.0"
 }
 
 version = "0.1-DEV"
