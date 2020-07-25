@@ -62,10 +62,10 @@ tasks.test {
 }
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_12
+    sourceCompatibility = JavaVersion.VERSION_13
 }
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "12"
+    kotlinOptions.jvmTarget = "13"
     kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
 }
 
