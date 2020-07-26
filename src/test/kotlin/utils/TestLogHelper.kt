@@ -18,7 +18,9 @@ class TestLogHelper private constructor(
 ) : Closeable {
     fun events() = logEvents.toImmutableList()
 
-    fun setLevel(level: Level) = run { logger.level = level }
+    fun setLevel(level: Level) {
+        logger.level = level
+    }
 
     override fun close() {
         logger.removeAppender(appender)

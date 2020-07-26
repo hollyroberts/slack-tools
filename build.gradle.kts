@@ -67,6 +67,7 @@ configure<JavaPluginConvention> {
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "13"
     kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
 tasks.withType<DependencyUpdatesTask> {
