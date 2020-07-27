@@ -1,6 +1,5 @@
 package dagger
 
-import com.squareup.moshi.Moshi
 import network.http.HttpUtils
 import network.http.HttpUtilsBasic
 import slack.Settings
@@ -15,7 +14,7 @@ import javax.inject.Singleton
 @Component(
         modules = [
             ExportMainComponent.Declarations::class,
-            ExportMainComponent.Providers::class,
+            SlackExport.Provider::class,
             MoshiModule::class
         ]
 )
@@ -38,14 +37,9 @@ interface ExportMainComponent {
     interface Declarations {
         @Binds
         fun provideHttpUtils(httpUtilsBasic: HttpUtilsBasic): HttpUtils
-    }
 
-    @Module
-    object Providers {
-        @Provides
-        @Singleton
-        fun provideSlackData(@Named("FolderLocation") location: Path, moshi: Moshi): SlackData =
-                SlackExport.loadFromFolder(location, moshi)
+        @Binds
+        fun bindSlackData(slackExport: SlackExport): SlackData
     }
 }
 

@@ -36,5 +36,5 @@ object Log : Logging {
     val LOW = Level.forName("INFO\u200B", 410)!!
     val HIGH = Level.forName("INFO\u200B\u200B", 390)!!
 
-    // TODO add extension functions for above
+    // TODO add extension functions for above? Can it be done with static dispatch?
 }

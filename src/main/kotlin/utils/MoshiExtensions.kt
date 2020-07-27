@@ -14,7 +14,7 @@ import kotlin.reflect.typeOf
 // They already have this: https://github.com/square/moshi/blob/master/kotlin/tests/src/test/kotlin/com/squareup/moshi/kotlin/reflect/-MoshiKotlinExtensions.kt
 // We could just pull it in (it's probably better), but making this was interesting
 // It'd also be harder to debug for the edge cases, so lets wait until something is stable
-@ExperimentalStdlibApi
+@OptIn(ExperimentalStdlibApi::class)
 inline fun <reified T> Moshi.reifiedAdapter(): JsonAdapter<T> {
     val moshiType = getMoshiType(typeOf<T>())
     return this.adapter(moshiType)

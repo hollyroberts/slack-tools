@@ -20,6 +20,7 @@ dependencies {
     // Common versions
     val log4j2Version = "2.13.3"
     val daggerVersion = "2.28.3"
+    val assistedInjectVersion = "0.5.2"
     val moshiVersion = "1.9.3"
     val okhttpVersion = "4.8.0"
     val retrofitVersion = "2.9.0"
@@ -34,6 +35,8 @@ dependencies {
     api("com.google.dagger:dagger:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
+    compileOnly("com.squareup.inject:assisted-inject-annotations-dagger2:$assistedInjectVersion")
+    kapt("com.squareup.inject:assisted-inject-processor-dagger2:$assistedInjectVersion")
 
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
