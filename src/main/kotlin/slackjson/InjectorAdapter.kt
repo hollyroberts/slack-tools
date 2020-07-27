@@ -26,7 +26,7 @@ class InjectorAdapter<T : Any>(
 
     @ToJson
     override fun toJson(writer: JsonWriter, value: T?) {
-        throw UnsupportedOperationException()
+        throw UnsupportedOperationException("Serialisation of injected objects is not supported")
     }
 
     @Suppress("RemoveRedundantQualifierName")

@@ -138,7 +138,8 @@ object ConversationContextfulAdapter {
     }
 
     @ToJson
+    @Suppress("UNUSED_PARAMETER")
     fun toJson(conversation: Conversation): String {
-        throw UnsupportedOperationException()
+        throw UnsupportedOperationException("Serialisation of Conversation is not supported")
     }
 }

@@ -61,6 +61,7 @@ object BaseMessageCustomAdapter : Logging {
     }
 
     @ToJson
+    @Suppress("UNUSED_PARAMETER")
     fun toJson(baseMessage: BaseMessage) : String {
         throw UnsupportedOperationException("Serialisation of BaseMessage is not supported")
     }
