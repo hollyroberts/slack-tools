@@ -7,6 +7,7 @@ import slackjson.JsonLoader
 import slackjson.message.BaseMessage
 import utils.Log
 import utils.reifiedAdapter
+import java.math.BigDecimal
 import java.nio.file.Files
 import java.nio.file.Path
 import javax.inject.Inject
@@ -20,7 +21,7 @@ class SlackExportProcessor @Inject constructor(
         private const val MESSAGE_FILE_GLOB = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json"
     }
 
-    private val messageAdapter by lazy { moshi.reifiedAdapter<List<BaseMessage>>() }
+    private val messageAdapter by lazy { moshi.reifiedAdapter<List<BaseMessage?>>() }
 
     fun loadConversationFolder(conversation: Conversation) {
         logger.log(Log.LOW) { "Loading conversation history from ${conversation.namePrefixed()}" }
@@ -36,7 +37,18 @@ class SlackExportProcessor @Inject constructor(
         val messages = mutableListOf<BaseMessage>()
         fileList.forEach {file ->
             val fileMessages = JsonLoader.loadJson(convoPath.resolve(file.fileName), messageAdapter)
-            messages.addAll(fileMessages)
+            messages.addAll(fileMessages.filterNotNull())
+        }
+
+        // TODO do some testing of this performance
+        // Hopefully since it should be in order then it'll be really quick
+        var ts: BigDecimal? = null
+        for (message in messages) {
+            if (ts != null && message.ts <= ts) {
+                error("Timestamp ${message.ts} is less than $ts")
+            }
+
+            ts = message.ts
         }
 
         logger.log(Log.LOW) { String.format("Loaded %,d messages from %s", messages.size, conversation.namePrefixed()) }

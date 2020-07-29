@@ -30,7 +30,7 @@ internal class ConversationTest : TestUtils {
 
         assertThat(parsed.id).isEqualTo("C012AB3CD")
         assertThat(parsed.type).isEqualTo(PUBLIC_CHANNEL)
-        assertThat(parsed.name()).isEqualTo("#general")
+        assertThat(parsed.namePrefixed()).isEqualTo("#general")
     }
 
     @Test
@@ -58,10 +58,10 @@ internal class ConversationTest : TestUtils {
 
         every { settings.useDisplayNamesForConversationNames } returns false
         every { slackData.userUsername("U0BS9U4SV") } returns "testuser"
-        assertThat(parsed.name()).isEqualTo("@testuser")
+        assertThat(parsed.namePrefixed()).isEqualTo("@testuser")
 
         every { settings.useDisplayNamesForConversationNames } returns true
         every { slackData.userDisplayname("U0BS9U4SV") } returns "Test User"
-        assertThat(parsed.name()).isEqualTo("@Test User")
+        assertThat(parsed.namePrefixed()).isEqualTo("@Test User")
     }
 }

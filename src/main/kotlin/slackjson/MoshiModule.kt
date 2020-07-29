@@ -32,6 +32,7 @@ object MoshiModule {
                     .add(ProfileJsonAdapter)
                     .add(ShareJsonAdapter)
                     .add(ConversationContextfulAdapter)
+                    .add(BigDecimalAdapter)
                     .build()
 
     @Provides

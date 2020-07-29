@@ -12,6 +12,7 @@ import slackjson.ConversationType.PUBLIC_CHANNEL
 import slackjson.JsonLoader
 import slackjson.ParsedConversationExport
 import slackjson.User
+import utils.Log
 import utils.reifiedAdapter
 import java.nio.file.Path
 import javax.inject.Named
@@ -40,6 +41,8 @@ class SlackExport @AssistedInject constructor(
         @Provides
         @Singleton
         fun loadFromFolder(@Named("FolderLocation") folder: Path, moshi: Moshi, factory: Factory): SlackExport {
+            logger.log(Log.HIGH) { "Loading export metadata" }
+
             val userAdapter = moshi.reifiedAdapter<List<User>>()
             val userMap = JsonLoader.loadJson(folder.resolve(USERS_FILE), userAdapter)
                     .associateBy { it.id }

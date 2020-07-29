@@ -11,6 +11,7 @@ import network.http.HttpUtils.ConflictStrategy
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slackjson.ConversationType
+import utils.Log
 import java.io.File
 import java.nio.file.Paths
 
@@ -60,6 +61,7 @@ class ScriptProcessConversationHistory : CliktCommand(
         val userAndConvoMap = dagger.getUserAndConvoMap()
         val exportProcessor = dagger.getExportProcessor()
 
+        logger.log(Log.HIGH) { "Loading conversation data" }
 
         userAndConvoMap.conversations.values
                 .sortedBy { it.nameRaw() }

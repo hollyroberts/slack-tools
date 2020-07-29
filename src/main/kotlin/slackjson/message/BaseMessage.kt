@@ -2,9 +2,10 @@ package slackjson.message
 
 import com.squareup.moshi.*
 import org.apache.logging.log4j.kotlin.Logging
+import java.math.BigDecimal
 
 interface BaseMessage {
-    val ts: String
+    val ts: BigDecimal
 }
 
 interface BaseUserMessage : BaseMessage {
