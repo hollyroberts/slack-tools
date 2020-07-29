@@ -11,7 +11,6 @@ import network.http.HttpUtils.ConflictStrategy
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slackjson.ConversationType
-import utils.Log
 import java.io.File
 import java.nio.file.Paths
 
@@ -54,15 +53,22 @@ class ScriptProcessConversationHistory : CliktCommand(
         // Setup
         val settings = Settings(fileConflictStrategy = ConflictStrategy.HASH).applyTimeOptions(timeOptions)
 
-        val export = DaggerExportMainComponent.builder()
+        val dagger = DaggerExportMainComponent.builder()
                 .settings(settings)
                 .folderLocation(input.toPath())
                 .build()
-        val userAndConvoMap = export.getUserAndConvoMap()
+        val userAndConvoMap = dagger.getUserAndConvoMap()
+        val exportProcessor = dagger.getExportProcessor()
+
+
         userAndConvoMap.conversations.values
-                .sortedBy { it.name() }
+                .sortedBy { it.nameRaw() }
                 .forEach {
-                    logger.log(Log.LOW) { it.name() }
+                    exportProcessor.loadConversationFolder(it)
                 }
+
+        // TODO replace this with filtering
+        // val firstConvo = userAndConvoMap.conversations.values.sortedBy { it.nameRaw() }[0]
+        // exportProcessor.loadConversationFolder(firstConvo)
     }
 }

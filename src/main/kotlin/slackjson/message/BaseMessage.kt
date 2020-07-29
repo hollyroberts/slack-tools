@@ -53,7 +53,7 @@ object BaseMessageCustomAdapter : Logging {
             is ChannelType -> channelMessageAdapter.fromJson(reader)
             else -> {
                 // Since our list of subtypes is currently non-exhaustive then skip processing the message
-                logger.trace { "Cannot process message subtype '${subtype}'" }
+                logger.debug { "Cannot process message subtype '${subtype}'" }
                 reader.skipValue()
                 null
             }

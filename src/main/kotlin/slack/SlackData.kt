@@ -14,7 +14,7 @@ abstract class SlackData {
     abstract val users: Map<String, User>
 
     // Basic data retrieval methods
-    fun conversationName(convoId: String?) = conversations[convoId]?.name() ?: "Unknown conversation"
+    fun conversationName(convoId: String?) = conversations[convoId]?.namePrefixed() ?: "Unknown conversation"
     fun conversationType(convoId: String?) : ConversationType? {
         if (convoId == null) {
             return null
@@ -57,7 +57,7 @@ abstract class SlackData {
         }
 
         conversations.forEach {
-            if (it.value.name() == channelString) {
+            if (it.value.namePrefixed() == channelString) {
                 return it.key
             }
         }

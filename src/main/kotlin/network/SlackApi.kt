@@ -34,11 +34,11 @@ interface SlackApi {
             require(start.isBefore(end)) { "Start must be before end" }
         }
 
-        logger.log(Log.LOW) { "Retrieving conversation history for ${conversation.name()}" }
+        logger.log(Log.LOW) { "Retrieving conversation history for ${conversation.namePrefixed()}" }
 
         var totalMessagesSeen = 0
         val messages: MutableList<BaseMessage> = Pagination.retrieveCursorResponseAsList(
-                "messages for ${conversation.name()}",
+                "messages for ${conversation.namePrefixed()}",
                 pageRetrievalFun = { cursor ->
                     getConversationHistoryPage(
                             cursor = cursor,
@@ -53,11 +53,11 @@ interface SlackApi {
                 }
         )
 
-        logger.log(Log.LOW) { "Retrieved ${messages.size} messages for ${conversation.name()}"}
+        logger.log(Log.LOW) { "Retrieved ${messages.size} messages for ${conversation.namePrefixed()}"}
 
         val skippedMessages = totalMessagesSeen - messages.size
         if (skippedMessages > 0) {
-            logger.warn { "Skipped $skippedMessages/$totalMessagesSeen messages for ${conversation.name()}" }
+            logger.warn { "Skipped $skippedMessages/$totalMessagesSeen messages for ${conversation.namePrefixed()}" }
         }
 
         messages.reverse()

@@ -22,7 +22,8 @@ abstract class Conversation {
     abstract val id: String
     abstract val type: ConversationType
 
-    abstract fun name(): String
+    abstract fun nameRaw(): String
+    abstract fun namePrefixed(): String
 }
 
 class ConversationDm(
@@ -40,14 +41,16 @@ class ConversationDm(
     @Inject
     lateinit var settings: Settings
 
-    override fun name(): String {
-        val suffix = if(settings.useDisplayNamesForConversationNames) {
+    override fun nameRaw(): String {
+        return if(settings.useDisplayNamesForConversationNames) {
             slackData.get().userDisplayname(userId)
         } else {
             slackData.get().userUsername(userId)
         }
-        
-        return "@$suffix"
+    }
+
+    override fun namePrefixed(): String {
+        return "@${nameRaw()}"
     }
 }
 
@@ -62,7 +65,8 @@ class ConversationChannel(
         }
     }
 
-    override fun name() = "#$name"
+    override fun nameRaw() = name
+    override fun namePrefixed() = "#$name"
 }
 
 
