@@ -10,6 +10,7 @@ import dagger.DaggerExportMainComponent
 import network.http.HttpUtils.ConflictStrategy
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
+import slackjson.Conversation
 import slackjson.ConversationType
 import utils.Log
 import java.io.File
@@ -35,7 +36,6 @@ class ScriptProcessConversationHistory : CliktCommand(
             help = "Download a specific conversations history. Can be public/private channel or DM. " +
                     "Checks channel IDs first, otherwise attempts to resolve the name (with #/@) to ID")
 
-    // TODO support
     private val convoTypes by option("--channel-type", "-ct",
             help = "The types of channels to include. Use ',' to separate types. By default all types are included",
             metavar = ConversationType.optionStr())
@@ -61,16 +61,32 @@ class ScriptProcessConversationHistory : CliktCommand(
         val userAndConvoMap = dagger.getUserAndConvoMap()
         val exportProcessor = dagger.getExportProcessor()
 
+        // TODO make this less janky?
+        var convos: List<Conversation>
+        if (convo == null) {
+            convos = userAndConvoMap.conversations
+                    .values
+                    .sortedBy { it.nameRaw() }
+        } else {
+            val convoId = userAndConvoMap.inferChannelID(convo!!) ?: run {
+                logger.error { "Could not infer channel from '$convo'" }
+                return
+            }
+            convos = listOf(userAndConvoMap.conversations[convoId]!!)
+        }
+
+        if (convoTypes != null) {
+            convos = convos.filter { convoTypes!!.contains(it.type) }
+        }
+        if (convos.isEmpty()) {
+            logger.error("Conversations to download is empty after filtering")
+            return
+        }
+
         logger.log(Log.HIGH) { "Loading conversation data" }
 
-        userAndConvoMap.conversations.values
-                .sortedBy { it.nameRaw() }
-                .forEach {
-                    exportProcessor.loadConversationFolder(it)
-                }
-
-        // TODO replace this with filtering
-        // val firstConvo = userAndConvoMap.conversations.values.sortedBy { it.nameRaw() }[0]
-        // exportProcessor.loadConversationFolder(firstConvo)
+        convos.forEach {
+            exportProcessor.loadConversationFolder(it)
+        }
     }
 }
