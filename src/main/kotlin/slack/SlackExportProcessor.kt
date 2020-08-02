@@ -4,6 +4,7 @@ import com.squareup.moshi.Moshi
 import org.apache.logging.log4j.kotlin.Logging
 import slackjson.Conversation
 import slackjson.JsonLoader
+import slackjson.NullDroppingList
 import slackjson.message.BaseMessage
 import utils.Log
 import utils.reifiedAdapter
@@ -21,7 +22,7 @@ class SlackExportProcessor @Inject constructor(
         private const val MESSAGE_FILE_GLOB = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json"
     }
 
-    private val messageAdapter by lazy { moshi.reifiedAdapter<List<BaseMessage?>>() }
+    private val messageAdapter by lazy { moshi.reifiedAdapter<NullDroppingList<BaseMessage>>() }
 
     fun loadConversationFolder(conversation: Conversation) {
         logger.log(Log.LOW) { "Loading conversation history from ${conversation.namePrefixed()}" }
@@ -35,9 +36,11 @@ class SlackExportProcessor @Inject constructor(
         }
 
         val messages = mutableListOf<BaseMessage>()
+        var droppedMessages = 0
         fileList.forEach {file ->
             val fileMessages = JsonLoader.loadJson(convoPath.resolve(file.fileName), messageAdapter)
-            messages.addAll(fileMessages.filterNotNull())
+            droppedMessages += fileMessages.droppedItems
+            messages.addAll(fileMessages)
         }
 
         // TODO do some testing of this performance
@@ -51,6 +54,15 @@ class SlackExportProcessor @Inject constructor(
             ts = message.ts
         }
 
+        if (droppedMessages > 0) {
+            logger.warn {
+                String.format("Dropped %,d message%s from %s",
+                        droppedMessages,
+                        if (droppedMessages > 1) "s" else "",
+                        conversation.namePrefixed()
+                )
+            }
+        }
         logger.log(Log.LOW) { String.format("Loaded %,d messages from %s", messages.size, conversation.namePrefixed()) }
     }
 }

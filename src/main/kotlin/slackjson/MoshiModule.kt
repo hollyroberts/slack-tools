@@ -22,16 +22,21 @@ object MoshiModule {
         @BindsOptionalOf
         fun optionalSlackApi(): SlackApi
     }
-
     @Provides
     @Singleton
     fun provideMoshi(injectorFactory: InjectorAdapter.JsonFactory): Moshi =
             Moshi.Builder()
+                    // Factories
                     .add(injectorFactory)
+                    .add(NullDroppingList.Factory)
                     .add(BaseMessageCustomAdapter)
+
+                    // Slack json adapters
                     .add(ProfileJsonAdapter)
                     .add(ShareJsonAdapter)
                     .add(ConversationContextfulAdapter)
+
+                    // Extra types
                     .add(BigDecimalAdapter)
                     .build()
 
