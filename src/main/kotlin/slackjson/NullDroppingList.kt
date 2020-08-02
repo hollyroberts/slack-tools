@@ -6,7 +6,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 class NullDroppingList<T>(
-        val list: List<T>,
+        list: List<T>,
         val droppedItems: Int
 ): ArrayList<T>(list) {
     class Adapter<T>(private val adapter: JsonAdapter<T>) : JsonAdapter<NullDroppingList<T>>() {

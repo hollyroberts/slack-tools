@@ -24,7 +24,6 @@ class InjectorAdapter<T : Any>(
         return obj
     }
 
-    @ToJson
     override fun toJson(writer: JsonWriter, value: T?) {
         throw UnsupportedOperationException("Serialisation of injected objects is not supported")
     }

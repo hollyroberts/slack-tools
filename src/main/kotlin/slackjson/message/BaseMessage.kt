@@ -12,11 +12,17 @@ interface BaseUserMessage : BaseMessage {
     val user: String
 }
 
-object BaseMessageCustomAdapter : Logging {
+object SlackMessageAdapter : Logging {
     private val keys = JsonReader.Options.of("type", "subtype")
 
+    // TODO maybe better to lazily initialise the adapters?
+    // Do some performance analysis on this when we have more adapters?
     @FromJson
-    fun fromJson(reader: JsonReader, textMessageAdapter: JsonAdapter<TextMessage>, channelMessageAdapter: JsonAdapter<ChannelMessage>): BaseMessage? {
+    fun fromJson(
+            reader: JsonReader,
+            textMessageAdapter: JsonAdapter<TextMessage>,
+            channelMessageAdapter: JsonAdapter<ChannelMessage>
+    ): BaseMessage? {
         // Read type/subtype with peeked reader
         val peekedReader = reader.peekJson()
 
@@ -32,7 +38,7 @@ object BaseMessageCustomAdapter : Logging {
                 // For the type we could check if it's 1/0
                 // For the subtype we'd have to figure out the available subtypes defined, and then use that for our map
 
-                0 -> type = peekedReader.nextString();
+                0 -> type = peekedReader.nextString()
                 1 -> subtype = peekedReader.nextString()
                 -1 -> peekedReader.skipValue()
             }

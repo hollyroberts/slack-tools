@@ -9,7 +9,7 @@ import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import network.SlackApi
 import org.apache.logging.log4j.kotlin.Logging
-import slackjson.message.BaseMessageCustomAdapter
+import slackjson.message.SlackMessageAdapter
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 
@@ -31,7 +31,7 @@ object MoshiModule : Logging {
                 // Factories
                 .add(injectorFactory)
                 .add(NullDroppingList.Factory)
-                .add(BaseMessageCustomAdapter)
+                .add(SlackMessageAdapter)
 
                 // Slack json adapters
                 .add(ProfileJsonAdapter)
