@@ -22,9 +22,11 @@ class SlackExportProcessor @Inject constructor(
         private const val MESSAGE_FILE_GLOB = "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].json"
     }
 
+    class LoadStats(val messagesLoaded: Int, val messagesDropped: Int)
+
     private val messageAdapter by lazy { moshi.reifiedAdapter<NullDroppingList<BaseMessage>>() }
 
-    fun loadConversationFolder(conversation: Conversation) {
+    fun loadConversationFolder(conversation: Conversation): LoadStats {
         logger.log(Log.LOW) { "Loading conversation history from ${conversation.namePrefixed()}" }
 
         val convoPath = folder.resolve(conversation.nameRaw())
@@ -64,5 +66,7 @@ class SlackExportProcessor @Inject constructor(
             }
         }
         logger.log(Log.LOW) { String.format("Loaded %,d messages from %s", messages.size, conversation.namePrefixed()) }
+
+        return LoadStats(messages.size, droppedMessages)
     }
 }

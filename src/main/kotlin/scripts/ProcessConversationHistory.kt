@@ -85,8 +85,19 @@ class ScriptProcessConversationHistory : CliktCommand(
 
         logger.log(Log.HIGH) { "Loading conversation data" }
 
-        convos.forEach {
+
+        val loadStats = convos.map {
             exportProcessor.loadConversationFolder(it)
+        }
+
+        val droppedMessages = loadStats.sumBy { it.messagesDropped }
+        val loadedMessages = loadStats.sumBy { it.messagesLoaded }
+        val droppedPercentage = (100 * droppedMessages.toFloat()) / loadedMessages
+
+        if (droppedMessages == 0) {
+            logger.log(Log.HIGH) { String.format("Loaded %,d messages", loadedMessages) }
+        } else {
+            logger.log(Log.HIGH) { String.format("Loaded %,d messages. Dropped messages: %,d (%.2f%%)", loadedMessages, droppedMessages, droppedPercentage) }
         }
     }
 }
