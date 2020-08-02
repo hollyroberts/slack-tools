@@ -1,10 +1,12 @@
-package slackjson
+package json
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonDataException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import json.slack.file.ParsedFile
+import json.slack.file.SlackFile
 import network.SlackApi
 import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.Test

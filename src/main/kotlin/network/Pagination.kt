@@ -1,9 +1,9 @@
 package network
 
+import json.CursorResponse
+import json.PaginatedResponse
 import okhttp3.internal.toImmutableList
 import org.apache.logging.log4j.kotlin.Logging
-import slackjson.CursorResponse
-import slackjson.PaginatedResponse
 import utils.Log
 
 object Pagination : Logging {

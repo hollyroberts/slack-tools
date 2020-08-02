@@ -1,11 +1,11 @@
 @file:Suppress("MemberVisibilityCanBePrivate")
 
 package slack
+import json.slack.metadata.Conversation
+import json.slack.metadata.ConversationType
+import json.slack.metadata.User
 import network.http.HttpUtils.ConflictStrategy
 import scripts.TimeOptions
-import slackjson.Conversation
-import slackjson.ConversationType
-import slackjson.User
 import java.time.ZoneId
 
 abstract class SlackData {

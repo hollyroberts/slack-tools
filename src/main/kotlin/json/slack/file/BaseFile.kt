@@ -1,4 +1,4 @@
-package slackjson
+package json.slack.file
 
 /**
  * Base class when parsing any slack file object

@@ -1,11 +1,11 @@
 package slack
 
 import com.squareup.moshi.Moshi
+import json.JsonLoader
+import json.NullDroppingList
+import json.slack.message.BaseMessage
+import json.slack.metadata.Conversation
 import org.apache.logging.log4j.kotlin.Logging
-import slackjson.Conversation
-import slackjson.JsonLoader
-import slackjson.NullDroppingList
-import slackjson.message.BaseMessage
 import utils.Log
 import utils.reifiedAdapter
 import java.math.BigDecimal

@@ -1,4 +1,4 @@
-package slackjson
+package json
 
 import com.squareup.moshi.Moshi
 import dagger.BindsOptionalOf
@@ -7,9 +7,15 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
+import json.slack.file.ParsedFile
+import json.slack.file.ShareJsonAdapter
+import json.slack.message.SlackMessageAdapter
+import json.slack.metadata.Conversation
+import json.slack.metadata.ConversationContextfulAdapter
+import json.slack.metadata.ConversationDm
+import json.slack.metadata.ProfileJsonAdapter
 import network.SlackApi
 import org.apache.logging.log4j.kotlin.Logging
-import slackjson.message.SlackMessageAdapter
 import javax.inject.Singleton
 import kotlin.reflect.KClass
 

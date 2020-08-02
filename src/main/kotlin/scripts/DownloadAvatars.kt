@@ -8,10 +8,10 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerWebMainComponent
+import json.slack.metadata.User
 import network.http.HttpUtilsBasic
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
-import slackjson.User
 import utils.Log
 import utils.ensureFolderExists
 import utils.guessImageExtFromURL

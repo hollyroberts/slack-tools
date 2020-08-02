@@ -1,6 +1,7 @@
-package slackjson
+package json
 
 import io.mockk.mockk
+import json.slack.metadata.User
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import slack.Settings

@@ -1,6 +1,6 @@
 package network
 
-import slackjson.SlackSimpleResponse
+import json.SlackSimpleResponse
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.FUNCTION)

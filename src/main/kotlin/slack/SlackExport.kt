@@ -6,12 +6,12 @@ import com.squareup.inject.assisted.dagger2.AssistedModule
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
+import json.JsonLoader
+import json.slack.metadata.Conversation
+import json.slack.metadata.ConversationType.PUBLIC_CHANNEL
+import json.slack.metadata.ParsedConversationExport
+import json.slack.metadata.User
 import org.apache.logging.log4j.kotlin.Logging
-import slackjson.Conversation
-import slackjson.ConversationType.PUBLIC_CHANNEL
-import slackjson.JsonLoader
-import slackjson.ParsedConversationExport
-import slackjson.User
 import utils.Log
 import utils.reifiedAdapter
 import java.nio.file.Path

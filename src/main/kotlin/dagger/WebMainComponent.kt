@@ -1,12 +1,12 @@
 package dagger
 
+import json.MoshiModule
 import network.RetrofitModule
 import network.SlackApi
 import network.http.HttpUtilsModule
 import slack.Settings
 import slack.SlackData
 import slack.UserAndConvoMap
-import slackjson.MoshiModule
 import javax.inject.Named
 import javax.inject.Singleton
 

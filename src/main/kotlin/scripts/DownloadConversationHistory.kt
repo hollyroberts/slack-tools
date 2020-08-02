@@ -8,11 +8,11 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerWebMainComponent
+import json.slack.message.TextMessage
+import json.slack.metadata.ConversationType
 import network.http.HttpUtils.ConflictStrategy
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
-import slackjson.ConversationType
-import slackjson.message.TextMessage
 import utils.Log
 import java.io.File
 

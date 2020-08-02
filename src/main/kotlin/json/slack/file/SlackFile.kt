@@ -1,11 +1,11 @@
-package slackjson
+package json.slack.file
 
 import dagger.Lazy
+import json.slack.file.SlackFile.FormattingType.Companion.defaultType
 import network.http.HttpUtils
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slack.SlackData
-import slackjson.SlackFile.FormattingType.Companion.defaultType
 import utils.DownloadStatus
 import utils.Log
 import java.io.File

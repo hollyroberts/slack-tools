@@ -8,11 +8,11 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerWebMainComponent
+import json.slack.metadata.ConversationType
 import network.http.HttpUtils.ConflictStrategy
 import slack.Settings
 import slack.filesByConvo
 import slack.toCompleteFiles
-import slackjson.ConversationType
 import java.io.File
 
 fun main(args: Array<String>) = ScriptDownloadByChannel().main(args)

@@ -1,12 +1,12 @@
-package slackjson.message
+package json.slack.message
 
 import com.squareup.moshi.JsonDataException
 import io.mockk.mockk
+import json.DaggerTestComponent
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import slack.Settings
-import slackjson.DaggerTestComponent
 import utils.TestUtils
 
 internal class BaseMessageDeserialisationTest : TestUtils {

@@ -2,10 +2,10 @@ package network
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import json.CursorResponse
+import json.PaginatedResponse
+import json.SlackSimpleResponse
 import network.TestCursorMapResponse.CursorResponseContents
-import slackjson.CursorResponse
-import slackjson.PaginatedResponse
-import slackjson.SlackSimpleResponse
 
 @JsonClass(generateAdapter = true)
 data class StringListResponse (

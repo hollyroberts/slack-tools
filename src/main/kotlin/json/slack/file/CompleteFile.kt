@@ -1,4 +1,4 @@
-package slackjson
+package json.slack.file
 
 class CompleteFile(sf: SlackFile, val uploadLoc: String?) : SlackFile() {
     override val id = sf.id

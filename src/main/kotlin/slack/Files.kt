@@ -1,11 +1,11 @@
 package slack
 
+import json.slack.file.CompleteFile
+import json.slack.file.ParsedFile
+import json.slack.file.SlackFile
+import json.slack.file.SlackFile.FormattingType
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.kotlin.logger
-import slackjson.CompleteFile
-import slackjson.ParsedFile
-import slackjson.SlackFile
-import slackjson.SlackFile.FormattingType
 import utils.DownloadStats
 import utils.Log
 import utils.ensureFolderExists
@@ -89,7 +89,7 @@ fun Map<String?, List<CompleteFile>>.downloadByChannel(slack: SlackData, outDir:
 }
 
 fun <F : SlackFile> Map<String, List<F>>.downloadToFolders(outDir: Path,
-                                                           formatting: FormattingType? = null) {
+                                                                                              formatting: FormattingType? = null) {
     // Process conversations alphabetically
     logger.log(Log.HIGH) { "Downloading files to '$outDir'" }
     var downloadStats = DownloadStats()

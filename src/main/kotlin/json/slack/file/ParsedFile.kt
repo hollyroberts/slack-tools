@@ -1,7 +1,8 @@
-package slackjson
+package json.slack.file
 
 import com.squareup.moshi.*
 import dagger.Lazy
+import json.MoshiInject
 import network.SlackApi
 import network.http.HttpUtils
 import org.apache.logging.log4j.kotlin.Logging

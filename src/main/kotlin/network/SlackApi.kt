@@ -1,11 +1,14 @@
 package network
 
+import json.*
+import json.slack.file.ParsedFile
+import json.slack.message.BaseMessage
+import json.slack.metadata.Conversation
+import json.slack.metadata.User
 import network.SlackTier.*
 import org.apache.logging.log4j.kotlin.Logging
 import retrofit2.http.GET
 import retrofit2.http.Query
-import slackjson.*
-import slackjson.message.BaseMessage
 import utils.Log
 import utils.formatSize
 import java.time.Instant

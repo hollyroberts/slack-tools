@@ -1,12 +1,12 @@
 package dagger
 
+import json.MoshiModule
 import network.http.HttpUtils
 import network.http.HttpUtilsBasic
 import slack.Settings
 import slack.SlackData
 import slack.SlackExport
 import slack.SlackExportProcessor
-import slackjson.MoshiModule
 import java.nio.file.Path
 import javax.inject.Named
 import javax.inject.Singleton

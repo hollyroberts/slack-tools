@@ -1,10 +1,11 @@
-package slackjson
+package json.slack.metadata
 
 import com.squareup.moshi.*
 import dagger.Lazy
+import json.MoshiInject
+import json.slack.metadata.ConversationType.*
 import slack.Settings
 import slack.SlackData
-import slackjson.ConversationType.*
 import javax.inject.Inject
 
 enum class ConversationType(val shortName: String) {

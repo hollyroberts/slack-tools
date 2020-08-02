@@ -2,11 +2,11 @@ package network
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonDataException
+import json.SlackResponse
+import json.SlackSimpleResponse
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
-import slackjson.SlackResponse
-import slackjson.SlackSimpleResponse
 import java.lang.reflect.Type
 import javax.inject.Inject
 

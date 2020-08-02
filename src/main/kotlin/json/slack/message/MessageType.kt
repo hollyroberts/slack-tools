@@ -1,4 +1,4 @@
-package slackjson.message
+package json.slack.message
 
 interface MessageType {
     val label: String?

@@ -7,11 +7,11 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerExportMainComponent
+import json.slack.metadata.Conversation
+import json.slack.metadata.ConversationType
 import network.http.HttpUtils.ConflictStrategy
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
-import slackjson.Conversation
-import slackjson.ConversationType
 import utils.Log
 import java.io.File
 import java.nio.file.Paths

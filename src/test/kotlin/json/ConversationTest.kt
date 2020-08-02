@@ -1,14 +1,15 @@
-package slackjson
+package json
 
 import com.squareup.moshi.JsonDataException
 import io.mockk.every
 import io.mockk.mockk
+import json.slack.metadata.Conversation
+import json.slack.metadata.ConversationType.PUBLIC_CHANNEL
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import slack.Settings
 import slack.SlackData
-import slackjson.ConversationType.PUBLIC_CHANNEL
 import utils.TestUtils
 
 internal class ConversationTest : TestUtils {

@@ -1,4 +1,4 @@
-package slackjson.message
+package json.slack.message
 
 import com.squareup.moshi.*
 import org.apache.logging.log4j.kotlin.Logging

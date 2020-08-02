@@ -1,4 +1,4 @@
-package slackjson.message
+package json.slack.message
 
 import com.squareup.moshi.JsonClass
 import java.math.BigDecimal

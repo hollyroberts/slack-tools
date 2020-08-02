@@ -1,4 +1,4 @@
-package slackjson
+package json.slack.metadata
 
 import com.squareup.moshi.*
 import utils.iterateObject

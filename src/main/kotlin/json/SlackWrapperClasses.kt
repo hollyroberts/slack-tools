@@ -1,8 +1,11 @@
-package slackjson
+package json
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import slackjson.message.BaseMessage
+import json.slack.file.ParsedFile
+import json.slack.message.BaseMessage
+import json.slack.metadata.Conversation
+import json.slack.metadata.User
 
 /** conversations.list **/
 @JsonClass(generateAdapter = true)

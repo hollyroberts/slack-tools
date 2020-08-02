@@ -9,6 +9,7 @@ import io.github.classgraph.ClassGraph
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import json.SlackSimpleResponse
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
@@ -16,7 +17,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
-import slackjson.SlackSimpleResponse
 import utils.TestUtils
 import javax.inject.Named
 import javax.inject.Singleton
