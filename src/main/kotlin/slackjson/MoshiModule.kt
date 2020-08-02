@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import network.SlackApi
+import org.apache.logging.log4j.kotlin.Logging
 import slackjson.message.BaseMessageCustomAdapter
 import javax.inject.Singleton
 import kotlin.reflect.KClass
@@ -15,7 +16,7 @@ import kotlin.reflect.KClass
 typealias InjectionMap = Map<KClass<out Any>, MembersInjector<out Any>>
 
 @Module(includes = [MoshiModule.OptionalBindings::class])
-object MoshiModule {
+object MoshiModule : Logging {
     // TODO I hope I can fix this
     @Module
     interface OptionalBindings {
@@ -24,21 +25,26 @@ object MoshiModule {
     }
     @Provides
     @Singleton
-    fun provideMoshi(injectorFactory: InjectorAdapter.JsonFactory): Moshi =
-            Moshi.Builder()
-                    // Factories
-                    .add(injectorFactory)
-                    .add(NullDroppingList.Factory)
-                    .add(BaseMessageCustomAdapter)
+    fun provideMoshi(injectorFactory: InjectorAdapter.JsonFactory): Moshi {
+        logger.debug { "Initialising moshi" }
+        val moshi = Moshi.Builder()
+                // Factories
+                .add(injectorFactory)
+                .add(NullDroppingList.Factory)
+                .add(BaseMessageCustomAdapter)
 
-                    // Slack json adapters
-                    .add(ProfileJsonAdapter)
-                    .add(ShareJsonAdapter)
-                    .add(ConversationContextfulAdapter)
+                // Slack json adapters
+                .add(ProfileJsonAdapter)
+                .add(ShareJsonAdapter)
+                .add(ConversationContextfulAdapter)
 
-                    // Extra types
-                    .add(BigDecimalAdapter)
-                    .build()
+                // Extra types
+                .add(BigDecimalAdapter)
+                .build()
+        logger.debug { "Moshi initialised" }
+        return moshi
+    }
+
 
     @Provides
     @IntoMap
