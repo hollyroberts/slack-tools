@@ -1,7 +1,7 @@
 package json.slack.metadata
 
 import com.squareup.moshi.*
-import utils.iterateObject
+import json.iterateObject
 
 @JsonClass(generateAdapter = true)
 data class User(

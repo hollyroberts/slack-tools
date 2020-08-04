@@ -9,4 +9,7 @@ class TextMessage(
         override val user: String,
 
         val text: String
-) : BaseUserMessage
+) : BaseUserMessage {
+    @Transient
+    override lateinit var subtype: MessageType
+}

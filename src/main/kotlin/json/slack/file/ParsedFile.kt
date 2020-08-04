@@ -3,13 +3,13 @@ package json.slack.file
 import com.squareup.moshi.*
 import dagger.Lazy
 import json.MoshiInject
+import json.iterateArray
+import json.iterateObject
 import network.SlackApi
 import network.http.HttpUtils
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import slack.SlackData
-import utils.iterateArray
-import utils.iterateObject
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject

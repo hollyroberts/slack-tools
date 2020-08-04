@@ -1,4 +1,4 @@
-package utils
+package json
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader

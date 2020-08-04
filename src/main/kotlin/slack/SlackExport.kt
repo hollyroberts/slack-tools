@@ -7,13 +7,13 @@ import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import json.JsonLoader
+import json.reifiedAdapter
 import json.slack.metadata.Conversation
 import json.slack.metadata.ConversationType.PUBLIC_CHANNEL
 import json.slack.metadata.ParsedConversationExport
 import json.slack.metadata.User
 import org.apache.logging.log4j.kotlin.Logging
 import utils.Log
-import utils.reifiedAdapter
 import java.nio.file.Path
 import javax.inject.Named
 import javax.inject.Singleton

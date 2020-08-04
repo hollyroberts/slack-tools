@@ -1,7 +1,6 @@
 package json
 
 import com.squareup.moshi.*
-import utils.iterateArray
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 

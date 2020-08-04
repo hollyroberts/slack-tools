@@ -1,6 +1,7 @@
 package utils
 
 import com.squareup.moshi.Moshi
+import json.reifiedAdapter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
