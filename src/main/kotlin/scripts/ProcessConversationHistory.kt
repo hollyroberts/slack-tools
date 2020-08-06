@@ -86,10 +86,12 @@ class ScriptProcessConversationHistory : CliktCommand(
         logger.log(Log.HIGH) { "Loading conversation data" }
 
 
+        // Load from disk
         val loadStats = convos.map {
             exportProcessor.loadConversationFolder(it)
         }
 
+        // Log total messages/dropped
         val droppedMessages = loadStats.sumBy { it.messagesDropped }
         val loadedMessages = loadStats.sumBy { it.messagesLoaded }
         val droppedPercentage = (100 * droppedMessages.toFloat()) / loadedMessages
@@ -99,5 +101,9 @@ class ScriptProcessConversationHistory : CliktCommand(
         } else {
             logger.log(Log.HIGH) { String.format("Loaded %,d messages. Dropped messages: %,d (%.2f%%)", loadedMessages, droppedMessages, droppedPercentage) }
         }
+
+        // Log subtype breakdown
+        val typeRecorder = dagger.getMessageTypeRecorder()
+        typeRecorder.logResults()
     }
 }

@@ -11,6 +11,7 @@ interface MessageType {
                 .flatten()
                 .associateBy { it.label }
 
+        // Maybe keep this around a bit, but we probably shouldn't need it now we have the subtype for everything
         fun lookupStrict(subtype: String?): MessageType {
             return typeMap[subtype] ?: throw IllegalArgumentException("Unrecognised subtype '$subtype'")
         }

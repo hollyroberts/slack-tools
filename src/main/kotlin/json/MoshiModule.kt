@@ -31,13 +31,16 @@ object MoshiModule : Logging {
     }
     @Provides
     @Singleton
-    fun provideMoshi(injectorFactory: InjectorAdapter.JsonFactory): Moshi {
+    fun provideMoshi(
+            injectorFactory: InjectorAdapter.JsonFactory,
+            slackMessageAdapter: SlackMessageAdapter
+    ): Moshi {
         logger.debug { "Initialising moshi" }
         val moshi = Moshi.Builder()
                 // Factories
                 .add(injectorFactory)
                 .add(NullDroppingList.Factory)
-                .add(SlackMessageAdapter)
+                .add(slackMessageAdapter)
 
                 // Slack json adapters
                 .add(ProfileJsonAdapter)

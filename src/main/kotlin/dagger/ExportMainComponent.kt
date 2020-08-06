@@ -1,6 +1,7 @@
 package dagger
 
 import json.MoshiModule
+import json.slack.message.MessageTypeRecorder
 import network.http.HttpUtils
 import network.http.HttpUtilsBasic
 import slack.Settings
@@ -35,6 +36,8 @@ interface ExportMainComponent {
     fun getUserAndConvoMap(): SlackData
 
     fun getExportProcessor(): SlackExportProcessor
+
+    fun getMessageTypeRecorder(): MessageTypeRecorder
 
     @Module
     interface Declarations {

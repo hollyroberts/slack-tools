@@ -2,9 +2,17 @@ package json.slack.message
 
 import com.squareup.moshi.*
 import org.apache.logging.log4j.kotlin.Logging
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object SlackMessageAdapter : Logging {
-    private val keys = JsonReader.Options.of("type", "subtype")
+// TODO put this back to an object depending on what we choose to do
+@Singleton
+class SlackMessageAdapter @Inject constructor(
+        private val typeRecorder: MessageTypeRecorder
+) {
+    companion object : Logging {
+        private val keys = JsonReader.Options.of("type", "subtype")
+    }
 
     // TODO maybe better to lazily initialise the adapters?
     // Do some performance analysis on this when we have more adapters?
@@ -44,9 +52,10 @@ object SlackMessageAdapter : Logging {
         if (type != "message") {
             throw JsonDataException("Message type was not 'message', but was '$type'")
         }
+        typeRecorder.recordType(subtypeStr)
 
-        val subtype = MessageType.lookup(subtypeStr)
         // TODO extend this
+        val subtype = MessageType.lookup(subtypeStr)
         val message = when (subtype) {
             Other.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
             is ChannelType -> channelMessageAdapter.fromJson(reader)
