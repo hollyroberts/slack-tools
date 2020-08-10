@@ -22,7 +22,7 @@ dependencies {
     val daggerVersion = "2.28.3"
     val assistedInjectVersion = "0.5.2"
     val moshiVersion = "1.9.3"
-    val okhttpVersion = "4.8.0"
+    val okhttpVersion = "4.8.1"
     val retrofitVersion = "2.9.0"
 
     // Dependencies
