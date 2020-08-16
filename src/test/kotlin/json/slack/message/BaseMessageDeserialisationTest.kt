@@ -32,7 +32,7 @@ internal class BaseMessageDeserialisationTest : TestUtils {
         val input = readResource("channel-join.json")
         val parsed = adapter.fromJson(input)!! as ChannelMessage
 
-        assertThat(parsed.subtype).isEqualTo(ChannelType.CHANNEL_JOIN)
+        assertThat(parsed.subtype).isEqualTo(ChannelEvent.CHANNEL_JOIN)
     }
 
     @Test

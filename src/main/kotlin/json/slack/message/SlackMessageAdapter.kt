@@ -57,8 +57,8 @@ class SlackMessageAdapter @Inject constructor(
         // TODO extend this
         val subtype = MessageType.lookup(subtypeStr)
         val message = when (subtype) {
-            Other.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
-            is ChannelType -> channelMessageAdapter.fromJson(reader)
+            OtherEvent.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
+            is ChannelEvent -> channelMessageAdapter.fromJson(reader)
             else -> {
                 // Since our list of subtypes is currently non-exhaustive then skip processing the message
                 logger.debug { "Cannot process message subtype '${subtype}'" }

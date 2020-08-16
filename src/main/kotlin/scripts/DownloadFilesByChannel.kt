@@ -11,6 +11,7 @@ import dagger.DaggerWebMainComponent
 import json.slack.metadata.ConversationType
 import network.http.HttpUtils.ConflictStrategy
 import slack.Settings
+import slack.downloadByChannel
 import slack.filesByConvo
 import slack.toCompleteFiles
 import java.io.File
@@ -75,6 +76,6 @@ class ScriptDownloadByChannel: CliktCommand(
         if (convoTypes != null) {
             completeFiles = completeFiles.filterKeys { convoTypes!!.contains(slack.conversationType(it)) }
         }
-        completeFiles.downloadByChannel(slack, output.toPath(), daggerComponent.getOldWebApi())
+        completeFiles.downloadByChannel(slack, output.toPath())
     }
 }

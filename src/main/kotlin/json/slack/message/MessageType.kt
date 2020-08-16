@@ -5,8 +5,8 @@ interface MessageType {
 
     companion object {
         private val typeMap: Map<String?, MessageType> = listOf<List<MessageType>>(
-                ChannelType.values().toList(),
-                Other.values().toList()
+                ChannelEvent.values().toList(),
+                OtherEvent.values().toList()
         )
                 .flatten()
                 .associateBy { it.label }
@@ -22,7 +22,7 @@ interface MessageType {
     }
 }
 
-enum class ChannelType(override val label: String) : MessageType {
+enum class ChannelEvent(override val label: String) : MessageType {
     CHANNEL_ARCHIVE("channel_archive"),
     CHANNEL_JOIN("channel_join"),
     CHANNEL_LEAVE("channel_leave"),
@@ -32,6 +32,24 @@ enum class ChannelType(override val label: String) : MessageType {
     CHANNEL_UNARCHIVE("channel_unarchive");
 }
 
-enum class Other(override val label: String?) : MessageType {
-    STANDARD_MESSAGE(null)
+enum class BotAdminEvent(override val label: String) : MessageType {
+    BOT_ADD("bot_add"),
+    BOT_DISABLE("bot_disable"),
+    BOT_ENABLE("bot_enable"),
+    BOT_REMOVE("bot_remove")
+}
+
+enum class ThreadEvent(override val label: String?) : MessageType {
+    REPLY_BROADCAST("reply_broadcast"),
+    THREAD_BROADCAST("thread_broadcast")
+}
+
+enum class OtherEvent(override val label: String?) : MessageType {
+    STANDARD_MESSAGE(null),
+    BOT_MESSAGE("bot_message"),
+    ME_MESSAGE("me_message"), // TODO this can probably be a normal message, but that italicizes itself
+    PINNED_ITEM("pinned_item"),
+    SLACKBOT_RESPONSE("slackbot_response"),
+    REMINDER_ADD("reminder_add"),
+    TOMBSTONE("tombstone")
 }

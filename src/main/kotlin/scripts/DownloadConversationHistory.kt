@@ -72,6 +72,5 @@ class ScriptDownloadConversationHistory: CliktCommand(
         convoHistory.forEach {
             logger.log(Log.LOW) { (it as TextMessage).text }
         }
-        return
     }
 }

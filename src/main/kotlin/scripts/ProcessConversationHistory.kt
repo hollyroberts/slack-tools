@@ -13,6 +13,7 @@ import network.http.HttpUtils.ConflictStrategy
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
 import utils.Log
+import utils.PerformanceLogging
 import java.io.File
 import java.nio.file.Paths
 
@@ -47,7 +48,7 @@ class ScriptProcessConversationHistory : CliktCommand(
             }
     private val output by option("--output", "-o",
             help = "Location to output files")
-            .file(canBeFile = false)
+            .file(canBeFile = false, mustExist = true)
             .default(File("files"))
 
     override fun run() {
@@ -105,5 +106,6 @@ class ScriptProcessConversationHistory : CliktCommand(
         // Log subtype breakdown
         val typeRecorder = dagger.getMessageTypeRecorder()
         typeRecorder.logResults()
+        PerformanceLogging.outputMemoryUsage()
     }
 }

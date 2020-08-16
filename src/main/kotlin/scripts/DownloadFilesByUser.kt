@@ -11,6 +11,7 @@ import dagger.DaggerWebMainComponent
 import network.http.HttpUtils.ConflictStrategy
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
+import slack.downloadByUser
 import slack.filesByUser
 import java.io.File
 
@@ -62,6 +63,6 @@ class ScriptDownloadByUser : CliktCommand(
         )
 
         val filesByUser = parsedFiles.filesByUser()
-        filesByUser.downloadByUser(slack, output.toPath(), daggerComponent.getOldWebApi())
+        filesByUser.downloadByUser(slack, output.toPath())
     }
 }
