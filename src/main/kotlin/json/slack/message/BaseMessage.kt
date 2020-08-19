@@ -2,12 +2,14 @@ package json.slack.message
 
 import java.math.BigDecimal
 
-interface BaseMessage {
-    val ts: BigDecimal
-    var subtype: MessageType
+abstract class BaseMessage {
+    lateinit var ts: BigDecimal
+
+    @Transient
+    lateinit var subtype: MessageType
 }
 
-interface BaseUserMessage : BaseMessage {
-    val user: String
+abstract class BaseUserMessage : BaseMessage() {
+    lateinit var user: String
 }
 
