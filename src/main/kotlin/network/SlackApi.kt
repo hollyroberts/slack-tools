@@ -27,7 +27,6 @@ interface SlackApi {
             @Query("latest") end: Long?
     ) : ConversationHistoryResponse
 
-    @JvmDefault
     fun getConversationHistory(
             conversation: Conversation,
             start: Instant? = null,
@@ -74,7 +73,6 @@ interface SlackApi {
             @Query("types") types: String
     ): ConversationListResponse
 
-    @JvmDefault
     fun listConversations(): Map<String, Conversation> {
         logger.info { "Retrieving conversations (channels)" }
         val convoMap = Pagination.retrieveCursorResponseAsMap(
@@ -103,7 +101,6 @@ interface SlackApi {
             @Query("user") user: String? = null
     ): FileListResponse
 
-    @JvmDefault
     fun listFiles(
             startTime: Long? = null,
             endTime: Long? = null,
@@ -132,7 +129,6 @@ interface SlackApi {
     @Slack(TIER_2)
     fun listUsersPage(@Query("cursor") cursor: String?): UserListResponse
 
-    @JvmDefault
     fun listUsers(): Map<String, User> {
         logger.info { "Retrieving user results" }
         val results = Pagination.retrieveCursorResponseAsMap(

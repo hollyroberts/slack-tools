@@ -21,7 +21,6 @@ interface RetrofitTestApi {
     @Slack(TIER_4)
     fun getPaginatedPage(@Query("page") page: Int): BasicPaginatedResponse
 
-    @JvmDefault
     fun getPaginatedStringList(): List<String> {
         val results = Pagination.retrievePaginatedList(
                 "strings",
@@ -37,7 +36,6 @@ interface RetrofitTestApi {
     @Slack(TIER_4)
     fun getCursorListPage(@Query("cursor") cursor: String?) : TestCursorListResponse
 
-    @JvmDefault
     fun getCursorList() = Pagination.retrieveCursorResponseAsList(
             name = "cursorStringsList",
             pageRetrievalFun = { getCursorListPage(it) },
@@ -48,7 +46,6 @@ interface RetrofitTestApi {
     @Slack(TIER_4)
     fun getCursorMapPage(@Query("cursor") cursor: String?): TestCursorMapResponse
 
-    @JvmDefault
     fun getCursorMap() = Pagination.retrieveCursorResponseAsMap(
             "cursorStrings",
             pageRetrievalFun = { getCursorMapPage(it) },

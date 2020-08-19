@@ -93,6 +93,6 @@ data class Profile(
         return images
                 .mapKeys { it.key.toIntOrNull() }
                 .filterNot { it.key == null }
-                .maxBy { it.key!!.toInt() }!!.value
+                .maxByOrNull { it.key!!.toInt() }!!.value
     }
 }

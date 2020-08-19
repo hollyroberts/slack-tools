@@ -82,13 +82,13 @@ open class ParsedFile (
      * Infers the share location based on the timestamps provided by addLocationTimestamp
      * Returns null if no timestamps were given
      */
-    private fun inferLocFromTimestamps() = custTimestamps.minBy { it.value }?.key
+    private fun inferLocFromTimestamps() = custTimestamps.minByOrNull { it.value }?.key
 
     /**
      * If API call returned shared data then this is the most accurate way to infer where the file was uploaded
      * However files.list does not return this data, only files.info
      */
-    private fun inferLocFromShares() = shares?.firstSeen?.minBy { it.value }?.key
+    private fun inferLocFromShares() = shares?.firstSeen?.minByOrNull { it.value }?.key
 
     /**
      * Gets the exact upload location by querying a single file

@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.3.72"
-    kotlin("kapt") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
+    kotlin("kapt") version "1.4.0"
     id("com.github.ben-manes.versions") version "0.29.0"
 }
 
@@ -27,6 +27,7 @@ dependencies {
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
 
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.0.0")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
@@ -65,11 +66,11 @@ tasks.test {
 }
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_13
+    sourceCompatibility = JavaVersion.VERSION_14
 }
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "13"
-    kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
+    kotlinOptions.jvmTarget = "14"
+    kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 
     kapt.includeCompileClasspath = false
