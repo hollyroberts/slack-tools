@@ -22,7 +22,8 @@ class SlackMessageAdapter @Inject constructor(
             textMessageAdapter: JsonAdapter<TextMessage>,
             channelMessageAdapter: JsonAdapter<ChannelMessage>,
             botMessageAdapter: JsonAdapter<BotMessage>,
-            botAdminMessageAdapter: JsonAdapter<BotAdminMessage>
+            botAdminMessageAdapter: JsonAdapter<BotAdminMessage>,
+            meMessageAdapter: JsonAdapter<MeMessage>
     ): BaseMessage? {
         // Read type/subtype with peeked reader
         val peekedReader = reader.peekJson()
@@ -64,6 +65,7 @@ class SlackMessageAdapter @Inject constructor(
         val message: BaseMessage = when (subtype) {
             OtherEvent.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
             OtherEvent.BOT_MESSAGE -> botMessageAdapter.fromJson(reader)
+            OtherEvent.ME_MESSAGE -> meMessageAdapter.fromJson(reader)
             is ChannelEvent -> channelMessageAdapter.fromJson(reader)
             is BotAdminEvent -> botAdminMessageAdapter.fromJson(reader)
             else -> {

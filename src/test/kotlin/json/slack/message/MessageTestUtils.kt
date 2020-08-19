@@ -4,7 +4,7 @@ import io.mockk.mockk
 import json.DaggerTestComponent
 import slack.Settings
 
-object MessageTestUtils {
+internal object MessageTestUtils {
     val moshi = DaggerTestComponent.builder()
             .settings(Settings())
             .slackData(mockk())

@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import utils.TestUtils
 
-internal class BaseMessageDeserialisationTest : TestUtils {
+internal class MessageDeserialisationTest : TestUtils {
     private val adapter = MessageTestUtils.moshi.reifiedAdapter<BaseMessage>()
 
     @Test
