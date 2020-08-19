@@ -5,7 +5,9 @@ interface MessageType {
 
     companion object {
         private val typeMap: Map<String?, MessageType> = listOf<List<MessageType>>(
+                BotAdminEvent.values().toList(),
                 ChannelEvent.values().toList(),
+                ThreadEvent.values().toList(),
                 OtherEvent.values().toList()
         )
                 .flatten()

@@ -1,0 +1,9 @@
+{
+  "type": "message",
+  "subtype": "bot_add",
+  "text": "added an integration to this channel: <https:\/\/team.slack.com\/services\/B0D7B1DSS|incoming-webhook>",
+  "user": "U02GZ1BHG",
+  "bot_id": "B0D7B1DSS",
+  "bot_link": "<https:\/\/team.slack.com\/services\/B0D7B1DSS|incoming-webhook>",
+  "ts": "1565580315.003300"
+}

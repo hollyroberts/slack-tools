@@ -21,7 +21,8 @@ class SlackMessageAdapter @Inject constructor(
             reader: JsonReader,
             textMessageAdapter: JsonAdapter<TextMessage>,
             channelMessageAdapter: JsonAdapter<ChannelMessage>,
-            botMessageAdapter: JsonAdapter<BotMessage>
+            botMessageAdapter: JsonAdapter<BotMessage>,
+            botAdminMessageAdapter: JsonAdapter<BotAdminMessage>
     ): BaseMessage? {
         // Read type/subtype with peeked reader
         val peekedReader = reader.peekJson()
@@ -58,11 +59,13 @@ class SlackMessageAdapter @Inject constructor(
 
         // TODO extend this
         // TODO could this be quicker with some sort of mapping lookup? Either a direct switch, or something else
+        // For example either a mapping of types, or coalescing the enums into one and having sets of types
         val subtype = MessageType.lookup(subtypeStr)
         val message: BaseMessage = when (subtype) {
             OtherEvent.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
             OtherEvent.BOT_MESSAGE -> botMessageAdapter.fromJson(reader)
             is ChannelEvent -> channelMessageAdapter.fromJson(reader)
+            is BotAdminEvent -> botAdminMessageAdapter.fromJson(reader)
             else -> {
                 // Since our list of subtypes is currently non-exhaustive then skip processing the message
                 logger.debug { "Cannot process message subtype '${subtype}'" }
