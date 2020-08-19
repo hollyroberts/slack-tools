@@ -1,22 +1,14 @@
 package json.slack.message
 
 import com.squareup.moshi.JsonDataException
-import io.mockk.mockk
-import json.DaggerTestComponent
+import json.reifiedAdapter
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
-import slack.Settings
 import utils.TestUtils
 
 internal class BaseMessageDeserialisationTest : TestUtils {
-    private val moshi = DaggerTestComponent.builder()
-            .settings(Settings())
-            .slackData(mockk())
-            .api(mockk())
-            .build()
-            .getMoshi()
-    private val adapter = moshi.adapter(BaseMessage::class.java)
+    private val adapter = MessageTestUtils.moshi.reifiedAdapter<BaseMessage>()
 
     @Test
     fun textMessageDeserialisation() {
@@ -28,7 +20,7 @@ internal class BaseMessageDeserialisationTest : TestUtils {
     }
 
     @Test
-    fun channelJoin() {
+    fun channelSubtype() {
         val input = readResource("channel-join.json")
         val parsed = adapter.fromJson(input)!! as ChannelMessage
 

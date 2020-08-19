@@ -1,0 +1,11 @@
+{
+  "type": "message",
+  "subtype": "bot_message",
+  "text": "Some sort of bot message",
+  "ts": "1597825947.041600",
+  "username": "The Bot Name",
+  "icons": {
+    "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2019-12-11\/87asdf279664_48.png"
+  },
+  "bot_id": "BRKT9G1QX"
+}

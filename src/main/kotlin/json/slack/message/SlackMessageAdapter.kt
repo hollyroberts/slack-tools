@@ -20,7 +20,8 @@ class SlackMessageAdapter @Inject constructor(
     fun fromJson(
             reader: JsonReader,
             textMessageAdapter: JsonAdapter<TextMessage>,
-            channelMessageAdapter: JsonAdapter<ChannelMessage>
+            channelMessageAdapter: JsonAdapter<ChannelMessage>,
+            botMessageAdapter: JsonAdapter<BotMessage>
     ): BaseMessage? {
         // Read type/subtype with peeked reader
         val peekedReader = reader.peekJson()
@@ -37,6 +38,7 @@ class SlackMessageAdapter @Inject constructor(
                 // For the type we could check if it's 1/0
                 // For the subtype we'd have to figure out the available subtypes defined, and then use that for our map
 
+                // Performance: Could we only do the null checks if not -1?
                 0 -> type = peekedReader.nextString()
                 1 -> subtypeStr = peekedReader.nextString()
                 -1 -> peekedReader.skipValue()
@@ -55,9 +57,11 @@ class SlackMessageAdapter @Inject constructor(
         typeRecorder.recordType(subtypeStr)
 
         // TODO extend this
+        // TODO could this be quicker with some sort of mapping lookup? Either a direct switch, or something else
         val subtype = MessageType.lookup(subtypeStr)
-        val message = when (subtype) {
+        val message: BaseMessage = when (subtype) {
             OtherEvent.STANDARD_MESSAGE -> textMessageAdapter.fromJson(reader)
+            OtherEvent.BOT_MESSAGE -> botMessageAdapter.fromJson(reader)
             is ChannelEvent -> channelMessageAdapter.fromJson(reader)
             else -> {
                 // Since our list of subtypes is currently non-exhaustive then skip processing the message
