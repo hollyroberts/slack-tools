@@ -1,0 +1,7 @@
+{
+  "type": "message",
+  "subtype": "reminder_add",
+  "text": "set up a reminder to \u201cdo the thing\u201d in this channel at 9pm today, Greenwich Mean Time.",
+  "user": "U02JQMMAB",
+  "ts": "1481104005.000012"
+}
