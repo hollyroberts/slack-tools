@@ -9,6 +9,7 @@ import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import json.slack.file.ParsedFile
 import json.slack.file.ShareJsonAdapter
+import json.slack.message.SlackBotMessageAdapter
 import json.slack.message.SlackMessageAdapter
 import json.slack.metadata.Conversation
 import json.slack.metadata.ConversationContextfulAdapter
@@ -46,6 +47,7 @@ object MoshiModule : Logging {
                 .add(ProfileJsonAdapter)
                 .add(ShareJsonAdapter)
                 .add(ConversationContextfulAdapter)
+                .add(SlackBotMessageAdapter)
 
                 // Extra types
                 .add(BigDecimalAdapter)

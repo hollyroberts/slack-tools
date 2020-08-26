@@ -1,0 +1,6 @@
+{
+  "type": "message",
+  "subtype": "slackbot_response",
+  "text": "Standup is at 9am daily!",
+  "ts": "1560352867.072221"
+}
