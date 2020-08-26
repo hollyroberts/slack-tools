@@ -9,7 +9,7 @@ internal class MeMessageTest : TestUtils {
     private val adapter = MessageTestUtils.moshi.reifiedAdapter<BaseMessage>()
 
     @Test
-    fun textMessageDeserialisation() {
+    fun goodMessageDeserialisation() {
         val input = readResource("me-message.json")
         val parsed = adapter.fromJson(input)!! as MeMessage
 

@@ -9,7 +9,7 @@ internal class ReminderAddMessageTest : TestUtils {
     private val adapter = MessageTestUtils.moshi.reifiedAdapter<BaseMessage>()
 
     @Test
-    fun textMessageDeserialisation() {
+    fun goodMessageDeserialisation() {
         val input = readResource("reminder-add-message.json")
         val parsed = adapter.fromJson(input)!! as ReminderAddMessage
 

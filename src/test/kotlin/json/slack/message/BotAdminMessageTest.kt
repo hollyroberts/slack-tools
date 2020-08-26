@@ -9,7 +9,7 @@ internal class BotAdminMessageTest : TestUtils {
     private val adapter = MessageTestUtils.moshi.reifiedAdapter<BaseMessage>()
 
     @Test
-    fun textMessageDeserialisation() {
+    fun goodMessageDeserialisation() {
         val input = readResource("bot-admin-message.json")
         val parsed = adapter.fromJson(input)!! as BotAdminMessage
 
