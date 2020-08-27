@@ -21,7 +21,7 @@ dependencies {
     val log4j2Version = "2.13.3"
     val daggerVersion = "2.28.3"
     val assistedInjectVersion = "0.5.2"
-    val moshiVersion = "1.9.3"
+    val moshiVersion = "1.10.0"
     val okhttpVersion = "4.8.1"
     val retrofitVersion = "2.9.0"
 
@@ -58,7 +58,7 @@ dependencies {
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.88")
+    testImplementation("io.github.classgraph:classgraph:4.8.89")
 }
 
 tasks.test {
