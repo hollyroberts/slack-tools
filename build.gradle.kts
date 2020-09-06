@@ -6,7 +6,7 @@ plugins {
     java
     kotlin("jvm") version "1.4.0"
     kotlin("kapt") version "1.4.0"
-    id("com.github.ben-manes.versions") version "0.29.0"
+    id("com.github.ben-manes.versions") version "0.30.0"
 }
 
 version = "0.1-DEV"
@@ -52,7 +52,7 @@ dependencies {
 
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
-    testImplementation("org.assertj:assertj-core:3.17.1")
+    testImplementation("org.assertj:assertj-core:3.17.2")
     testImplementation("io.mockk:mockk:1.10.0")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
