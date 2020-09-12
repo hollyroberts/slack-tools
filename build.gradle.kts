@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.4.0"
-    kotlin("kapt") version "1.4.0"
+    kotlin("jvm") version "1.4.10"
+    kotlin("kapt") version "1.4.10"
     id("com.github.ben-manes.versions") version "0.30.0"
 }
 
@@ -27,7 +27,7 @@ dependencies {
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.10")
 
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.0.0")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
