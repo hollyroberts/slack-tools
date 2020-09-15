@@ -15,6 +15,20 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    create("bench") {
+        java.srcDir("src/bench/java")
+        resources.srcDir("src/bench/resources")
+
+        compileClasspath += main.get().output + test.get().output
+        runtimeClasspath += main.get().output + test.get().output
+    }
+}
+
+val benchImplementation: Configuration by configurations.getting { extendsFrom(configurations.implementation.get()) }
+configurations["benchImplementation"].extendsFrom(configurations.testImplementation.get())
+configurations["benchRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
+configurations["benchCompileOnly"].extendsFrom(configurations.testCompileOnly.get())
 
 dependencies {
     // Common versions
@@ -59,6 +73,8 @@ dependencies {
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
     testImplementation("io.github.classgraph:classgraph:4.8.89")
+
+    benchImplementation("com.google.jimfs:jimfs:1.1")
 }
 
 tasks.test {
