@@ -32,7 +32,7 @@ class SlackExportProcessor @Inject constructor(
         val convoPath = folder.resolve(conversation.nameRaw())
         val fileList = Files.newDirectoryStream(convoPath, MESSAGE_FILE_GLOB).use { dirStream ->
             dirStream
-                    .filter { Files.isRegularFile(it) }
+                    .filter(Files::isRegularFile)
                     .sorted()
                     .toList()
         }
