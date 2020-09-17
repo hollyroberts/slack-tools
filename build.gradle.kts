@@ -33,10 +33,10 @@ configurations["benchCompileOnly"].extendsFrom(configurations.testCompileOnly.ge
 dependencies {
     // Common versions
     val log4j2Version = "2.13.3"
-    val daggerVersion = "2.28.3"
-    val assistedInjectVersion = "0.5.2"
+    val daggerVersion = "2.29.1"
+    val assistedInjectVersion = "0.6.0"
     val moshiVersion = "1.10.0"
-    val okhttpVersion = "4.8.1"
+    val okhttpVersion = "4.9.0"
     val retrofitVersion = "2.9.0"
 
     // Dependencies
@@ -65,14 +65,14 @@ dependencies {
     implementation("com.github.ajalt:clikt:2.8.0")
 
     // Test dependencies
-    testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
     testImplementation("org.assertj:assertj-core:3.17.2")
     testImplementation("io.mockk:mockk:1.10.0")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.89")
+    testImplementation("io.github.classgraph:classgraph:4.8.90")
 
     benchImplementation("com.google.jimfs:jimfs:1.1")
 }
