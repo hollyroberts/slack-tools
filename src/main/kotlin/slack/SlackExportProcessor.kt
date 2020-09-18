@@ -30,8 +30,7 @@ class SlackExportProcessor @Inject constructor(
         logger.log(Log.LOW) { "Loading conversation history from ${conversation.namePrefixed()}" }
 
         val convoPath = folder.resolve(conversation.nameRaw())
-        val fileList = Files.newDirectoryStream(convoPath, MESSAGE_FILE_GLOB).use { dirStream ->
-            dirStream
+        val fileList = Files.newDirectoryStream(convoPath, MESSAGE_FILE_GLOB).use { dirStream -> dirStream
                     .filter(Files::isRegularFile)
                     .sorted()
                     .toList()
@@ -39,7 +38,7 @@ class SlackExportProcessor @Inject constructor(
 
         val messages = mutableListOf<BaseMessage>()
         var droppedMessages = 0
-        fileList.forEach {file ->
+        fileList.forEach { file ->
             val fileMessages = JsonLoader.loadJson(convoPath.resolve(file.fileName), messageAdapter)
             droppedMessages += fileMessages.droppedItems
             messages.addAll(fileMessages)

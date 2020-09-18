@@ -8,7 +8,8 @@ import kotlin.system.measureTimeMillis
 
 object InMemoryDirectory : Logging {
     fun loadDirectory(path: Path): FileSystem {
-        val fileSystem = Jimfs.newFileSystem(Configuration.windows())
+        val fileSystem = Jimfs.newFileSystem(Configuration.unix())
+        val baseJimfsPath = fileSystem.getPath("")
 
         logger.info { "Loading directory '${path}' recursively to memory" }
 
@@ -16,7 +17,17 @@ object InMemoryDirectory : Logging {
             Files.walk(path)
                     .forEach { realPath ->
                         val subpath = path.relativize(realPath)
-                        val jimfsPath = fileSystem.getPath(subpath.toString())
+
+                        // Manually resolve subpath using each individual component
+                        var jimfsPath = baseJimfsPath
+                        for (index in 0 until subpath.nameCount) {
+                            val part = subpath.getName(index).toString()
+                            if (part.isEmpty()) {
+                                continue
+                            }
+
+                            jimfsPath = jimfsPath.resolve(part)
+                        }
 
                         if (subpath.toString().isEmpty()) {
                             return@forEach
