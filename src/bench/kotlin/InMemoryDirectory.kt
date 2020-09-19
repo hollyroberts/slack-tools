@@ -22,7 +22,7 @@ object InMemoryDirectory : Logging {
                         var jimfsPath = baseJimfsPath
                         for (index in 0 until subpath.nameCount) {
                             val part = subpath.getName(index).toString()
-                            if (part.isEmpty()) {
+                            if (index == 0 && part.isEmpty()) {
                                 continue
                             }
 
