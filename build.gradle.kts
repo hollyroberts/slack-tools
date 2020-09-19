@@ -6,7 +6,7 @@ plugins {
     java
     kotlin("jvm") version "1.4.10"
     kotlin("kapt") version "1.4.10"
-    id("com.github.ben-manes.versions") version "0.30.0"
+    id("com.github.ben-manes.versions") version "0.33.0"
 }
 
 version = "0.1-DEV"
@@ -61,7 +61,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-    implementation("com.github.ajalt:clikt:2.8.0")
+    implementation("com.github.ajalt.clikt:clikt:3.0.1")
 
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
