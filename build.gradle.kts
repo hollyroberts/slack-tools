@@ -26,9 +26,7 @@ sourceSets {
 }
 
 val benchImplementation: Configuration by configurations.getting { extendsFrom(configurations.implementation.get()) }
-configurations["benchImplementation"].extendsFrom(configurations.testImplementation.get())
-configurations["benchRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
-configurations["benchCompileOnly"].extendsFrom(configurations.testCompileOnly.get())
+val kaptBench: Configuration by configurations.getting { extendsFrom(configurations.kaptTest.get()) }
 
 dependencies {
     // Common versions
@@ -73,11 +71,25 @@ dependencies {
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
     testImplementation("io.github.classgraph:classgraph:4.8.90")
 
+    // Bench dependencies
     benchImplementation("com.google.jimfs:jimfs:1.1")
+    benchImplementation("org.openjdk.jmh:jmh-core:1.25.2")
+    kaptBench("org.openjdk.jmh:jmh-generator-annprocess:1.25.2")
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks {
+    register("bench", type=JavaExec::class) {
+        dependsOn("benchClasses")
+        group = "benchmark"
+        main = "org.openjdk.jmh.Main"
+        classpath = sourceSets["bench"].runtimeClasspath
+        // To pass parameters ("-h" gives a list of possible parameters)
+        // args(listOf("-h"))
+    }
 }
 
 configure<JavaPluginConvention> {
