@@ -20,7 +20,9 @@ open class JsonSelectBenchmark {
         private const val VALUE_STRING = "message"
     }
 
-    private lateinit var data: String
+    private lateinit var dataMatch: String
+    private lateinit var dataNoMatch: String
+
     private val nextNameAdapter = Moshi.Builder()
             .add(NextNameAdapter)
             .build()
@@ -32,23 +34,46 @@ open class JsonSelectBenchmark {
 
     @Setup
     fun setup() {
-        val stream = this::class.java.classLoader.getResourceAsStream("jmh/json-name-read.json")
-        data = stream!!.readAllBytes().decodeToString()
+        dataMatch = this::class.java.classLoader
+                .getResourceAsStream("jmh/json-name-read-success.json")!!
+                .readAllBytes()
+                .decodeToString()
+
+        dataNoMatch = this::class.java.classLoader
+                .getResourceAsStream("jmh/json-name-read-fail.json")!!
+                .readAllBytes()
+                .decodeToString()
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    fun nextName(blackhole: Blackhole) {
+    fun matchNextName(blackhole: Blackhole) {
         repeat(INNER_LOOPS) {
-            blackhole.consume(nextNameAdapter.fromJson(data))
+            blackhole.consume(nextNameAdapter.fromJson(dataMatch))
         }
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    fun selectName(blackhole: Blackhole) {
+    fun matchSelectName(blackhole: Blackhole) {
         repeat(INNER_LOOPS) {
-            blackhole.consume(selectNameAdapter.fromJson(data))
+            blackhole.consume(selectNameAdapter.fromJson(dataMatch))
+        }
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    fun noMatchNextName(blackhole: Blackhole) {
+        repeat(INNER_LOOPS) {
+            blackhole.consume(nextNameAdapter.fromJson(dataNoMatch))
+        }
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    fun noMatchSelectName(blackhole: Blackhole) {
+        repeat(INNER_LOOPS) {
+            blackhole.consume(selectNameAdapter.fromJson(dataNoMatch))
         }
     }
 
@@ -60,6 +85,9 @@ open class JsonSelectBenchmark {
             reader.beginObject()
             reader.skipName()
             val int = reader.selectString(options)
+            if (int == -1) {
+                reader.skipValue()
+            }
             reader.endObject()
             return int
         }
