@@ -64,7 +64,7 @@ dependencies {
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
     testImplementation("org.assertj:assertj-core:3.17.2")
-    testImplementation("io.mockk:mockk:1.10.0")
+    testImplementation("io.mockk:mockk:1.10.2")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
