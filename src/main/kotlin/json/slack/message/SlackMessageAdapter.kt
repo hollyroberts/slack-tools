@@ -11,7 +11,7 @@ class SlackMessageAdapter @Inject constructor(
         private val typeRecorder: MessageTypeRecorder
 ) {
     companion object : Logging {
-        private val keys = JsonReader.Options.of("type", "subtype")
+        private val REQUIRED_TYPES = JsonReader.Options.of("message")
     }
 
     // TODO maybe better to lazily initialise the adapters?
@@ -30,7 +30,7 @@ class SlackMessageAdapter @Inject constructor(
         // Read type/subtype with peeked reader
         val peekedReader = reader.peekJson()
 
-        var type: String? = null
+        var seenType = false
         var subtypeStr: String? = null
 
         // We don't use JsonReader.selectName() for this because it's less efficient
@@ -42,17 +42,25 @@ class SlackMessageAdapter @Inject constructor(
         peekedReader.beginObject()
         while (peekedReader.hasNext()) {
             when (peekedReader.nextName()) {
-                // It might be worth figuring out if we can use Options for type/subtype to improve performance?
-                // The issue is mapping the various types/subtypes to numbers and retaining the switch lookup performance
-                // For the type we could check if it's 1/0
+                // It might be worth figuring out if we can use Options for subtype to improve performance?
+                // The issue is mapping the subtypes to numbers and retaining the switch lookup performance
                 // For the subtype we'd have to figure out the available subtypes defined, and then use that for our map
+
                 "type" -> {
-                    type = peekedReader.nextString()
-                    if (type != null && subtypeStr != null) break
+                    // Benchmarked in JMH against nextName(). Shown to be noticeably quicker on the happy path
+                    if (peekedReader.selectString(REQUIRED_TYPES) == -1) {
+                        throw JsonDataException(String.format("Message type must be one of the following: %s. But instead it was '%s'",
+                                REQUIRED_TYPES.strings().joinToString(", ") { "'$it'" },
+                                peekedReader.nextString()
+                        ))
+                    }
+
+                    if (subtypeStr != null) break
+                    seenType = true
                 }
                 "subtype" -> {
                     subtypeStr = peekedReader.nextString()
-                    if (type != null && subtypeStr != null) break
+                    if (seenType) break
                 }
                 else -> peekedReader.skipValue()
             }
@@ -60,9 +68,6 @@ class SlackMessageAdapter @Inject constructor(
         // We don't need to call endObject as the peeked reader will be discarded
 
         // Parse message into actual type
-        if (type != "message") {
-            throw JsonDataException("Message type was not 'message', but was '$type'")
-        }
         typeRecorder.recordType(subtypeStr)
 
         // TODO extend this

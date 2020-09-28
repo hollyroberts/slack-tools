@@ -33,7 +33,7 @@ internal class MessageDeserialisationTest : TestUtils {
         val input = readResource("invalid-type.json")
         assertThatThrownBy { adapter.fromJson(input) }
                 .isInstanceOf(JsonDataException::class.java)
-                .hasMessageContaining("Message type was not 'message', but was 'messagee'")
+                .hasMessageContaining("Message type must be one of the following: 'message'. But instead it was 'messagee'")
     }
 
     @Test
