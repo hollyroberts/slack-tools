@@ -33,7 +33,7 @@ dependencies {
     val log4j2Version = "2.13.3"
     val daggerVersion = "2.29.1"
     val assistedInjectVersion = "0.6.0"
-    val moshiVersion = "1.10.0"
+    val moshiVersion = "1.11.0"
     val okhttpVersion = "4.9.0"
     val retrofitVersion = "2.9.0"
 

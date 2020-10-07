@@ -3,39 +3,12 @@ package json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
-import java.lang.reflect.Type
-import kotlin.reflect.KType
-import kotlin.reflect.KTypeProjection
-import kotlin.reflect.jvm.jvmErasure
-import kotlin.reflect.typeOf
+import com.squareup.moshi.adapter
 
-// TODO hopefully at some point Moshi will implement this for us
-// They already have this: https://github.com/square/moshi/blob/master/kotlin/tests/src/test/kotlin/com/squareup/moshi/kotlin/reflect/-MoshiKotlinExtensions.kt
-// We could just pull it in (it's probably better), but making this was interesting
-// It'd also be harder to debug for the edge cases, so lets wait until something is stable
+// Use this inline wrapper method for now so we can opt-in to the experimental feature without having to update the codebase
 @OptIn(ExperimentalStdlibApi::class)
 inline fun <reified T> Moshi.reifiedAdapter(): JsonAdapter<T> {
-    val moshiType = getMoshiType(typeOf<T>())
-    return this.adapter(moshiType)
-}
-
-@PublishedApi
-internal fun getMoshiType(type: KType): Type {
-    if (type.arguments.isEmpty()) {
-        return type.jvmErasure.javaObjectType
-    }
-
-    val typeParameters = mutableListOf<Type>()
-    for (typeProjection: KTypeProjection in type.arguments) {
-        if (typeProjection.type == null) {
-            throw IllegalArgumentException("Type projection $typeProjection has null type. This can happen if star projection is used (java)")
-        }
-
-        typeParameters.add(getMoshiType(typeProjection.type!!))
-    }
-
-    return Types.newParameterizedType(type.jvmErasure.java, *typeParameters.toTypedArray())
+    return this.adapter()
 }
 
 /**
