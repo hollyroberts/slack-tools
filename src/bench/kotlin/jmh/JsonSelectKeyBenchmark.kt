@@ -19,13 +19,19 @@ open class JsonSelectKeyBenchmark {
     companion object Constants {
         private const val INNER_LOOPS = 10_000_000
         private const val VALUE_STRING = "channel_archive"
+
+        private val EVENTS_LOOKUP = ChannelEvent.values().associate { it.label to it.ordinal }
     }
 
     private lateinit var dataMatch: String
     private lateinit var dataNoMatch: String
 
-    private val nextNameAdapter = Moshi.Builder()
-            .add(NextNameAdapter)
+    private val nextNameAdapterSingle = Moshi.Builder()
+            .add(NextNameAdapterSingle)
+            .build()
+            .adapter(Int::class.java)
+    private val nextNameAdapterLookup = Moshi.Builder()
+            .add(NextNameAdapterLookup)
             .build()
             .adapter(Int::class.java)
     private val selectNameAdapter = Moshi.Builder()
@@ -48,9 +54,17 @@ open class JsonSelectKeyBenchmark {
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    fun matchNextName(blackhole: Blackhole) {
+    fun matchNextNameSingle(blackhole: Blackhole) {
         repeat(INNER_LOOPS) {
-            blackhole.consume(nextNameAdapter.fromJson(dataMatch))
+            blackhole.consume(nextNameAdapterSingle.fromJson(dataMatch))
+        }
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    fun matchNextNameLookup(blackhole: Blackhole) {
+        repeat(INNER_LOOPS) {
+            blackhole.consume(nextNameAdapterLookup.fromJson(dataMatch))
         }
     }
 
@@ -64,9 +78,17 @@ open class JsonSelectKeyBenchmark {
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    fun noMatchNextName(blackhole: Blackhole) {
+    fun noMatchNextNameSingle(blackhole: Blackhole) {
         repeat(INNER_LOOPS) {
-            blackhole.consume(nextNameAdapter.fromJson(dataNoMatch))
+            blackhole.consume(nextNameAdapterSingle.fromJson(dataNoMatch))
+        }
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    fun noMatchNextNameLookup(blackhole: Blackhole) {
+        repeat(INNER_LOOPS) {
+            blackhole.consume(nextNameAdapterLookup.fromJson(dataNoMatch))
         }
     }
 
@@ -101,7 +123,7 @@ open class JsonSelectKeyBenchmark {
         }
     }
 
-    private object NextNameAdapter {
+    private object NextNameAdapterSingle {
         @FromJson
         fun fromJson(reader: JsonReader): Int {
             reader.beginObject()
@@ -113,6 +135,23 @@ open class JsonSelectKeyBenchmark {
                 return 0
             }
             return -1
+        }
+
+        @ToJson
+        fun toJson(jsonWriter: JsonWriter, value: Int) {
+            throw UnsupportedOperationException()
+        }
+    }
+
+    private object NextNameAdapterLookup {
+        @FromJson
+        fun fromJson(reader: JsonReader): Int {
+            reader.beginObject()
+            val str = reader.nextName()!!
+            reader.skipValue()
+            reader.endObject()
+
+            return EVENTS_LOOKUP[str] ?: -1
         }
 
         @ToJson
