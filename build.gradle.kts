@@ -73,8 +73,8 @@ dependencies {
 
     // Bench dependencies
     benchImplementation("com.google.jimfs:jimfs:1.1")
-    benchImplementation("org.openjdk.jmh:jmh-core:1.25.2")
-    kaptBench("org.openjdk.jmh:jmh-generator-annprocess:1.25.2")
+    benchImplementation("org.openjdk.jmh:jmh-core:1.26")
+    kaptBench("org.openjdk.jmh:jmh-generator-annprocess:1.26")
 }
 
 tasks.test {

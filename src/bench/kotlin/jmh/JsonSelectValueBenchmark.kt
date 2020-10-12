@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 @Fork(value = 3, warmups = 0, jvmArgsAppend = ["-XX:-BackgroundCompilation"])
 @Warmup(iterations = 10, time = 1)
 @Measurement(iterations = 5, time = 1)
-open class JsonSelectBenchmark {
+open class JsonSelecValueBenchmark {
 
     companion object Constants {
         private const val INNER_LOOPS = 10_000_000
@@ -23,11 +23,11 @@ open class JsonSelectBenchmark {
     private lateinit var dataMatch: String
     private lateinit var dataNoMatch: String
 
-    private val nextNameAdapter = Moshi.Builder()
+    private val nextStringAdapter = Moshi.Builder()
             .add(NextNameAdapter)
             .build()
             .adapter(Int::class.java)
-    private val selectNameAdapter = Moshi.Builder()
+    private val selectStringAdapter = Moshi.Builder()
             .add(SelectNameAdapter)
             .build()
             .adapter(Int::class.java)
@@ -35,45 +35,45 @@ open class JsonSelectBenchmark {
     @Setup
     fun setup() {
         dataMatch = this::class.java.classLoader
-                .getResourceAsStream("jmh/json-name-read-success.json")!!
+                .getResourceAsStream("jmh/json-value-read-success.json")!!
                 .readAllBytes()
                 .decodeToString()
 
         dataNoMatch = this::class.java.classLoader
-                .getResourceAsStream("jmh/json-name-read-fail.json")!!
+                .getResourceAsStream("jmh/json-value-read-fail.json")!!
                 .readAllBytes()
                 .decodeToString()
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    fun matchNextName(blackhole: Blackhole) {
+    fun matchNextString(blackhole: Blackhole) {
         repeat(INNER_LOOPS) {
-            blackhole.consume(nextNameAdapter.fromJson(dataMatch))
+            blackhole.consume(nextStringAdapter.fromJson(dataMatch))
         }
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    fun matchSelectName(blackhole: Blackhole) {
+    fun matchSelectString(blackhole: Blackhole) {
         repeat(INNER_LOOPS) {
-            blackhole.consume(selectNameAdapter.fromJson(dataMatch))
+            blackhole.consume(selectStringAdapter.fromJson(dataMatch))
         }
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    fun noMatchNextName(blackhole: Blackhole) {
+    fun noMatchNextString(blackhole: Blackhole) {
         repeat(INNER_LOOPS) {
-            blackhole.consume(nextNameAdapter.fromJson(dataNoMatch))
+            blackhole.consume(nextStringAdapter.fromJson(dataNoMatch))
         }
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    fun noMatchSelectName(blackhole: Blackhole) {
+    fun noMatchSelectString(blackhole: Blackhole) {
         repeat(INNER_LOOPS) {
-            blackhole.consume(selectNameAdapter.fromJson(dataNoMatch))
+            blackhole.consume(selectStringAdapter.fromJson(dataNoMatch))
         }
     }
 
@@ -120,7 +120,7 @@ open class JsonSelectBenchmark {
 
 private fun main() {
     val opt = OptionsBuilder()
-            .include(JsonSelectBenchmark::class.java.simpleName)
+            .include(JsonSelecValueBenchmark::class.java.simpleName)
             .build()
     Runner(opt).run()
 }
