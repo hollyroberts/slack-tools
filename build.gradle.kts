@@ -30,8 +30,8 @@ val kaptBench: Configuration by configurations.getting { extendsFrom(configurati
 
 dependencies {
     // Common versions
-    val log4j2Version = "2.13.3"
-    val daggerVersion = "2.29.1"
+    val log4j2Version = "2.14.0"
+    val daggerVersion = "2.30.1"
     val assistedInjectVersion = "0.6.0"
     val moshiVersion = "1.11.0"
     val okhttpVersion = "4.9.0"
@@ -63,13 +63,13 @@ dependencies {
 
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
-    testImplementation("org.assertj:assertj-core:3.17.2")
+    testImplementation("org.assertj:assertj-core:3.18.1")
     testImplementation("io.mockk:mockk:1.10.2")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.90")
+    testImplementation("io.github.classgraph:classgraph:4.8.92")
 
     // Bench dependencies
     benchImplementation("com.google.jimfs:jimfs:1.1")
