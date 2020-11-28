@@ -93,10 +93,10 @@ tasks {
 }
 
 configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_14
+    sourceCompatibility = JavaVersion.VERSION_15
 }
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "14"
+    kotlinOptions.jvmTarget = "15"
     kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 
