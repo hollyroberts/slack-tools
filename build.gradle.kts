@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.4.20"
-    kotlin("kapt") version "1.4.20"
+    kotlin("jvm") version "1.4.21"
+    kotlin("kapt") version "1.4.21"
     id("com.github.ben-manes.versions") version "0.36.0"
 }
 
@@ -39,7 +39,7 @@ dependencies {
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.20") // Specify reflect library explicitly to stop duplicate classpath build warnings
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21") // Specify reflect library explicitly to stop duplicate classpath build warnings
 
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.0.0")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
@@ -73,7 +73,7 @@ dependencies {
 
     // Bench dependencies
     benchImplementation("com.google.jimfs:jimfs:1.1")
-    benchImplementation("org.openjdk.jmh:jmh-core:1.26")
+    benchImplementation("org.openjdk.jmh:jmh-core:1.27")
     kaptBench("org.openjdk.jmh:jmh-generator-annprocess:1.26")
 }
 
