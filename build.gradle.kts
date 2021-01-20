@@ -64,15 +64,15 @@ dependencies {
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.0")
     testImplementation("org.assertj:assertj-core:3.18.1")
-    testImplementation("io.mockk:mockk:1.10.3")
+    testImplementation("io.mockk:mockk:1.10.5")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.93")
+    testImplementation("io.github.classgraph:classgraph:4.8.98")
 
     // Bench dependencies
-    benchImplementation("com.google.jimfs:jimfs:1.1")
+    benchImplementation("com.google.jimfs:jimfs:1.2")
     benchImplementation("org.openjdk.jmh:jmh-core:1.27")
     kaptBench("org.openjdk.jmh:jmh-generator-annprocess:1.26")
 }
