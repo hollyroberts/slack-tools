@@ -1,5 +1,6 @@
 package network
 
+import io.mockk.mockk
 import network.TestCursorMapResponse.CursorResponseContents
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -10,6 +11,7 @@ import utils.TestUtils
 class PaginationCursorTest : TestUtils {
     private fun getApi(server: MockWebServer) = DaggerRetrofitTestComponent.builder()
             .url(server.url(""))
+            .threadSleeper(mockk())
             .build()
             .getTestApi()
 

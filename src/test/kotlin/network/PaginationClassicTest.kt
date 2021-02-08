@@ -1,5 +1,6 @@
 package network
 
+import io.mockk.mockk
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -11,6 +12,7 @@ import utils.TestUtils
 class PaginationClassicTest : TestUtils {
     private fun getApi(server: MockWebServer) = DaggerRetrofitTestComponent.builder()
             .url(server.url(""))
+            .threadSleeper(mockk())
             .build()
             .getTestApi()
 

@@ -24,6 +24,7 @@ import javax.inject.Singleton
 class SlackAdapterTest : TestUtils {
     private fun getApi(url: HttpUrl) = DaggerRetrofitTestComponent.builder()
             .url(url)
+            .threadSleeper(mockk())
             .build()
             .getTestApi()
     private fun getApi(server: MockWebServer) = getApi(server.url(""))

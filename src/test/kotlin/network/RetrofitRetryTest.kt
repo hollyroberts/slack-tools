@@ -1,35 +1,29 @@
 package network
 
-import io.mockk.clearMocks
 import io.mockk.every
-import io.mockk.mockkObject
+import io.mockk.mockk
+import io.mockk.verify
+import network.SlackTier.TIER_4
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.TestInstance.Lifecycle
-import java.time.Duration
+import utils.ThreadSleeper
 
-@TestInstance(Lifecycle.PER_CLASS)
 class RetrofitRetryTest {
+    private val threadSleeper: ThreadSleeper = mockk()
+
     private fun getApi(server: MockWebServer) = DaggerRetrofitTestComponent.builder()
             .url(server.url(""))
+            .threadSleeper(threadSleeper)
             .build()
             .getTestApi()
 
-    @BeforeAll
+    @BeforeEach
     fun setupClass() {
-        mockkObject(SlackTier.TIER_4)
-        every { SlackTier.TIER_4.waitTimeMillis } returns 50
-    }
-
-    @AfterAll
-    fun clearClass() {
-        clearMocks(SlackTier.TIER_4)
+        every { threadSleeper.sleep(TIER_4.waitTimeMillis) } returns Unit
     }
 
     @Test
@@ -98,20 +92,9 @@ class RetrofitRetryTest {
             val response = testApi.retryTest()
 
             assertThat(response).containsExactly("success")
-
             assertThat(server.requestCount).isEqualTo(3)
 
-            val timeDiffs = List(dispatcher.dispatchTimes.size - 1) {
-                Duration.between(
-                        dispatcher.dispatchTimes[it],
-                        dispatcher.dispatchTimes[it + 1]
-                ).toMillisPart()
-            }
-
-            // TODO mock thread.sleep (possibly through proxy?)
-            assertThat(timeDiffs).allSatisfy {
-                assertThat(it).isGreaterThanOrEqualTo(50)
-            }
+            verify (exactly = 2) { threadSleeper.sleep(TIER_4.waitTimeMillis) }
         }
     }
 

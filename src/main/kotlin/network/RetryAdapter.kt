@@ -6,18 +6,22 @@ import org.apache.logging.log4j.kotlin.Logging
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
+import utils.ThreadSleeper
 import java.lang.reflect.Type
 import javax.inject.Inject
 
 class RetryAdapter<T>(
         private val responseType: Type,
-        private val retryTier: SlackTier
+        private val retryTier: SlackTier,
+        private val threadSleeper: ThreadSleeper
 ) : CallAdapter<T, Any> {
-    class Factory @Inject constructor() : CallAdapter.Factory() {
+    class Factory @Inject constructor(
+            private val threadSleeper: ThreadSleeper
+    ) : CallAdapter.Factory() {
         override fun get(returnType: Type, annotations: Array<Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
             val annotationTier = (annotations.find { it is Slack } ?: return null) as Slack
 
-            return RetryAdapter<Any>(returnType, annotationTier.tier)
+            return RetryAdapter<Any>(returnType, annotationTier.tier, threadSleeper)
         }
     }
 
@@ -47,7 +51,7 @@ class RetryAdapter<T>(
             when ((response as CallResult.Failure).reason) {
                 RATE_LIMITED -> {
                     logger.warn { "Rate limited, waiting " + "%,d".format(retryTier.waitTimeMillis) + "ms" }
-                    if (attempt < MAX_ATTEMPTS) Thread.sleep(retryTier.waitTimeMillis)
+                    if (attempt < MAX_ATTEMPTS) threadSleeper.sleep(retryTier.waitTimeMillis)
                 }
                 UNKNOWN -> throw RuntimeException("Unknown error occurred calling ${call.request().url.encodedPath}")
             }

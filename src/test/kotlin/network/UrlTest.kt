@@ -1,5 +1,6 @@
 package network
 
+import io.mockk.mockk
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test
 class UrlTest {
     private val testApi = DaggerRetrofitTestComponent.builder()
             .url("https://a-fake-url.com/api/".toHttpUrl())
+            .threadSleeper(mockk())
             .build()
             .getTestApi()
 
