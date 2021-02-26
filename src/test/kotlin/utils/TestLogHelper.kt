@@ -37,8 +37,7 @@ class TestLogHelper private constructor(
             // We can't use capture's here because then we can't make the events immutable
             val logEvents = mutableListOf<LogEvent>()
             every { appender.append(ofType()) } answers {
-                @Suppress("CAST_NEVER_SUCCEEDS")
-                logEvents.add((value as LogEvent).toImmutable())
+                logEvents.add((firstArg() as LogEvent).toImmutable())
             }
 
             val logger = LogManager.getLogger(clazz)!! as Logger

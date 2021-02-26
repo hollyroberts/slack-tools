@@ -99,6 +99,7 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "15"
     kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    kotlinOptions.useIR = true
 
     kapt.includeCompileClasspath = false
 }
