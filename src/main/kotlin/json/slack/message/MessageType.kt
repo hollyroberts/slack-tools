@@ -1,17 +1,32 @@
 package json.slack.message
 
+import com.squareup.moshi.JsonReader
+
 interface MessageType {
   val label: String?
 
   companion object {
     private val typeMap: Map<String?, MessageType> = listOf<List<MessageType>>(
-        BotAdminEvent.values().toList(),
-        ChannelEvent.values().toList(),
-        ThreadEvent.values().toList(),
-        OtherEvent.values().toList()
+       BotAdminEvent.values().toList(),
+       ChannelEvent.values().toList(),
+       ThreadEvent.values().toList(),
+       OtherEvent.values().toList()
+   )
+       .flatten()
+       .associateBy { it.label }
+
+    val optionsLookup: JsonReader.Options = JsonReader.Options.of(
+        *typeMap.keys.asSequence()
+            .filterNotNull()
+            .sorted()
+            .toList()
+            .toTypedArray()
     )
-        .flatten()
-        .associateBy { it.label }
+
+    val optionsLookupDecode: Map<Int, String> = optionsLookup.strings()
+        .asSequence()
+        .mapIndexed { index, str -> Pair(index, str) }
+        .toMap()
 
     // Maybe keep this around a bit, but we probably shouldn't need it now we have the subtype for everything
     fun lookupStrict(subtype: String?): MessageType {

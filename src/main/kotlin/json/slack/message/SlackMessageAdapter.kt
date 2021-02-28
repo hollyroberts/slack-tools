@@ -59,7 +59,13 @@ class SlackMessageAdapter @Inject constructor(
           seenType = true
         }
         "subtype" -> {
-          subtypeStr = peekedReader.nextString()
+          val subtypeResult = peekedReader.selectString(MessageType.optionsLookup)
+          if (subtypeResult == -1) {
+            subtypeStr = peekedReader.nextString()
+          } else {
+            subtypeStr = MessageType.optionsLookupDecode[subtypeResult]!!
+          }
+
           if (seenType) break
         }
         else -> peekedReader.skipValue()
@@ -92,6 +98,8 @@ class SlackMessageAdapter @Inject constructor(
     message.subtype = subtype
     return message
   }
+
+  // inline fun getMessageFromSubtype()
 
   @ToJson
   @Suppress("UNUSED_PARAMETER")
