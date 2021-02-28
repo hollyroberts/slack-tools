@@ -6,8 +6,8 @@ import javax.inject.Singleton
 
 @Singleton
 class UserAndConvoMap @Inject constructor(
-        api: SlackApi
+    api: SlackApi
 ) : SlackData() {
-    override val conversations = api.listConversations()
-    override val users = api.listUsers()
+  override val conversations = api.listConversations()
+  override val users = api.listUsers()
 }

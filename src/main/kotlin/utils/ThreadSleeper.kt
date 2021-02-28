@@ -5,7 +5,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ThreadSleeper @Inject constructor() {
-    fun sleep(millis: Long) {
-        Thread.sleep(millis)
-    }
+  fun sleep(millis: Long) {
+    Thread.sleep(millis)
+  }
 }

@@ -6,5 +6,5 @@ import javax.inject.Singleton
 
 @Singleton
 class HttpUtilsToken @Inject constructor(
-        tokenClient: OkHttpClient
-): HttpUtils(tokenClient)
+    tokenClient: OkHttpClient
+) : HttpUtils(tokenClient)

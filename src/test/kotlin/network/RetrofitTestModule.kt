@@ -10,15 +10,15 @@ import javax.inject.Singleton
 
 @Module
 object RetrofitTestModule {
-    @Provides
-    @Singleton
-    fun provideTestService(retrofit: Retrofit): RetrofitTestApi = retrofit.create()
+  @Provides
+  @Singleton
+  fun provideTestService(retrofit: Retrofit): RetrofitTestApi = retrofit.create()
 
-    @Provides
-    @Named("SlackToken")
-    fun provideToken() = ""
+  @Provides
+  @Named("SlackToken")
+  fun provideToken() = ""
 
-    @Provides
-    @Singleton
-    fun provideMoshi(): Moshi = Moshi.Builder().build()
+  @Provides
+  @Singleton
+  fun provideMoshi(): Moshi = Moshi.Builder().build()
 }

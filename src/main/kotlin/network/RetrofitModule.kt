@@ -15,52 +15,52 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Module(includes = [
-    Base::class,
-    Defaults::class]
+  Base::class,
+  Defaults::class]
 )
 object RetrofitModule {
-    @Module
-    object Defaults {
-        @Provides
-        @Named("SlackUrl")
-        @Singleton
-        fun provideBaseUrl() = "https://slack.com/api/".toHttpUrl()
+  @Module
+  object Defaults {
+    @Provides
+    @Named("SlackUrl")
+    @Singleton
+    fun provideBaseUrl() = "https://slack.com/api/".toHttpUrl()
 
-        @Provides
-        @Singleton
-        fun provideRetrofitService(retrofit: Retrofit): SlackApi = retrofit.create()
+    @Provides
+    @Singleton
+    fun provideRetrofitService(retrofit: Retrofit): SlackApi = retrofit.create()
+  }
+
+  @Module
+  object Base {
+    @Provides
+    @Singleton
+    fun provideRetrofitBuilder(
+        @Named("SlackUrl") baseUrl: HttpUrl,
+        okHttpClient: OkHttpClient,
+        moshi: Moshi,
+        slackFactory: SlackAdapter.Factory,
+        retryFactory: RetryAdapter.Factory
+    ): Retrofit {
+      return Retrofit.Builder()
+          .baseUrl(baseUrl)
+          .addConverterFactory(MoshiConverterFactory.create(moshi))
+          .addCallAdapterFactory(slackFactory)
+          .addCallAdapterFactory(retryFactory)
+          .client(okHttpClient)
+          .build()
     }
 
-    @Module
-    object Base {
-        @Provides
-        @Singleton
-        fun provideRetrofitBuilder(
-                @Named("SlackUrl") baseUrl: HttpUrl,
-                okHttpClient: OkHttpClient,
-                moshi: Moshi,
-                slackFactory: SlackAdapter.Factory,
-                retryFactory: RetryAdapter.Factory
-        ): Retrofit {
-            return Retrofit.Builder()
-                    .baseUrl(baseUrl)
-                    .addConverterFactory(MoshiConverterFactory.create(moshi))
-                    .addCallAdapterFactory(slackFactory)
-                    .addCallAdapterFactory(retryFactory)
-                    .client(okHttpClient)
-                    .build()
-        }
-
-        @Provides
-        @Singleton
-        fun provideClient(
-                tokenInterceptor: TokenInterceptor,
-                restInterceptor: RestRequestInterceptor
-        ): OkHttpClient {
-            return OkHttpClient.Builder()
-                    .addInterceptor(tokenInterceptor)
-                    .addInterceptor(restInterceptor)
-                    .build()
-        }
+    @Provides
+    @Singleton
+    fun provideClient(
+        tokenInterceptor: TokenInterceptor,
+        restInterceptor: RestRequestInterceptor
+    ): OkHttpClient {
+      return OkHttpClient.Builder()
+          .addInterceptor(tokenInterceptor)
+          .addInterceptor(restInterceptor)
+          .build()
     }
+  }
 }

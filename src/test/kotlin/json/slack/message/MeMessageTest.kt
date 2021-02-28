@@ -6,15 +6,15 @@ import org.junit.jupiter.api.Test
 import utils.TestUtils
 
 internal class MeMessageTest : TestUtils {
-    private val adapter = MessageTestUtils.moshi.reifiedAdapter<BaseMessage>()
+  private val adapter = MessageTestUtils.moshi.reifiedAdapter<BaseMessage>()
 
-    @Test
-    fun goodMessageDeserialisation() {
-        val input = readResource("me-message.json")
-        val parsed = adapter.fromJson(input)!! as MeMessage
+  @Test
+  fun goodMessageDeserialisation() {
+    val input = readResource("me-message.json")
+    val parsed = adapter.fromJson(input)!! as MeMessage
 
-        assertThat(parsed.ts).isEqualTo("1355517523.000006")
-        assertThat(parsed.user).isEqualTo("U2147483699")
-        assertThat(parsed.text).isEqualTo("Hello Me")
-    }
+    assertThat(parsed.ts).isEqualTo("1355517523.000006")
+    assertThat(parsed.user).isEqualTo("U2147483699")
+    assertThat(parsed.text).isEqualTo("Hello Me")
+  }
 }

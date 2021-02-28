@@ -22,76 +22,76 @@ import java.time.format.DateTimeFormatter
 fun main(args: Array<String>) = ScriptDownloadAvatars().main(args)
 
 class ScriptDownloadAvatars : CliktCommand(
-        name = "download-files-by-user"
+    name = "download-files-by-user"
 ) {
-    companion object : Logging
+  companion object : Logging
 
-    // Top level options
-    private val topLevelOptions by TopLevelOptions()
-    private val timeOptions by TimeOptions()
+  // Top level options
+  private val topLevelOptions by TopLevelOptions()
+  private val timeOptions by TimeOptions()
 
-    // Auth
-    private val token by option("--token", "-t",
-            envvar = "SlackToken",
-            help = "Authorisation token for slacks web api"
-    ).required()
+  // Auth
+  private val token by option("--token", "-t",
+      envvar = "SlackToken",
+      help = "Authorisation token for slacks web api"
+  ).required()
 
-    // Options
-    // Output information
-    private val output by option("--output", "-o",
-            help = "Location to output files")
-            .file(canBeFile = false)
-            .default(File("avatars"))
-    private val useDisplayname by option("--displayname", "-dn",
-            help = "Use the display name instead of username").flag()
-    private val includeDate by option("--add-date", "-ad",
-            help = "Adds the date in format ' - yyyy\\.mm\\.dd' to the folder").flag()
+  // Options
+  // Output information
+  private val output by option("--output", "-o",
+      help = "Location to output files")
+      .file(canBeFile = false)
+      .default(File("avatars"))
+  private val useDisplayname by option("--displayname", "-dn",
+      help = "Use the display name instead of username").flag()
+  private val includeDate by option("--add-date", "-ad",
+      help = "Adds the date in format ' - yyyy\\.mm\\.dd' to the folder").flag()
 
-    private val includeBots by option("--include-bots", "-ib",
-            help = "Download the avatar images of bots").flag()
-    private val includeDeleted by option("--include-deleted", "-id",
-            help = "Download avatars for deactivated accounts").flag()
+  private val includeBots by option("--include-bots", "-ib",
+      help = "Download the avatar images of bots").flag()
+  private val includeDeleted by option("--include-deleted", "-id",
+      help = "Download avatars for deactivated accounts").flag()
 
-    override fun run() {
-        val daggerComponent = DaggerWebMainComponent.builder()
-                .settings(Settings())
-                .token(token)
-                .build()
-        val api = daggerComponent.getSlackApi()
+  override fun run() {
+    val daggerComponent = DaggerWebMainComponent.builder()
+        .settings(Settings())
+        .token(token)
+        .build()
+    val api = daggerComponent.getSlackApi()
 
-        // Get users
-        val users = api.listUsers().entries.filter { mapEntry ->
-            if (!includeDeleted && mapEntry.value.deleted) {
-                false
-            } else !(!includeBots && mapEntry.value.isBot())
-        }.sortedBy { getName(useDisplayname, it.value) }
+    // Get users
+    val users = api.listUsers().entries.filter { mapEntry ->
+      if (!includeDeleted && mapEntry.value.deleted) {
+        false
+      } else !(!includeBots && mapEntry.value.isBot())
+    }.sortedBy { getName(useDisplayname, it.value) }
 
-        // Setup folder
-        val outDir = if (includeDate) {
-            val timeNow = Instant.now().atZone(timeOptions.outputTz)
-            val folderTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-            val extraStr = " - " + folderTimeFormatter.format(timeNow)
-            output.toPath().resolveSibling(output.name + extraStr)
-        } else {
-            output.toPath()
-        }
-        ensureFolderExists(outDir)
-
-        logger.log(Log.HIGH) { "Downloading avatars" }
-        val http = HttpUtilsBasic()
-        users.forEach { mapEntry ->
-            val url = mapEntry.value.profile.getLargestImage()
-            val name = getName(useDisplayname, mapEntry.value)
-            val saveLoc = outDir.resolve(name + guessImageExtFromURL(url))
-
-            http.downloadFile(url, saveLoc)
-        }
-        logger.log(Log.HIGH) { "Avatars downloaded" }
-    }
-
-    private fun getName(useDisplayname: Boolean, user: User) = if (useDisplayname) {
-        user.displayname()
+    // Setup folder
+    val outDir = if (includeDate) {
+      val timeNow = Instant.now().atZone(timeOptions.outputTz)
+      val folderTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+      val extraStr = " - " + folderTimeFormatter.format(timeNow)
+      output.toPath().resolveSibling(output.name + extraStr)
     } else {
-        user.username()
+      output.toPath()
     }
+    ensureFolderExists(outDir)
+
+    logger.log(Log.HIGH) { "Downloading avatars" }
+    val http = HttpUtilsBasic()
+    users.forEach { mapEntry ->
+      val url = mapEntry.value.profile.getLargestImage()
+      val name = getName(useDisplayname, mapEntry.value)
+      val saveLoc = outDir.resolve(name + guessImageExtFromURL(url))
+
+      http.downloadFile(url, saveLoc)
+    }
+    logger.log(Log.HIGH) { "Avatars downloaded" }
+  }
+
+  private fun getName(useDisplayname: Boolean, user: User) = if (useDisplayname) {
+    user.displayname()
+  } else {
+    user.username()
+  }
 }

@@ -12,19 +12,19 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [MoshiModule::class, HttpUtilsModule.Basic::class])
 interface TestComponent {
-    @Component.Builder
-    interface Builder {
-        @BindsInstance
-        fun slackData(slackData: SlackData): Builder
+  @Component.Builder
+  interface Builder {
+    @BindsInstance
+    fun slackData(slackData: SlackData): Builder
 
-        @BindsInstance
-        fun settings(settings: Settings): Builder
+    @BindsInstance
+    fun settings(settings: Settings): Builder
 
-        @BindsInstance
-        fun api(slackApi: SlackApi): Builder
+    @BindsInstance
+    fun api(slackApi: SlackApi): Builder
 
-        fun build(): TestComponent
-    }
+    fun build(): TestComponent
+  }
 
-    fun getMoshi(): Moshi
+  fun getMoshi(): Moshi
 }

@@ -12,31 +12,31 @@ import org.junit.jupiter.api.Test
 import utils.Log
 
 internal class TopLevelOptionsTest {
-    @Test
-    fun loggingSetsLevel() {
-        mockkStatic(Configurator::class)
+  @Test
+  fun loggingSetsLevel() {
+    mockkStatic(Configurator::class)
 
-        val wrapper = Wrapper()
-        wrapper.parse(listOf("--log", "lOw"))
-        verify { Configurator.setRootLevel(Log.LOW) }
+    val wrapper = Wrapper()
+    wrapper.parse(listOf("--log", "lOw"))
+    verify { Configurator.setRootLevel(Log.LOW) }
 
-        unmockkStatic(Configurator::class)
-        Configurator.reconfigure()
+    unmockkStatic(Configurator::class)
+    Configurator.reconfigure()
+  }
+
+  @Test
+  fun loggingBadArgs() {
+    val wrapper = Wrapper()
+    assertThatThrownBy { wrapper.parse(listOf("--log", "something")) }
+        .isInstanceOf(BadParameterValue::class.java)
+        .hasMessage("Invalid value for \"--log\": invalid choice: something. (choose from TRACE, DEBUG, LOW, MEDIUM, HIGH, WARN, ERROR)")
+  }
+
+  private class Wrapper : CliktCommand() {
+    val topLevelOptions by TopLevelOptions()
+
+    override fun run() {
     }
-
-    @Test
-    fun loggingBadArgs() {
-        val wrapper = Wrapper()
-        assertThatThrownBy { wrapper.parse(listOf("--log", "something")) }
-                .isInstanceOf(BadParameterValue::class.java)
-                .hasMessage("Invalid value for \"--log\": invalid choice: something. (choose from TRACE, DEBUG, LOW, MEDIUM, HIGH, WARN, ERROR)")
-    }
-
-    private class Wrapper : CliktCommand() {
-        val topLevelOptions by TopLevelOptions()
-
-        override fun run() {
-        }
-    }
+  }
 
 }

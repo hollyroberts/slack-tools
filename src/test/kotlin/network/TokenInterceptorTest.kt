@@ -17,54 +17,54 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 internal class TokenInterceptorTest : TestUtils {
-    private fun getApi(server: MockWebServer) = DaggerTokenInterceptorTest_TestComponent.builder()
-            .url(server.url(""))
-            .token("test_token")
-            .build()
-            .getTestApi()
+  private fun getApi(server: MockWebServer) = DaggerTokenInterceptorTest_TestComponent.builder()
+      .url(server.url(""))
+      .token("test_token")
+      .build()
+      .getTestApi()
 
-    @Test
-    fun addsHeaders() {
-        val server = MockWebServer()
-        server.enqueue(MockResponse().setBody(readResource("slack-response-ok.json")))
+  @Test
+  fun addsHeaders() {
+    val server = MockWebServer()
+    server.enqueue(MockResponse().setBody(readResource("slack-response-ok.json")))
 
-        server.runServer {
-            val testApi = getApi(server)
-            testApi.getSlackResponse()
-        }
-
-        assertThat(server.takeRequest().headers)
-                .contains(
-                        "Content-Type" to "application/json",
-                        "Authorization" to "Bearer test_token"
-                )
+    server.runServer {
+      val testApi = getApi(server)
+      testApi.getSlackResponse()
     }
 
+    assertThat(server.takeRequest().headers)
+        .contains(
+            "Content-Type" to "application/json",
+            "Authorization" to "Bearer test_token"
+        )
+  }
+
+  @Singleton
+  @Component(modules = [RetrofitModule.Base::class, TestModule::class])
+  interface TestComponent {
+    @Component.Builder
+    interface Builder {
+      @BindsInstance
+      fun url(@Named("SlackUrl") httpUrl: HttpUrl): Builder
+
+      @BindsInstance
+      fun token(@Named("SlackToken") token: String): Builder
+
+      fun build(): TestComponent
+    }
+
+    fun getTestApi(): RetrofitTestApi
+  }
+
+  @Module
+  object TestModule {
+    @Provides
     @Singleton
-    @Component(modules = [RetrofitModule.Base::class, TestModule::class])
-    interface TestComponent {
-        @Component.Builder
-        interface Builder {
-            @BindsInstance
-            fun url(@Named("SlackUrl") httpUrl: HttpUrl): Builder
+    fun provideTestService(retrofit: Retrofit): RetrofitTestApi = retrofit.create()
 
-            @BindsInstance
-            fun token(@Named("SlackToken") token: String): Builder
-
-            fun build(): TestComponent
-        }
-
-        fun getTestApi(): RetrofitTestApi
-    }
-
-    @Module
-    object TestModule {
-        @Provides
-        @Singleton
-        fun provideTestService(retrofit: Retrofit): RetrofitTestApi = retrofit.create()
-
-        @Provides
-        @Singleton
-        fun provideMoshi(): Moshi = Moshi.Builder().build()
-    }
+    @Provides
+    @Singleton
+    fun provideMoshi(): Moshi = Moshi.Builder().build()
+  }
 }

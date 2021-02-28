@@ -18,64 +18,64 @@ import java.io.File
 
 fun main(args: Array<String>) = ScriptDownloadByChannel().main(args)
 
-class ScriptDownloadByChannel: CliktCommand(
-        name = "download-files-by-channel"
+class ScriptDownloadByChannel : CliktCommand(
+    name = "download-files-by-channel"
 ) {
-    // Top level options
-    private val topLevelOptions by TopLevelOptions()
-    private val timeOptions by TimeOptions()
+  // Top level options
+  private val topLevelOptions by TopLevelOptions()
+  private val timeOptions by TimeOptions()
 
-    // Auth
-    private val token by option("--token", "-t",
-            envvar = "SlackToken",
-            help = "Authorisation token for slacks web api"
-    ).required()
+  // Auth
+  private val token by option("--token", "-t",
+      envvar = "SlackToken",
+      help = "Authorisation token for slacks web api"
+  ).required()
 
-    // Options
-    private val user by option("--user", "-u",
-            help = "Filters to files only by this user. " +
-                    "Checks user IDs first, otherwise attempts to resolve the username then display name to ID")
-    private val convo by option("--channel", "-c",
-            help = "Filters files to those only by this channel. Can be public/private channel or DM. " +
-                    "Checks channel IDs first, otherwise attempts to resolve the name (with #/@) to ID")
+  // Options
+  private val user by option("--user", "-u",
+      help = "Filters to files only by this user. " +
+          "Checks user IDs first, otherwise attempts to resolve the username then display name to ID")
+  private val convo by option("--channel", "-c",
+      help = "Filters files to those only by this channel. Can be public/private channel or DM. " +
+          "Checks channel IDs first, otherwise attempts to resolve the name (with #/@) to ID")
 
-    private val convoTypes by option("--channel-type", "-ct",
-            help = "The types of channels to include. Use ',' to separate types. By default all types are included",
-            metavar = ConversationType.optionStr())
-            .convert { inputStr ->
-                inputStr.split(",").map { arg ->
-                    ConversationType.values().find { arg.toLowerCase() == it.shortName }
-                            ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationType.optionStr())
-                }.toSet()
-            }
-    private val output by option("--output", "-o",
-            help = "Location to output files")
-            .file(canBeFile = false)
-            .default(File("files"))
+  private val convoTypes by option("--channel-type", "-ct",
+      help = "The types of channels to include. Use ',' to separate types. By default all types are included",
+      metavar = ConversationType.optionStr())
+      .convert { inputStr ->
+        inputStr.split(",").map { arg ->
+          ConversationType.values().find { arg.toLowerCase() == it.shortName }
+              ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationType.optionStr())
+        }.toSet()
+      }
+  private val output by option("--output", "-o",
+      help = "Location to output files")
+      .file(canBeFile = false)
+      .default(File("files"))
 
-    override fun run() {
-        // Setup
-        val settings = Settings(fileConflictStrategy = ConflictStrategy.HASH).applyTimeOptions(timeOptions)
-        val daggerComponent = DaggerWebMainComponent.builder()
-                .settings(settings)
-                .token(token)
-                .build()
-        val slack = daggerComponent.getUserAndConvoMap()
+  override fun run() {
+    // Setup
+    val settings = Settings(fileConflictStrategy = ConflictStrategy.HASH).applyTimeOptions(timeOptions)
+    val daggerComponent = DaggerWebMainComponent.builder()
+        .settings(settings)
+        .token(token)
+        .build()
+    val slack = daggerComponent.getUserAndConvoMap()
 
-        // Resolve user/conversation ID
-        val userID = user?.let { slack.inferUserID(it) }
-        val convoID = convo?.let { slack.inferChannelID(it) }
+    // Resolve user/conversation ID
+    val userID = user?.let { slack.inferUserID(it) }
+    val convoID = convo?.let { slack.inferChannelID(it) }
 
-        val parsedFiles = daggerComponent.getSlackApi().listFiles(
-                startTime = timeOptions.startTime?.toEpochSecond(),
-                endTime = timeOptions.endTime?.toEpochSecond(),
-                user = userID,
-                channel = convoID
-        )
-        var completeFiles = parsedFiles.toCompleteFiles().filesByConvo()
-        if (convoTypes != null) {
-            completeFiles = completeFiles.filterKeys { convoTypes!!.contains(slack.conversationType(it)) }
-        }
-        completeFiles.downloadByChannel(slack, output.toPath())
+    val parsedFiles = daggerComponent.getSlackApi().listFiles(
+        startTime = timeOptions.startTime?.toEpochSecond(),
+        endTime = timeOptions.endTime?.toEpochSecond(),
+        user = userID,
+        channel = convoID
+    )
+    var completeFiles = parsedFiles.toCompleteFiles().filesByConvo()
+    if (convoTypes != null) {
+      completeFiles = completeFiles.filterKeys { convoTypes!!.contains(slack.conversationType(it)) }
     }
+    completeFiles.downloadByChannel(slack, output.toPath())
+  }
 }

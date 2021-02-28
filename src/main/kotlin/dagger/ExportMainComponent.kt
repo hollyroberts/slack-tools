@@ -14,38 +14,38 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = [
-            ExportMainComponent.Declarations::class,
-            SlackExport.Provider::class,
-            MoshiModule::class
-        ]
+    modules = [
+      ExportMainComponent.Declarations::class,
+      SlackExport.Provider::class,
+      MoshiModule::class
+    ]
 )
 interface ExportMainComponent {
-    @Component.Builder
-    interface Builder {
-        @BindsInstance
-        fun settings(settings: Settings): Builder
+  @Component.Builder
+  interface Builder {
+    @BindsInstance
+    fun settings(settings: Settings): Builder
 
-        @BindsInstance
-        fun folderLocation(@Named("FolderLocation") location: Path): Builder
+    @BindsInstance
+    fun folderLocation(@Named("FolderLocation") location: Path): Builder
 
-        fun build(): ExportMainComponent
-    }
+    fun build(): ExportMainComponent
+  }
 
-    @Deprecated(message = "To be replaced with something better I hope")
-    fun getUserAndConvoMap(): SlackData
+  @Deprecated(message = "To be replaced with something better I hope")
+  fun getUserAndConvoMap(): SlackData
 
-    fun getExportProcessor(): SlackExportProcessor
+  fun getExportProcessor(): SlackExportProcessor
 
-    fun getMessageTypeRecorder(): MessageTypeRecorder
+  fun getMessageTypeRecorder(): MessageTypeRecorder
 
-    @Module
-    interface Declarations {
-        @Binds
-        fun provideHttpUtils(httpUtilsBasic: HttpUtilsBasic): HttpUtils
+  @Module
+  interface Declarations {
+    @Binds
+    fun provideHttpUtils(httpUtilsBasic: HttpUtilsBasic): HttpUtils
 
-        @Binds
-        fun bindSlackData(slackExport: SlackExport): SlackData
-    }
+    @Binds
+    fun bindSlackData(slackExport: SlackExport): SlackData
+  }
 }
 

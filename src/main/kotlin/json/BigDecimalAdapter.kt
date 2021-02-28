@@ -5,9 +5,9 @@ import com.squareup.moshi.ToJson
 import java.math.BigDecimal
 
 object BigDecimalAdapter {
-    @FromJson
-    fun fromJson(string: String) = BigDecimal(string)
+  @FromJson
+  fun fromJson(string: String) = BigDecimal(string)
 
-    @ToJson
-    fun toJson(bd: BigDecimal) = bd.toString()
+  @ToJson
+  fun toJson(bd: BigDecimal) = bd.toString()
 }
