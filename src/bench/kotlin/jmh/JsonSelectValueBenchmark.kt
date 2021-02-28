@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 @Fork(value = 3, warmups = 0, jvmArgsAppend = ["-XX:-BackgroundCompilation"])
 @Warmup(iterations = 10, time = 1)
 @Measurement(iterations = 5, time = 1)
-open class JsonSelecValueBenchmark {
+open class JsonSelectValueBenchmark {
 
   companion object Constants {
     private const val INNER_LOOPS = 10_000_000
@@ -120,7 +120,7 @@ open class JsonSelecValueBenchmark {
 
 private fun main() {
   val opt = OptionsBuilder()
-      .include(JsonSelecValueBenchmark::class.java.simpleName)
+      .include(JsonSelectValueBenchmark::class.java.simpleName)
       .build()
   Runner(opt).run()
 }
