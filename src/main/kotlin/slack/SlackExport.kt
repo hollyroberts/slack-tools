@@ -1,8 +1,5 @@
 package slack
 
-import com.squareup.inject.assisted.Assisted
-import com.squareup.inject.assisted.AssistedInject
-import com.squareup.inject.assisted.dagger2.AssistedModule
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -18,29 +15,21 @@ import java.nio.file.Path
 import javax.inject.Named
 import javax.inject.Singleton
 
-class SlackExport @AssistedInject constructor(
-    @Assisted override val users: Map<String, User>,
-    @Assisted override val conversations: Map<String, Conversation>
+class SlackExport constructor(
+    override val users: Map<String, User>,
+    override val conversations: Map<String, Conversation>
 ) : SlackData() {
-
-  @AssistedInject.Factory
-  interface Factory {
-    fun create(users: Map<String, User>,
-               conversations: Map<String, Conversation>
-    ): SlackExport
-  }
 
   companion object : Logging
 
-  @AssistedModule
-  @Module(includes = [AssistedInject_SlackExport_Provider::class])
+  @Module
   object Provider {
     private const val USERS_FILE = "users.json"
     private const val CHANNELS_FILE = "channels.json"
 
     @Provides
     @Singleton
-    fun loadFromFolder(@Named("FolderLocation") folder: Path, moshi: Moshi, factory: Factory): SlackExport {
+    fun loadFromFolder(@Named("FolderLocation") folder: Path, moshi: Moshi): SlackExport {
       logger.log(Log.HIGH) { "Loading export metadata" }
 
       val userAdapter = moshi.reifiedAdapter<List<User>>()
@@ -54,7 +43,7 @@ class SlackExport @AssistedInject constructor(
           .associateBy { it.id }
       logger.info { "Loaded data about ${convoMap.size} users from $CHANNELS_FILE" }
 
-      return factory.create(userMap, convoMap)
+      return SlackExport(userMap, convoMap)
     }
   }
 }

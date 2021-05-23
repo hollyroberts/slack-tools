@@ -38,8 +38,8 @@ internal class ConversationTest : TestUtils {
   fun incorrectConversationType() {
     val input = readResource("conversation-incorrect-type.json")
     assertThatThrownBy { adapter.fromJson(input) }
-        .hasRootCauseInstanceOf(JsonDataException::class.java)
-        .hasRootCauseMessage("Conversation C012AB3CD (general) has more than 1 channel type")
+        .isInstanceOf(JsonDataException::class.java)
+        .hasMessage("Conversation C012AB3CD (general) has more than 1 channel type")
   }
 
   @Test
