@@ -21,6 +21,7 @@
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
+.idea/**/libraries-with-intellij-classes.xml
 
 ##### Build stuff and gradle
 .gradle/
@@ -38,3 +39,4 @@ clan/
 files/
 users/
 avatars*/
+/In-memory test.txt

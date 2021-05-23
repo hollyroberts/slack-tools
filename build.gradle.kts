@@ -1,5 +1,6 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel.CURRENT
+import org.gradle.api.file.DuplicatesStrategy.WARN
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -35,6 +36,7 @@ dependencies {
     val moshiVersion = "1.12.0"
     val okhttpVersion = "4.9.1"
     val retrofitVersion = "2.9.0"
+    val jmhVersion = "1.31"
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
@@ -70,8 +72,8 @@ dependencies {
 
     // Bench dependencies
     benchImplementation("com.google.jimfs:jimfs:1.2")
-    benchImplementation("org.openjdk.jmh:jmh-core:1.26")
-    kaptBench("org.openjdk.jmh:jmh-generator-annprocess:1.26")
+    benchImplementation("org.openjdk.jmh:jmh-core:$jmhVersion")
+    kaptBench("org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion")
 }
 
 tasks.test {
@@ -92,11 +94,15 @@ tasks {
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_15
 }
+
+tasks.withType<Copy> {
+    duplicatesStrategy = WARN // FIXME: This shouldn't be a thing
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "15"
     kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-    kotlinOptions.useIR = true
 
     kapt.includeCompileClasspath = false
 }
