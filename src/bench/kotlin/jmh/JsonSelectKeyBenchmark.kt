@@ -118,6 +118,7 @@ open class JsonSelectKeyBenchmark {
     }
 
     @ToJson
+    @Suppress("UNUSED_PARAMETER")
     fun toJson(jsonWriter: JsonWriter, value: Int) {
       throw UnsupportedOperationException()
     }
@@ -138,6 +139,7 @@ open class JsonSelectKeyBenchmark {
     }
 
     @ToJson
+    @Suppress("UNUSED_PARAMETER")
     fun toJson(jsonWriter: JsonWriter, value: Int) {
       throw UnsupportedOperationException()
     }
@@ -155,6 +157,7 @@ open class JsonSelectKeyBenchmark {
     }
 
     @ToJson
+    @Suppress("UNUSED_PARAMETER")
     fun toJson(jsonWriter: JsonWriter, value: Int) {
       throw UnsupportedOperationException()
     }

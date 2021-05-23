@@ -44,7 +44,7 @@ class ScriptDownloadByChannel : CliktCommand(
       metavar = ConversationType.optionStr())
       .convert { inputStr ->
         inputStr.split(",").map { arg ->
-          ConversationType.values().find { arg.toLowerCase() == it.shortName }
+          ConversationType.values().find { arg.lowercase() == it.shortName }
               ?: fail("Unknown channel type '$arg'\nAvailable options are: " + ConversationType.optionStr())
         }.toSet()
       }

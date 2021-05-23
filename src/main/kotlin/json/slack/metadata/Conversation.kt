@@ -14,7 +14,7 @@ enum class ConversationType(val shortName: String) {
   DIRECT_MESSAGE("dm");
 
   companion object {
-    fun optionStr() = values().joinToString(", ", transform = { it.shortName.toUpperCase() })
+    fun optionStr() = values().joinToString(", ", transform = { it.shortName.uppercase() })
   }
 }
 
@@ -106,8 +106,8 @@ class ParsedConversationWeb(
     val userId: String?
 ) {
   init {
-    val numTrues = booleanArrayOf(isChannel, isGroup, isIm).sumBy { if (it) 1 else 0 }
-    val conversationStr = "Conversation $id" + if (name != null) " ($name)" else ""
+    val numTrues = sequenceOf(isChannel, isGroup, isIm).count { it }
+    val conversationStr: String = "Conversation $id" + if (name != null) " ($name)" else ""
 
     // Must be a channel, group, or dm
     if (numTrues == 0) {

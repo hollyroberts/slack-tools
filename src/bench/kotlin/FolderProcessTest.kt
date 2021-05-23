@@ -39,7 +39,7 @@ object FolderProcessTest {
 
       Configurator.reconfigure()
 
-      val loadedMessages = stats.sumBy { it.messagesLoaded }
+      val loadedMessages = stats.sumOf { it.messagesLoaded }
       Log.logger.info { String.format("Loaded %,d messages", loadedMessages) }
     }
 

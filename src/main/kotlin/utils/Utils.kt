@@ -96,7 +96,7 @@ fun guessImageExtFromURL(url: String): String {
   val guess = URLConnection.guessContentTypeFromName(url) ?: return ""
   if (!guess.startsWith("image/")) return ""
 
-  var filetype = guess.removePrefix("image/").toLowerCase()
+  var filetype = guess.removePrefix("image/").lowercase()
   if (filetype == "jpeg") {
     filetype = "jpg"
   }
