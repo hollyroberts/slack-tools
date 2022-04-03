@@ -37,7 +37,7 @@ dependencies {
     val moshiVersion = "1.13.0"
     val okhttpVersion = "4.9.3"
     val retrofitVersion = "2.9.0"
-    val jmhVersion = "1.31"
+    val jmhVersion = "1.34"
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
