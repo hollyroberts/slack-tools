@@ -15,6 +15,7 @@ import slack.SlackData
 import utils.TestUtils
 import java.math.BigDecimal
 import java.time.ZoneId
+import java.util.function.Consumer
 
 @Suppress("UsePropertyAccessSyntax", "SpellCheckingInspection")
 internal class ParsedFileTest : TestUtils {
@@ -52,9 +53,9 @@ internal class ParsedFileTest : TestUtils {
 
     assertThat(parsed.shares)
         .isNotNull()
-        .satisfies {
+        .satisfies(Consumer {
           assertThat(it!!.firstSeen).contains(entry("C0T8SE4AU", BigDecimal("1531763348.000001")))
-        }
+        })
   }
 
   @Test

@@ -18,6 +18,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import utils.TestUtils
+import java.util.function.Consumer
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -139,12 +140,12 @@ class SlackAdapterTest : TestUtils {
     subclasses.forEach { subclass ->
       val contentsAnnotation = subclass.getFieldInfo("contents")!!.annotationInfo
 
-      assertThat(contentsAnnotation).anySatisfy { annotation ->
+      assertThat(contentsAnnotation).anySatisfy(Consumer { annotation ->
         assertThat(annotation.name).isEqualTo("com.squareup.moshi.Json")
-        assertThat(annotation.parameterValues).anySatisfy {
+        assertThat(annotation.parameterValues).anySatisfy(Consumer {
           assertThat(it.name).isEqualTo("name")
-        }
-      }
+        })
+      })
     }
 
   }

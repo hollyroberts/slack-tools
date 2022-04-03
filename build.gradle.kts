@@ -14,6 +14,7 @@ version = "0.1-DEV"
 
 repositories {
     mavenCentral()
+    google()
 }
 
 sourceSets {
@@ -31,18 +32,18 @@ val kaptBench: Configuration by configurations.getting { extendsFrom(configurati
 
 dependencies {
     // Common versions
-    val log4j2Version = "2.14.1"
-    val daggerVersion = "2.35.1"
-    val moshiVersion = "1.12.0"
-    val okhttpVersion = "4.9.1"
+    val log4j2Version = "2.17.2"
+    val daggerVersion = "2.41"
+    val moshiVersion = "1.13.0"
+    val okhttpVersion = "4.9.3"
     val retrofitVersion = "2.9.0"
     val jmhVersion = "1.31"
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.0") // Specify reflect library explicitly to stop duplicate classpath build warnings
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10") // Specify reflect library explicitly to stop duplicate classpath build warnings
 
-    implementation("org.apache.logging.log4j:log4j-api-kotlin:1.0.0")
+    implementation("org.apache.logging.log4j:log4j-api-kotlin:1.1.0")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
 
@@ -58,17 +59,17 @@ dependencies {
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-    implementation("com.github.ajalt.clikt:clikt:3.2.0")
+    implementation("com.github.ajalt.clikt:clikt:3.4.0")
 
     // Test dependencies
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
-    testImplementation("org.assertj:assertj-core:3.19.0")
-    testImplementation("io.mockk:mockk:1.11.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation("io.mockk:mockk:1.12.3")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.105")
+    testImplementation("io.github.classgraph:classgraph:4.8.143")
 
     // Bench dependencies
     benchImplementation("com.google.jimfs:jimfs:1.2")
