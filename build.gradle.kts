@@ -7,6 +7,7 @@ plugins {
     java
     kotlin("jvm") version "1.6.20"
     kotlin("kapt") version "1.6.20"
+    id("com.google.devtools.ksp") version "1.6.20-1.0.4"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
 
@@ -57,7 +58,7 @@ dependencies {
 
     implementation("com.squareup.moshi:moshi:$moshiVersion")
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
     implementation("com.github.ajalt.clikt:clikt:3.4.0")
 
