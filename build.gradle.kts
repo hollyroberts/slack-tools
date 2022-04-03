@@ -5,8 +5,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.5.0"
-    kotlin("kapt") version "1.5.0"
+    kotlin("jvm") version "1.6.10"
+    kotlin("kapt") version "1.6.10"
     id("com.github.ben-manes.versions") version "0.38.0"
 }
 
@@ -41,7 +41,7 @@ dependencies {
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.5.10") // Specify reflect library explicitly to stop duplicate classpath build warnings
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10") // Specify reflect library explicitly to stop duplicate classpath build warnings
 
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.1.0")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
@@ -85,15 +85,15 @@ tasks {
     register("bench", type=JavaExec::class) {
         dependsOn("benchClasses")
         group = "benchmark"
-        main = "org.openjdk.jmh.Main"
+        mainClass.set("org.openjdk.jmh.Main")
         classpath = sourceSets["bench"].runtimeClasspath
         // To pass parameters ("-h" gives a list of possible parameters)
         // args(listOf("-h"))
     }
 }
 
-configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_15
+configure<JavaPluginExtension> {
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<Copy> {
@@ -101,7 +101,7 @@ tasks.withType<Copy> {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "15"
+    kotlinOptions.jvmTarget = "17"
     kotlinOptions.freeCompilerArgs += "-Xjvm-default=all"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 
