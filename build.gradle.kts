@@ -5,9 +5,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.6.10"
-    kotlin("kapt") version "1.6.10"
-    id("com.github.ben-manes.versions") version "0.38.0"
+    kotlin("jvm") version "1.6.20"
+    kotlin("kapt") version "1.6.20"
+    id("com.github.ben-manes.versions") version "0.42.0"
 }
 
 version = "0.1-DEV"
@@ -37,11 +37,11 @@ dependencies {
     val moshiVersion = "1.13.0"
     val okhttpVersion = "4.9.3"
     val retrofitVersion = "2.9.0"
-    val jmhVersion = "1.34"
+    val jmhVersion = "1.35"
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10") // Specify reflect library explicitly to stop duplicate classpath build warnings
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20") // Specify reflect library explicitly to stop duplicate classpath build warnings
 
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.1.0")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
