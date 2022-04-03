@@ -26,7 +26,6 @@ abstract class HttpUtils(private val client: OkHttpClient) {
     }
   }
 
-
   /**
    * Downloads a file
    * @return Whether the operation was successful or not
@@ -66,8 +65,8 @@ abstract class HttpUtils(private val client: OkHttpClient) {
       val code = response.code
 
       logger.trace { "Response code: $code" }
-      if (code != 200) {
-        logger.error { "Code was not 200 when downloading file (given $code)" }
+      if (!response.isSuccessful) {
+        logger.error { "Response was not successful when downloading file (given $code)" }
         return DownloadStatus.FAILURE
       }
 

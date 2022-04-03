@@ -21,11 +21,7 @@ data class User(
 ) {
   @Suppress("DEPRECATION")
   fun username() = name
-  fun displayname() = if (profile.displayName.isNotEmpty()) {
-    profile.displayName
-  } else {
-    profile.realName
-  }
+  fun displayname() = profile.displayName.ifEmpty { profile.realName }
 
   @Suppress("DEPRECATION")
   fun isBot() = is_bot || id == "USLACKBOT"

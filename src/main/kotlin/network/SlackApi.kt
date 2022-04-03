@@ -120,7 +120,7 @@ interface SlackApi {
           )
         }
     )
-    val fileSize = list.map { it.size }.sum()
+    val fileSize = list.sumOf { it.size }
     logger.info { "Retrieved info for %,d files (%s)".format(list.size, formatSize(fileSize)) }
     return list
   }

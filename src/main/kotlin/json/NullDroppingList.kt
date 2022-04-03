@@ -9,7 +9,7 @@ class NullDroppingList<T>(
     val droppedItems: Int
 ) : ArrayList<T>(list) {
   class Adapter<T>(private val adapter: JsonAdapter<T>) : JsonAdapter<NullDroppingList<T>>() {
-    override fun fromJson(reader: JsonReader): NullDroppingList<T>? {
+    override fun fromJson(reader: JsonReader): NullDroppingList<T> {
       var droppedItems = 0
       val newList = mutableListOf<T>()
 

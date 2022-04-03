@@ -18,7 +18,7 @@ class InjectorAdapter<T : Any>(
     private val delegate: JsonAdapter<T>
 ) : JsonAdapter<T>() {
 
-  override fun fromJson(reader: JsonReader): T? {
+  override fun fromJson(reader: JsonReader): T {
     val obj: T = delegate.fromJson(reader)!!
     injectionMap[obj::class]?.injectMembers(obj)
     return obj

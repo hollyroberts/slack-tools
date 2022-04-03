@@ -7,6 +7,7 @@ import com.squareup.moshi.JsonDataException
 /*
 Top level classes for slack json representations
  */
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class SlackResponse {
   var ok = false
   var warning: String? = null
