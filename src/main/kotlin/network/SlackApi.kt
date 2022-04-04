@@ -6,16 +6,23 @@ import json.slack.message.BaseMessage
 import json.slack.metadata.Conversation
 import json.slack.metadata.User
 import network.SlackTier.*
+import network.body.FileId
 import org.apache.logging.log4j.kotlin.Logging
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 import utils.Log
 import utils.formatSize
 import java.time.Instant
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 interface SlackApi {
   companion object : Logging {
     private val ALL_CONVERSATION_TYPES = listOf("public_channel", "private_channel", "im").joinToString()
+
+    private val LOCAL_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
   }
 
   @GET("conversations.history?limit=100&inclusive=true")
@@ -102,19 +109,26 @@ interface SlackApi {
   ): FileListResponse
 
   fun listFiles(
-      startTime: Long? = null,
-      endTime: Long? = null,
+      startTime: ZonedDateTime? = null,
+      endTime: ZonedDateTime? = null,
       channel: String? = null,
       user: String? = null
   ): List<ParsedFile> {
-    logger.info { "Retrieving files" }
+    var timePeriod: String = ""
+    startTime?.let { timePeriod += " after ${it.format(LOCAL_DATE_TIME)}" }
+    if (startTime != null && endTime != null) {
+      timePeriod += " and"
+    }
+    endTime?.let { timePeriod += " before ${it.format(LOCAL_DATE_TIME)}" }
+
+    logger.info { "Retrieving files$timePeriod" }
     val list = Pagination.retrievePaginatedList(
         "files",
         pageRetrievalFun = {
           listFilesPage(
               page = it,
-              startTime = startTime,
-              endTime = endTime,
+              startTime = startTime?.toEpochSecond(),
+              endTime = endTime?.toEpochSecond(),
               channel = channel,
               user = user
           )
@@ -139,4 +153,8 @@ interface SlackApi {
     logger.info { "Finished retrieving user results (${results.size} found)" }
     return results
   }
+
+  @POST("files.delete")
+  @Slack(TIER_3)
+  fun deleteFile(@Body file: FileId): SlackStatusResponse
 }

@@ -6,6 +6,7 @@ import json.MoshiInject
 import json.iterateArray
 import json.iterateObject
 import network.SlackApi
+import network.body.FileId
 import network.http.HttpUtils
 import org.apache.logging.log4j.kotlin.Logging
 import slack.Settings
@@ -122,6 +123,10 @@ open class ParsedFile(
     }
 
     return CompleteFile(this, location)
+  }
+
+  fun delete() {
+    api.get().deleteFile(FileId(id))
   }
 }
 

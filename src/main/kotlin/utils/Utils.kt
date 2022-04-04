@@ -71,7 +71,7 @@ fun formatSize(size: Long, sigFigures: Int = 3): String {
     return "${finalDouble.toInt()} ${unitPrefix}iB"
   }
 
-  // Otherwise display at least 1
+  // Otherwise, display at least 1
   val mathContext = MathContext(sigFigures, RoundingMode.DOWN)
   val bigDecimal = BigDecimal(finalDouble, mathContext)
   val formatter = DecimalFormat("#.0" + "#".repeat(max(0, sigFigures - 2)))

@@ -1,9 +1,13 @@
 package network
 
+import json.SlackStatusResponse
 import network.SlackTier.TIER_4
+import network.body.FileId
 import org.apache.logging.log4j.kotlin.Logging
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface RetrofitTestApi {
@@ -60,6 +64,10 @@ interface RetrofitTestApi {
   @GET("no.adapter")
   @Slack(TIER_4)
   fun noAdapters(): List<String>
+
+  @POST("files.delete")
+  @Slack(SlackTier.TIER_3)
+  fun deleteFile(@Body file: FileId): SlackStatusResponse
 
   companion object : Logging
 }

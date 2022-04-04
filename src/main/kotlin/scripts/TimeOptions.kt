@@ -1,10 +1,12 @@
 package scripts
 
 import com.github.ajalt.clikt.core.Context
+import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.options.Option
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.long
 import com.github.ajalt.clikt.parsers.OptionParser
 import org.apache.logging.log4j.kotlin.Logging
 import utils.Log
@@ -43,17 +45,21 @@ class TimeOptions : OptionGroup(
       help = "The timezone for any information output (eg. message/file times)")
 
   // Start/end time
-  private val startTimeOption by option("--start-time", "-ts",
+  private val startTimeOption: String? by option("--start-time", "-ts",
       help = "Include anything after this time (inclusive)",
       metavar = "DATETIME")
-  private val endTimeOptions by option("--end-time", "-te",
+  private val endTimeOption: String? by option("--end-time", "-te",
       help = "Exclude anything after this time (exclusive)",
       metavar = "DATETIME")
+  private val minAgeOptions: Long? by option("--min-age", "-ma",
+      help = "Minimum age in days ",
+      metavar = "DAYS")
+      .long()
 
   // Parsed and transformed variables
   var startTime: ZonedDateTime? = null
   var endTime: ZonedDateTime? = null
-  lateinit var inputTz: ZoneId
+  private lateinit var inputTz: ZoneId
   lateinit var outputTz: ZoneId
 
   override fun finalize(context: Context, invocationsByOption: Map<Option, List<OptionParser.Invocation>>) {
@@ -78,14 +84,25 @@ class TimeOptions : OptionGroup(
       ZoneId.systemDefault()
     }
 
+    if (usesFixedTime() && usesDeltaTime()) {
+      throw UsageError("Fixed time parameters and delta time parameters cannot be combined")
+    }
+
     // Parse datetime
     startTime = startTimeOption?.let {
       val startTimeLocal = LocalDateTime.parse(it, dtf)
       ZonedDateTime.of(startTimeLocal, inputTz)
     }
-    endTime = endTimeOptions?.let {
+
+    endTime = endTimeOption?.let {
       val endTimeLocal = LocalDateTime.parse(it, dtf)
       ZonedDateTime.of(endTimeLocal, outputTz)
+    } ?: minAgeOptions?.let {
+      ZonedDateTime.now().minusDays(it)
     }
   }
+
+  private fun usesFixedTime() = startTimeOption != null || endTimeOption != null
+
+  private fun usesDeltaTime() = minAgeOptions != null
 }

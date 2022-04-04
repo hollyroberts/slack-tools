@@ -27,6 +27,7 @@ class ScriptDownloadAvatars : CliktCommand(
   companion object : Logging
 
   // Top level options
+  @Suppress("unused")
   private val topLevelOptions by TopLevelOptions()
   private val timeOptions by TimeOptions()
 

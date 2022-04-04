@@ -7,7 +7,6 @@ import okhttp3.mockwebserver.RecordedRequest
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 inline fun MockWebServer.runServer(function: () -> Unit) {
   this.start()
@@ -30,7 +29,7 @@ fun MockWebServer.takeRequestImmediately(): RecordedRequest {
 
 class TimeRecorderDispatcher : Dispatcher() {
   private val queue: Queue<MockResponse> = ArrayDeque()
-  val dispatchTimes: MutableList<Instant> = ArrayList()
+  private val dispatchTimes: MutableList<Instant> = ArrayList()
 
   fun addResponse(mockResponse: MockResponse) {
     queue.add(mockResponse)

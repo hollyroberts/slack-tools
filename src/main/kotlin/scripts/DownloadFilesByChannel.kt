@@ -8,6 +8,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.file
 import dagger.DaggerWebMainComponent
+import json.slack.file.CompleteFile
 import json.slack.metadata.ConversationType
 import network.http.HttpUtils.ConflictStrategy
 import slack.Settings
@@ -22,6 +23,7 @@ class ScriptDownloadByChannel : CliktCommand(
     name = "download-files-by-channel"
 ) {
   // Top level options
+  @Suppress("unused")
   private val topLevelOptions by TopLevelOptions()
   private val timeOptions by TimeOptions()
 
@@ -67,12 +69,12 @@ class ScriptDownloadByChannel : CliktCommand(
     val convoID = convo?.let { slack.inferChannelID(it) }
 
     val parsedFiles = daggerComponent.getSlackApi().listFiles(
-        startTime = timeOptions.startTime?.toEpochSecond(),
-        endTime = timeOptions.endTime?.toEpochSecond(),
+        startTime = timeOptions.startTime,
+        endTime = timeOptions.endTime,
         user = userID,
         channel = convoID
     )
-    var completeFiles = parsedFiles.toCompleteFiles().filesByConvo()
+    var completeFiles: Map<String?, List<CompleteFile>> = parsedFiles.toCompleteFiles().filesByConvo()
     if (convoTypes != null) {
       completeFiles = completeFiles.filterKeys { convoTypes!!.contains(slack.conversationType(it)) }
     }

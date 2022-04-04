@@ -28,6 +28,9 @@ abstract class SlackResponse {
   }
 }
 
+@JsonClass(generateAdapter = true)
+class SlackStatusResponse: SlackResponse()
+
 abstract class SlackSimpleResponse<T> : SlackResponse() {
   abstract val contents: T?
 }

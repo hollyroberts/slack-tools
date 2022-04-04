@@ -23,6 +23,7 @@ class ScriptDownloadByUser : CliktCommand(
   companion object : Logging
 
   // Top level options
+  @Suppress("unused")
   private val topLevelOptions by TopLevelOptions()
   private val timeOptions by TimeOptions()
 
@@ -57,8 +58,8 @@ class ScriptDownloadByUser : CliktCommand(
     }
 
     val parsedFiles = daggerComponent.getSlackApi().listFiles(
-        startTime = timeOptions.startTime?.toEpochSecond(),
-        endTime = timeOptions.endTime?.toEpochSecond(),
+        startTime = timeOptions.startTime,
+        endTime = timeOptions.endTime,
         channel = convoID
     )
 

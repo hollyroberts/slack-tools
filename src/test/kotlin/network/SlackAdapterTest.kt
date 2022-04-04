@@ -10,10 +10,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import json.SlackSimpleResponse
+import network.body.FileId
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -62,7 +64,7 @@ class SlackAdapterTest : TestUtils {
   }
 
   @Test
-  fun successfulCall() {
+  fun successfulGetCall() {
     val server = MockWebServer()
     server.enqueue(MockResponse().setBody(readResource("slack-response-ok.json")))
 
@@ -77,7 +79,7 @@ class SlackAdapterTest : TestUtils {
   @Test
   fun okFalseWithWarningAndErrors() {
     val server = MockWebServer()
-    server.enqueue(MockResponse().setBody(readResource("slack-response-bad-1.json")))
+    server.enqueue(MockResponse().setBody(readResource("slack-response-bad-with-information.json")))
 
     server.runServer {
       val testApi = getApi(server)
@@ -92,7 +94,7 @@ class SlackAdapterTest : TestUtils {
   @Test
   fun okFalseNoData() {
     val server = MockWebServer()
-    server.enqueue(MockResponse().setBody(readResource("slack-response-bad-2.json")))
+    server.enqueue(MockResponse().setBody(readResource("slack-response-bad-no-failure-info.json")))
 
     server.runServer {
       val testApi = getApi(server)
@@ -105,7 +107,7 @@ class SlackAdapterTest : TestUtils {
   @Test
   fun okButNoContents() {
     val server = MockWebServer()
-    server.enqueue(MockResponse().setBody(readResource("slack-response-bad-3.json")))
+    server.enqueue(MockResponse().setBody(readResource("slack-response-ok-no-contents.json")))
 
     server.runServer {
       val testApi = getApi(server)
@@ -118,7 +120,7 @@ class SlackAdapterTest : TestUtils {
   @Test
   fun goodDataNoOk() {
     val server = MockWebServer()
-    server.enqueue(MockResponse().setBody(readResource("slack-response-bad-4.json")))
+    server.enqueue(MockResponse().setBody(readResource("slack-response-bad-no-status.json")))
 
     server.runServer {
       val testApi = getApi(server)
@@ -127,6 +129,42 @@ class SlackAdapterTest : TestUtils {
           .hasMessage("Response from slack did not indicate success. No information about the failure was provided.")
     }
   }
+
+  @Test
+  fun successfulPostCall() {
+    val server = MockWebServer()
+    server.enqueue(MockResponse().setBody(readResource("slack-response-ok-no-contents.json"))
+    )
+
+    server.runServer {
+      val testApi = getApi(server)
+      testApi.deleteFile(FileId("foo"))
+    }
+
+    val takeRequestImmediately: RecordedRequest = server.takeRequestImmediately()
+    assertThat(takeRequestImmediately)
+        .isNotNull()
+        .returns("POST", RecordedRequest::method)
+        .returns("/files.delete") { it.requestUrl?.encodedPath }
+        .returns("{\"file\":\"foo\"}") { it.body.readUtf8() }
+  }
+
+  @Test
+  fun unsuccessfulPostCall() {
+    val server = MockWebServer()
+    server.enqueue(MockResponse().setBody(readResource("slack-response-bad-with-information.json"))
+    )
+
+    server.runServer {
+      val testApi = getApi(server)
+      assertThatThrownBy { testApi.deleteFile(FileId("foo")) }
+          .isInstanceOf(JsonDataException::class.java)
+          .hasMessage("Response from slack did not indicate success" +
+              "\n\t\tWarning message: This is a warning" +
+              "\n\t\tError message: This is an error")
+    }
+  }
+
 
   /**
    * Kotlin needs a field specifier for constructor parameters for us to see the annotation (as it doesn't know if it's a field/getter/setter)
