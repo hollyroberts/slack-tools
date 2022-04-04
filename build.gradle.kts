@@ -109,6 +109,13 @@ tasks.withType<KotlinCompile> {
     kapt.includeCompileClasspath = false
 }
 
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-Xlint:unchecked")
+
+    // If we want to see what javac complains about. This is normally a subset of kotlinc
+    // options.compilerArgs.add("-Xlint:deprecation")
+}
+
 tasks.withType<DependencyUpdatesTask> {
     checkForGradleUpdate = true
     gradleReleaseChannel = CURRENT.toString()
