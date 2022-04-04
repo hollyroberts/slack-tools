@@ -105,7 +105,7 @@ class ScriptDeleteFiles : CliktCommand(
           val files = entry.value
           logger.info { "Processing %s. Files to delete: %,d (%s)".format(entry.key, files.size, formatSize(files.sumOf { it.size })) }
           files.forEach {
-            val fileInfo = "'${it.title}' (${formatSize(it.size)})"
+            val fileInfo = "'${it.title}' (${formatSize(it.size)}) by ${slack.userUsername(it.user)}"
 
             if (dryRun) {
               logger.log(Log.LOW) { "Would delete $fileInfo"}

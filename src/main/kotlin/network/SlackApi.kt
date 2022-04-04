@@ -22,7 +22,7 @@ interface SlackApi {
   companion object : Logging {
     private val ALL_CONVERSATION_TYPES = listOf("public_channel", "private_channel", "im").joinToString()
 
-    private val LOCAL_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    private val LOCAL_DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z")
   }
 
   @GET("conversations.history?limit=100&inclusive=true")

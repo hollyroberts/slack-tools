@@ -98,7 +98,7 @@ class TimeOptions : OptionGroup(
       val endTimeLocal = LocalDateTime.parse(it, dtf)
       ZonedDateTime.of(endTimeLocal, outputTz)
     } ?: minAgeOptions?.let {
-      ZonedDateTime.now().minusDays(it)
+      ZonedDateTime.now(outputTz).minusDays(it)
     }
   }
 
