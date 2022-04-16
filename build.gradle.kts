@@ -7,7 +7,7 @@ plugins {
     java
     kotlin("jvm") version "1.6.20"
     kotlin("kapt") version "1.6.20"
-    id("com.google.devtools.ksp") version "1.6.20-1.0.4"
+    id("com.google.devtools.ksp") version "1.6.20-1.0.5"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
 
@@ -60,7 +60,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-    implementation("com.github.ajalt.clikt:clikt:3.4.0")
+    implementation("com.github.ajalt.clikt:clikt:3.4.1")
 
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
@@ -70,7 +70,7 @@ dependencies {
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.143")
+    testImplementation("io.github.classgraph:classgraph:4.8.146")
 
     // Bench dependencies
     benchImplementation("com.google.jimfs:jimfs:1.2")
