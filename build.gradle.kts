@@ -5,9 +5,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.6.20"
-    kotlin("kapt") version "1.6.20"
-    id("com.google.devtools.ksp") version "1.6.20-1.0.5"
+    kotlin("jvm") version "1.6.21"
+    kotlin("kapt") version "1.6.21"
+    id("com.google.devtools.ksp") version "1.6.21-1.0.5"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
 
@@ -42,7 +42,7 @@ dependencies {
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.20") // Specify reflect library explicitly to stop duplicate classpath build warnings
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.21") // Specify reflect library explicitly to stop duplicate classpath build warnings
 
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.1.0")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
