@@ -14,7 +14,7 @@ class RetryAdapter<T>(
     private val responseType: Type,
     private val retryTier: SlackTier,
     private val threadSleeper: ThreadSleeper
-) : CallAdapter<T, Any> {
+) : CallAdapter<T, T> {
   class Factory @Inject constructor(
       private val threadSleeper: ThreadSleeper
   ) : CallAdapter.Factory() {

@@ -51,7 +51,7 @@ class SlackAdapter {
       private val responseType: Type,
       private val rawResponseClass: Class<R>,
       private val retryAdapter: RetryAdapter<R>
-  ) : CallAdapter<R, Any> {
+  ) : CallAdapter<R, T> {
     override fun responseType(): Type = responseType
 
     override fun adapt(call: Call<R>): T {

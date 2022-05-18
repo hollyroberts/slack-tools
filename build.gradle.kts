@@ -34,7 +34,7 @@ val kaptBench: Configuration by configurations.getting { extendsFrom(configurati
 dependencies {
     // Common versions
     val log4j2Version = "2.17.2"
-    val daggerVersion = "2.41"
+    val daggerVersion = "2.42"
     val moshiVersion = "1.13.0"
     val okhttpVersion = "4.9.3"
     val retrofitVersion = "2.9.0"
@@ -60,12 +60,12 @@ dependencies {
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     ksp("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-    implementation("com.github.ajalt.clikt:clikt:3.4.1")
+    implementation("com.github.ajalt.clikt:clikt:3.4.2")
 
     // Test dependencies
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.assertj:assertj-core:3.22.0")
-    testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation("io.mockk:mockk:1.12.4")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
