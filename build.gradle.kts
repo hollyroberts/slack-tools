@@ -5,9 +5,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    kotlin("jvm") version "1.7.0"
-    kotlin("kapt") version "1.7.0"
-    id("com.google.devtools.ksp") version "1.7.0-1.0.6"
+    kotlin("jvm") version "1.7.20"
+    kotlin("kapt") version "1.7.20"
+    id("com.google.devtools.ksp") version "1.7.20-1.0.6"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
 
@@ -33,18 +33,18 @@ val kaptBench: Configuration by configurations.getting { extendsFrom(configurati
 
 dependencies {
     // Common versions
-    val log4j2Version = "2.17.2"
-    val daggerVersion = "2.42"
-    val moshiVersion = "1.13.0"
+    val log4j2Version = "2.19.0"
+    val daggerVersion = "2.44"
+    val moshiVersion = "1.14.0"
     val okhttpVersion = "4.10.0"
     val retrofitVersion = "2.9.0"
     val jmhVersion = "1.35"
 
     // Dependencies
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.0") // Specify reflect library explicitly to stop duplicate classpath build warnings
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.20") // Specify reflect library explicitly to stop duplicate classpath build warnings
 
-    implementation("org.apache.logging.log4j:log4j-api-kotlin:1.1.0")
+    implementation("org.apache.logging.log4j:log4j-api-kotlin:1.2.0")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
 
@@ -63,14 +63,14 @@ dependencies {
     implementation("com.github.ajalt.clikt:clikt:3.5.0")
 
     // Test dependencies
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
     testImplementation("org.assertj:assertj-core:3.23.1")
-    testImplementation("io.mockk:mockk:1.12.4")
+    testImplementation("io.mockk:mockk:1.13.2")
 
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:$okhttpVersion")
-    testImplementation("io.github.classgraph:classgraph:4.8.147")
+    testImplementation("io.github.classgraph:classgraph:4.8.149")
 
     // Bench dependencies
     benchImplementation("com.google.jimfs:jimfs:1.2")
