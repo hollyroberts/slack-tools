@@ -7,8 +7,8 @@ plugins {
     java
     kotlin("jvm") version "1.7.20"
     kotlin("kapt") version "1.7.20"
-    id("com.google.devtools.ksp") version "1.7.20-1.0.6"
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.google.devtools.ksp") version "1.7.20-1.0.8"
+    id("com.github.ben-manes.versions") version "0.43.0"
 }
 
 version = "0.1-DEV"
